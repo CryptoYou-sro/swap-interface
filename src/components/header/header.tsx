@@ -196,7 +196,7 @@ export const Header = () => {
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
 	// const navigate = useNavigate();
-	const { pathname } = useLocation();
+	// const { pathname } = useLocation();
 
 	const noKycStatusMessage = 'kyc verify not exist';
 
