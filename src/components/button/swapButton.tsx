@@ -124,9 +124,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 								? `Max Amount ${beautifyNumbers({ n: maxAmount ?? '0.0', digits: 3 })} ${sourceToken}`
 								: +maxAmount === 0
 									? `Your ${sourceToken} balance is to low`
-									: destinationAddress.length > 0 && !isDestinationAddressValid
+									: !isDestinationAddressValid
 										? 'Please insert a valid Destination Address'
-										: destinationMemo.length > 0 && !isDestinationMemoValid
+										: !isDestinationMemoValid
 											? 'Please insert a valid Destination Memo'
 											: 'Wait for deposit';
 

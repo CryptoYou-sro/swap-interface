@@ -205,18 +205,18 @@ export const SwapForm = () => {
 				// @ts-ignore
 				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
 					'hasTag'
-				];
+					];
 			setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 		}
 	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork ]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
-			const specialWithdrawTips = 
+			const specialWithdrawTips =
 				// @ts-ignore
 				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.tokens[
 					destinationToken
-				]?.specialWithdrawTips;
+					]?.specialWithdrawTips;
 			setWithdrawTipsText(!isNetworkSelected(destinationNetwork) ? '' : specialWithdrawTips);
 		}
 	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork, destinationToken ]);
