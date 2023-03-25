@@ -12,7 +12,6 @@ import {
 	isSwapRejected,
 	isTokenSelected,
 	KycL2StatusEnum,
-	KycStatusEnum,
 	makeId,
 	NETWORK_TO_ID,
 	PairEnum,
@@ -114,7 +113,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			? 'Connect wallet to swap'
 			: !isUserVerified && buttonStatus.text === 'Login'
 				? 'Log in to swap'
-				: !isUserVerified && kycStatus !== KycStatusEnum.PASS || kycL2Status !== KycL2StatusEnum.PASSED
+				: !isUserVerified && kycL2Status !== KycL2StatusEnum.PASSED
 					? 'Pass KYC to swap'
 					: !isTokenSelected(destinationToken)
 						? 'Select Network and Token'

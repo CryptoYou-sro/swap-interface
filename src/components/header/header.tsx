@@ -14,7 +14,6 @@ import {
 } from '../../styles';
 import type { ApiAuthType } from '../../helpers';
 import {
-	BasicStatusEnum,
 	button,
 	ButtonEnum,
 	CHAINS,
@@ -26,11 +25,9 @@ import {
 	INITIAL_STORAGE,
 	isLightTheme,
 	isNetworkSelected,
-	KycEnum,
 	KycL2BusinessEnum,
 	KycL2Enum,
 	KycL2StatusEnum,
-	KycStatusEnum,
 	loadBinanceKycScript,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
@@ -162,7 +159,6 @@ export const Header = () => {
 			buttonStatus,
 			isUserVerified,
 			accessToken,
-			kycStatus,
 			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
@@ -187,7 +183,7 @@ export const Header = () => {
 	// const navigate = useNavigate();
 	// const { pathname } = useLocation();
 
-	const noKycStatusMessage = 'kyc verify not exist';
+	// const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
 	const { activate, library, account, chainId, switchNetwork, activateBrowserWallet } = useEthers();
@@ -212,10 +208,6 @@ export const Header = () => {
 				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
 				dispatch({ type: VerificationEnum.ACCESS, payload: res.access });
 				dispatch({ type: VerificationEnum.REFRESH, payload: res.refresh });
-				dispatch({
-					type: KycEnum.STATUS,
-					payload: res.is_kyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
-				});
 				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
 			} catch (error: any) {
 				// TODO: do we need toast here?
@@ -299,19 +291,19 @@ export const Header = () => {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
-				if (res.data.errorData === noKycStatusMessage) {
-					await getBinanceToken();
-				}
-				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
+				// if (res.data.errorData === noKycStatusMessage) {
+				// 	await getBinanceToken();
+				// }
+				// const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
 				const {
 					status: kycL2Status,
 					statusBusiness: kycL2StatusBusiness,
 					representativeType: reprType
 				} = res?.data?.L2;
-				dispatch({
-					type: KycEnum.STATUS,
-					payload: kyc
-				});
+				// dispatch({
+				// 	type: KycEnum.STATUS,
+				// 	payload: kyc
+				// });
 				dispatch({
 					type: KycL2Enum.STATUS,
 					payload: kycL2Status
@@ -328,21 +320,18 @@ export const Header = () => {
 				}
 				setStorage({
 					...storage,
-					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
+					isKyced: kycL2Status === KycL2StatusEnum.PASSED
 				});
 				// TODO: move this part to context?
-				if (kyc === KycStatusEnum.REJECT) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
-				} else if (kycL2Status === KycL2StatusEnum.REJECTED) {
+				// if (kyc === KycStatusEnum.REJECT) {
+				// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				// 	addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
+				// }
+				if (kycL2Status === KycL2StatusEnum.REJECTED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
-				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
 				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-				} else if (kyc === KycStatusEnum.REVIEW) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					setShowStatusKycL2Modal(true);
@@ -463,10 +452,10 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: JSON.parse(localStorageAuth).account });
 			dispatch({ type: VerificationEnum.ACCESS, payload: JSON.parse(localStorageAuth).access });
 			dispatch({ type: VerificationEnum.REFRESH, payload: JSON.parse(localStorageAuth).refresh });
-			dispatch({
-				type: KycEnum.STATUS,
-				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
-			});
+			// dispatch({
+			// 	type: KycEnum.STATUS,
+			// 	payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
+			// });
 			dispatch({
 				type: KycL2Enum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced
@@ -496,10 +485,10 @@ export const Header = () => {
 			);
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
-			dispatch({
-				type: KycEnum.STATUS,
-				payload: KycStatusEnum.INITIAL
-			});
+			// dispatch({
+			// 	type: KycEnum.STATUS,
+			// 	payload: KycStatusEnum.INITIAL
+			// });
 			dispatch({
 				type: KycL2Enum.STATUS,
 				payload: KycL2StatusEnum.INITIAL
@@ -519,7 +508,7 @@ export const Header = () => {
 
 	useEffect(() => {
 		void checkStatus();
-	}, [ kycStatus, kycL2Status, accessToken, account, userAccount ]);
+	}, [ kycL2Status, accessToken, account, userAccount ]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -529,14 +518,15 @@ export const Header = () => {
 				size={isMobile ? 'medium' : 112}
 			/>
 			{!isMobile && (
-				<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
-				<Button
-					variant="pure"
-					onClick={() =>
-						console.log('Out')
-					}>
-					Step-by-step Guide
-				</Button>
+				<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/"
+					 target="_blank">
+					<Button
+						variant="pure"
+						onClick={() =>
+							console.log('Out')
+						}>
+						Step-by-step Guide
+					</Button>
 				</a>
 			)}
 			{!isMobile && isNetworkSelected(sourceNetwork) && (
@@ -589,7 +579,8 @@ export const Header = () => {
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
 						<li>
-							<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/" target="_blank">
+							<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/"
+								 target="_blank">
 								<Button
 									variant="pure"
 									onClick={() =>
@@ -605,7 +596,7 @@ export const Header = () => {
 								onClick={() => {
 									changeTheme();
 									setShowMenu(!showMenu);
-							}}>
+								}}>
 								{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
 							</Button>
 						</li>

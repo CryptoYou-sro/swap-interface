@@ -17,6 +17,7 @@ import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
 import { ContentTitle } from './kycL2LegalModal';
 import makeAnimated from 'react-select/animated';
+import { DateInput } from './shareholdersModal';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -167,6 +168,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		setShowModal(showKycL2);
 	}, [ showKycL2 ]);
 	const [ input, setInput ] = useState<{
+		fullName: string;
+		dateOfBirth: string;
 		appliedSanctions: string;
 		citizenship: string[];
 		countryOfWork: string[];
@@ -192,6 +195,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		workArea: string[];
 		yearlyIncome: number | null;
 	}>({
+		fullName: '',
+		dateOfBirth: '',
 		appliedSanctions: '',
 		citizenship: [],
 		countryOfWork: [],
@@ -200,7 +205,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		email: '',
 		file: {
 			poaDoc1: null,
-			posofDoc1: null
+			posofDoc1: null,
+			identificationDoc1: null,
+			identificationDoc2: null,
+			identificationSelfie: null,
+
 		},
 		gender: 'Select gender',
 		hasCriminalRecords: '',
@@ -235,9 +244,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ page, setPage ] = useState<number>(0);
 	const [ selectWorkCountry, setSelectWorkCountry ] = useState<any[]>([]);
 	const [ selectCitizenShip, setSelectCitizenShip ] = useState<any[]>([]);
+	const [ isDisclaimerAgree, setIsDisclaimerAgree ] = useState<boolean>(false);
 
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
+	const fileIdentificationDoc1 = useRef<HTMLInputElement>();
+	const fileIdentificationDoc2 = useRef<HTMLInputElement>();
+	const fileIdentificationDocSelfie = useRef<HTMLInputElement>();
 
 	const { addToast }: any | null = useToasts();
 	const {
@@ -344,6 +357,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			setInput({ ...input, [attributeValue]: [ ...filteredArray ] });
 		}
 	};
+	const handleDisclaimerCheckBox = () => {
+		setIsDisclaimerAgree(!isDisclaimerAgree);
+	};
+
+	const handleChangeDate = (event: any) => {
+		setInput({ ...input, dateOfBirth: event.target.value });
+	};
 
 	const handleSelectDropdownCountryOfWork = (event: any) => {
 		setSelectWorkCountry([ ...event ]);
@@ -359,16 +379,26 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		const filePosoaDoc1: any =
 			fileInputAddress?.current?.files && fileInputAddress.current.files[0];
 		const filePosofDoc1: any = fileInputDocs?.current?.files && fileInputDocs.current.files[0];
+		const fileIdentification1: any = fileIdentificationDoc1?.current?.files && fileIdentificationDoc1.current.files[0];
+		const fileIdentification2: any = fileIdentificationDoc2?.current?.files && fileIdentificationDoc2.current.files[0];
+		const fileIdentificationSelfie: any = fileIdentificationDocSelfie?.current?.files && fileIdentificationDocSelfie.current.files[0];
 		setInput({
 			...input,
-			file: { ...input.file, poaDoc1: filePosoaDoc1, posofDoc1: filePosofDoc1 }
+			file: {
+				...input.file,
+				poaDoc1: filePosoaDoc1,
+				posofDoc1: filePosofDoc1,
+				identificationDoc1: fileIdentification1,
+				identificationDoc2: fileIdentification2,
+				identificationSelfie: fileIdentificationSelfie
+			}
 		});
 	};
 
-	const handleDropDownInput = (event: any) => {
-		console.log(event.target.name);
-		setInput({ ...input, [event.target.name]: event.target.value });
-	};
+	// const handleDropDownInput = (event: any) => {
+	// 	console.log(event.target.name);
+	// 	setInput({ ...input, [event.target.name]: event.target.value });
+	// };
 	const handleDropDownInputResidence = (event: any) => {
 		setInput({ ...input, residence: { ...input.residence, country: [ event.target.value ] } });
 	};
@@ -390,7 +420,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
-		setIsValid(false);
+		setIsValid(true);
 		if (page === 0 && input.email.includes('@')
 			&& input.email.includes('.')
 			&& input.email.trim().length > 2
@@ -450,125 +480,261 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					}}>
 					{page === 0 && (
 						<WrapContainer>
-							<Title>KYC L2 form for Natural Person</Title>
-							<div style={{ marginRight: '15px', marginBottom: '10px' }}>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-place-of-birth"
-										style={{ marginBottom: '8px', display: 'inline-block' }}>
-										Place of birth
-									</label>
-									<TextField
-										id="label-place-of-birth"
-										value={input.placeOfBirth}
-										placeholder="Place of birth"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="placeOfBirth"
-										error={input.placeOfBirth.length < 2}
-										maxLength={100}
+							<Title>Disclaimer</Title>
+							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+								<p style={{ marginBottom: '40px' }}>
+									“Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae soluta reiciendis commodi in aliquam
+									repellat, magnam sed, non voluptas debitis fugiat cumque. Vel commodi enim cum dolorem, aliquid
+									obcaecati accusantium.”
+								</p>
+								<div
+									style={{
+										display: 'flex',
+										justifyContent: 'flex-start',
+										marginBottom: '8px'
+									}}>
+									<input
+										type="checkbox"
+										name='isDisclaimerAgree'
+										id='disclaimerAgree-checkbox'
+										onChange={handleDisclaimerCheckBox}
+										checked={isDisclaimerAgree}
+										data-key="workArea"
 									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-email"
-										style={{ marginBottom: '8px', display: 'inline-block' }}>
-										Email
-									</label>
-									<TextField
-										id="label-email"
-										value={input.email}
-										placeholder="Email"
-										type="email"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="email"
-										maxLength={100}
-									/>
-								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label htmlFor="label-select-gender">
-										Gender
-										<Select
-											name="gender"
-											onChange={handleDropDownInput}
-											value={input.gender}
-											id="label-select-gender">
-											<option value="Select gender">Select gender</option>
-											<option value="Male">Male</option>
-											<option value="Female">Female</option>
-											<option value="Other">Other</option>
-										</Select>
+									<label style={{ marginLeft: '4px' }} htmlFor='disclaimerAgree-checkbox'>
+										I agree
 									</label>
 								</div>
 							</div>
-
 						</WrapContainer>
 					)}
 					{page === 1 && (
 						<WrapContainer>
-							<div style={{ margin: '10px 0', width: '100%' }}>
-								<label
-									htmlFor="label-sourceOfIncome"
-									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Prevailing source of such income
-								</label>
-								<TextField
-									id="label-sourceOfIncome"
-									value={input.sourceOfIncome}
-									placeholder="Employment/business, real estate, trading, etc."
-									type="text"
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="sourceOfIncome"
-									maxLength={100}
-									error={input.sourceOfIncome.length < 2}
-								/>
+							<div style={{ marginRight: '15px', display: 'flex', alignItems: 'baseline' }}>
+								<div style={{ marginRight: '10px' }}>
+									<label
+										htmlFor="label-full-name-natural"
+										style={{ marginBottom: '8px', display: 'inline-block' }}>
+										Name and Surname
+									</label>
+									<TextField
+										id="label-full-name-natural"
+										value={input.fullName}
+										placeholder="Name and Surname"
+										type="text"
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="fullName"
+										error={input.fullName.length < 2}
+										maxLength={100}
+									/>
+								</div>
+								<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
+									<label
+										htmlFor="label-natural-dateOfBirth"
+										style={{
+											margin: '8px 0',
+											display: 'inline-block'
+										}}>
+										Date of birth
+									</label>
+									<DateInput
+										style={{
+											backgroundColor: `${theme.background.secondary}`,
+											color: `${theme.font.default}`,
+											minHeight: '45px',
+											border: '1px solid grey',
+											borderRadius: `${DEFAULT_BORDER_RADIUS}`
+										}}
+										type="date"
+										id="label-natural-dateOfBirth"
+										value={input.dateOfBirth}
+										min="1900-01-01"
+										name="dateOfBirth"
+										onChange={(e: any) => handleChangeDate(e)}
+									/>
+								</div>
 							</div>
-							<div style={{ marginBottom: '10px' }}>
-								<label
-									htmlFor="label-net-yearly-income"
-									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Net yearly income (Euro)
-								</label>
-								<TextField
-									id="label-net-yearly-income"
-									value={input.yearlyIncome !== null && input.yearlyIncome}
-									placeholder="Net yearly income"
-									type="number"
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="yearlyIncome"
-									maxLength={100}
-								/>
-							</div>
-							<div style={{ margin: '10px 0 30px', width: '100%' }}>
-								<label htmlFor="label-select-tax-residency">
-									Tax Residency
-									<Select
-										name="taxResidency"
-										onChange={handleDropDownInput}
-										value={input.taxResidency}
-										id="label-select-tax-residency">
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-								</label>
+							<div
+								style={{
+									padding: '0 10px',
+									textAlign: 'left',
+									display: 'flex',
+									alignItems: 'baseline',
+									flexWrap: 'wrap',
+									justifyContent: 'space-between'
+								}}>
+								<ContentTitle style={{ textAlign: 'left', marginBottom: '0px' }}>Provide photos of one of the following
+									documents: Passport /
+									ID / Driving License</ContentTitle>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Front, second page for Passport
+								</ContentTitle>
+								<LabelInput htmlFor="file-natural-identification-doc-1">
+									<FileInput
+										id="file-natural-identification-doc-1"
+										type="file"
+										ref={fileIdentificationDoc1 as any}
+										onChange={handleChangeFileInput}>
+									</FileInput>
+									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Back, third page for Passport
+								</ContentTitle>
+								<LabelInput htmlFor="file-natural-identification-doc-2">
+									<FileInput
+										id="file-natural-identification-doc-2"
+										type="file"
+										ref={fileIdentificationDoc2 as any}
+										onChange={handleChangeFileInput}>
+									</FileInput>
+									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Provide a photo of yourself (selfie) with your face only
+								</ContentTitle>
+								<LabelInput htmlFor="file-natural-selfie">
+									<FileInput
+										id="file-natural-selfie"
+										type="file"
+										ref={fileIdentificationDocSelfie as any}
+										onChange={handleChangeFileInput}>
+									</FileInput>
+									{input.file.identificationSelfie && input.file.identificationSelfie.name.length < 15 ? input.file.identificationSelfie.name : input.file.identificationSelfie && input.file.identificationSelfie.name.length >= 15 ? input.file.identificationSelfie.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
 							</div>
 						</WrapContainer>
 					)}
+
+					{/* {page === 0 && (*/}
+					{/*	<WrapContainer>*/}
+					{/*		<Title>KYC L2 form for Natural Person</Title>*/}
+					{/*		<div style={{ marginRight: '15px', marginBottom: '10px' }}>*/}
+					{/*			<div style={{ marginBottom: '10px' }}>*/}
+					{/*				<label*/}
+					{/*					htmlFor="label-place-of-birth"*/}
+					{/*					style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
+					{/*					Place of birth*/}
+					{/*				</label>*/}
+					{/*				<TextField*/}
+					{/*					id="label-place-of-birth"*/}
+					{/*					value={input.placeOfBirth}*/}
+					{/*					placeholder="Place of birth"*/}
+					{/*					type="text"*/}
+					{/*					onChange={handleChangeInput}*/}
+					{/*					size="small"*/}
+					{/*					align="left"*/}
+					{/*					name="placeOfBirth"*/}
+					{/*					error={input.placeOfBirth.length < 2}*/}
+					{/*					maxLength={100}*/}
+					{/*				/>*/}
+					{/*			</div>*/}
+					{/*			<div style={{ marginBottom: '10px' }}>*/}
+					{/*				<label*/}
+					{/*					htmlFor="label-email"*/}
+					{/*					style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
+					{/*					Email*/}
+					{/*				</label>*/}
+					{/*				<TextField*/}
+					{/*					id="label-email"*/}
+					{/*					value={input.email}*/}
+					{/*					placeholder="Email"*/}
+					{/*					type="email"*/}
+					{/*					onChange={handleChangeInput}*/}
+					{/*					size="small"*/}
+					{/*					align="left"*/}
+					{/*					name="email"*/}
+					{/*					maxLength={100}*/}
+					{/*				/>*/}
+					{/*			</div>*/}
+					{/*			<div style={{ marginBottom: '10px' }}>*/}
+					{/*				<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'block' }}>*/}
+					{/*					Gender*/}
+					{/*				</label>*/}
+					{/*				<Select*/}
+					{/*					name="gender"*/}
+					{/*					onChange={handleDropDownInput}*/}
+					{/*					value={input.gender}*/}
+					{/*					id="label-select-gender"*/}
+					{/*					style={{*/}
+					{/*						color: 'white',*/}
+					{/*						borderRadius: '6px',*/}
+					{/*						minHeight: '46px',*/}
+					{/*					}}>*/}
+					{/*					<option value="Select gender">Select gender</option>*/}
+					{/*					<option value="Male">Male</option>*/}
+					{/*					<option value="Female">Female</option>*/}
+					{/*					<option value="Other">Other</option>*/}
+					{/*				</Select>*/}
+
+					{/*			</div>*/}
+					{/*		</div>*/}
+
+					{/*	</WrapContainer>*/}
+					{/* )}*/}
+					{/* {page === 1 && (*/}
+					{/*	<WrapContainer>*/}
+					{/*		<div style={{ margin: '10px 0', width: '100%' }}>*/}
+					{/*			<label*/}
+					{/*				htmlFor="label-sourceOfIncome"*/}
+					{/*				style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
+					{/*				Prevailing source of such income*/}
+					{/*			</label>*/}
+					{/*			<TextField*/}
+					{/*				id="label-sourceOfIncome"*/}
+					{/*				value={input.sourceOfIncome}*/}
+					{/*				placeholder="Employment/business, real estate, trading, etc."*/}
+					{/*				type="text"*/}
+					{/*				onChange={handleChangeInput}*/}
+					{/*				size="small"*/}
+					{/*				align="left"*/}
+					{/*				name="sourceOfIncome"*/}
+					{/*				maxLength={100}*/}
+					{/*				error={input.sourceOfIncome.length < 2}*/}
+					{/*			/>*/}
+					{/*		</div>*/}
+					{/*		<div style={{ marginBottom: '10px' }}>*/}
+					{/*			<label*/}
+					{/*				htmlFor="label-net-yearly-income"*/}
+					{/*				style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
+					{/*				Net yearly income (Euro)*/}
+					{/*			</label>*/}
+					{/*			<TextField*/}
+					{/*				id="label-net-yearly-income"*/}
+					{/*				value={input.yearlyIncome !== null && input.yearlyIncome}*/}
+					{/*				placeholder="Net yearly income"*/}
+					{/*				type="number"*/}
+					{/*				onChange={handleChangeInput}*/}
+					{/*				size="small"*/}
+					{/*				align="left"*/}
+					{/*				name="yearlyIncome"*/}
+					{/*				maxLength={100}*/}
+					{/*			/>*/}
+					{/*		</div>*/}
+					{/*		<div style={{ margin: '10px 0 30px', width: '100%' }}>*/}
+					{/*			<label htmlFor="label-select-tax-residency">*/}
+					{/*				Tax Residency*/}
+					{/*				<Select*/}
+					{/*					name="taxResidency"*/}
+					{/*					onChange={handleDropDownInput}*/}
+					{/*					value={input.taxResidency}*/}
+					{/*					id="label-select-tax-residency">*/}
+					{/*					<option value="Select country">Select country</option>*/}
+					{/*					{COUNTRIES.map((country: any) => {*/}
+					{/*						return (*/}
+					{/*							<option value={country.name} key={country.name}>*/}
+					{/*								{country.name}*/}
+					{/*							</option>*/}
+					{/*						);*/}
+					{/*					})}*/}
+					{/*					;*/}
+					{/*				</Select>*/}
+					{/*			</label>*/}
+					{/*		</div>*/}
+					{/*	</WrapContainer>*/}
+					{/* )}*/}
 					{page === 2 && (
 						<div style={{ marginBottom: '10px', width: '100%' }}>
 							<ContentTitle>
