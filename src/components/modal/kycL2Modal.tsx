@@ -101,7 +101,7 @@ const Select = styled.select(() => {
 		height: 100%;
 		max-height: ${pxToRem(46)};
 		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
+		background: none;
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 	`;
 });
@@ -387,16 +387,29 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const handleChangeFileInput = () => {
 		const filePosoaDoc1: any =
 			fileInputAddress?.current?.files && fileInputAddress.current.files[0];
-		const filePosofDoc1: any = fileInputDocs?.current?.files && fileInputDocs.current.files[0];
-		const fileIdentification1: any = fileIdentificationDoc1?.current?.files && fileIdentificationDoc1.current.files[0];
-		const fileIdentification2: any = fileIdentificationDoc2?.current?.files && fileIdentificationDoc2.current.files[0];
-		const fileIdentificationSelfie: any = fileIdentificationDocSelfie?.current?.files && fileIdentificationDocSelfie.current.files[0];
+		const filePosofDoc1: any =
+			fileInputDocs?.current?.files && fileInputDocs.current.files[0];
 		setInput({
 			...input,
 			file: {
 				...input.file,
 				poaDoc1: filePosoaDoc1,
 				posofDoc1: filePosofDoc1,
+			}
+		});
+	};
+
+	const handleFileIdentification = () => {
+		const fileIdentification1: any =
+			fileIdentificationDoc1?.current?.files && fileIdentificationDoc1.current.files[0];
+		const fileIdentification2: any =
+			fileIdentificationDoc2?.current?.files && fileIdentificationDoc2.current.files[0];
+		const fileIdentificationSelfie: any =
+			fileIdentificationDocSelfie?.current?.files && fileIdentificationDocSelfie.current.files[0];
+		setInput({
+			...input,
+			file: {
+				...input.file,
 				identificationDoc1: fileIdentification1,
 				identificationDoc2: fileIdentification2,
 				identificationSelfie: fileIdentificationSelfie
@@ -599,8 +612,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											value={input.gender}
 											id="label-select-gender"
 											style={{
-												color: 'white',
-												borderRadius: '6px',
 												minHeight: '46px',
 												maxWidth: '48%'
 											}}>
@@ -635,7 +646,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										id="file-natural-identification-doc-1"
 										type="file"
 										ref={fileIdentificationDoc1 as any}
-										onChange={handleChangeFileInput}>
+										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
@@ -647,7 +658,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										id="file-natural-identification-doc-2"
 										type="file"
 										ref={fileIdentificationDoc2 as any}
-										onChange={handleChangeFileInput}>
+										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
@@ -659,7 +670,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										id="file-natural-selfie"
 										type="file"
 										ref={fileIdentificationDocSelfie as any}
-										onChange={handleChangeFileInput}>
+										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationSelfie && input.file.identificationSelfie.name.length < 15 ? input.file.identificationSelfie.name : input.file.identificationSelfie && input.file.identificationSelfie.name.length >= 15 ? input.file.identificationSelfie.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
@@ -692,7 +703,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<label
 									htmlFor="label-net-yearly-income"
 									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Net yearly income (Euro)
+									Net yearly income (Euro €)
 								</label>
 								<TextField
 									id="label-net-yearly-income"
@@ -754,7 +765,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									} ),
 									menu: (base): any => ( {
 										...base,
-										backgroundColor: `${theme.background.secondary}`
+										background: `${theme.background.secondary}`
 									} ),
 									option: (base, state): any => ( {
 										...base,
@@ -767,7 +778,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									control: (baseStyles): any => ( {
 										...baseStyles,
 										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
+										background: 'none',
 										color: `${theme.font.default}`,
 										padding: 0
 									} )
@@ -936,7 +947,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									control: (baseStyles): any => ( {
 										...baseStyles,
 										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
+										background: 'none',
 										color: `${theme.font.default}`,
 										padding: 0
 									} )
