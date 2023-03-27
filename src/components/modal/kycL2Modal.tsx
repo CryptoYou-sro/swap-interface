@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { BASE_URL, button, ButtonEnum, findAndReplace, routes, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -103,6 +103,14 @@ const Select = styled.select(() => {
 		color: ${theme.font.default};
 		background-color: ${theme.background.secondary};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+	`;
+});
+
+const DisclaimerText = styled.p(() => {
+
+	return css`
+		margin-bottom: ${pxToRem(40)};
+		font-size: ${fontSize[16]};
 	`;
 });
 
@@ -244,7 +252,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ page, setPage ] = useState<number>(0);
 	const [ selectWorkCountry, setSelectWorkCountry ] = useState<any[]>([]);
 	const [ selectCitizenShip, setSelectCitizenShip ] = useState<any[]>([]);
-	const [ isDisclaimerAgree, setIsDisclaimerAgree ] = useState<boolean>(false);
 
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
@@ -269,6 +276,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		event.preventDefault();
 		const bodyFormData = new FormData();
 		bodyFormData.append('place_of_birth', input.placeOfBirth);
+		bodyFormData.append('full_name', input.fullName);
+		bodyFormData.append('dob', input.dateOfBirth);
 		bodyFormData.append('residence', JSON.stringify(input.residence));
 		if (input.mailAddress) {
 			bodyFormData.append('mail_address', JSON.stringify(input.mailAddress));
@@ -277,6 +286,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		bodyFormData.append('citizenship', input.citizenship.join(', '));
 		bodyFormData.append('poa_doc_1', input.file.poaDoc1);
 		bodyFormData.append('posof_doc_1', input.file.posofDoc1);
+		bodyFormData.append('identification_doc_1', input.file.identificationDoc1);
+		bodyFormData.append('identification_doc_2', input.file.identificationDoc2);
+		bodyFormData.append('identification_selfie', input.file.identificationSelfie);
 		bodyFormData.append('email', input.email);
 		bodyFormData.append('tax_residency', input.taxResidency);
 		bodyFormData.append('politicall_person', input.politicallPerson === 'Yes' ? 'true' : 'false');
@@ -357,9 +369,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			setInput({ ...input, [attributeValue]: [ ...filteredArray ] });
 		}
 	};
-	const handleDisclaimerCheckBox = () => {
-		setIsDisclaimerAgree(!isDisclaimerAgree);
-	};
 
 	const handleChangeDate = (event: any) => {
 		setInput({ ...input, dateOfBirth: event.target.value });
@@ -395,10 +404,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		});
 	};
 
-	// const handleDropDownInput = (event: any) => {
-	// 	console.log(event.target.name);
-	// 	setInput({ ...input, [event.target.name]: event.target.value });
-	// };
+	const handleDropDownInput = (event: any) => {
+		setInput({ ...input, [event.target.name]: event.target.value });
+	};
 	const handleDropDownInputResidence = (event: any) => {
 		setInput({ ...input, residence: { ...input.residence, country: [ event.target.value ] } });
 	};
@@ -420,43 +428,50 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
-		setIsValid(true);
-		if (page === 0 && input.email.includes('@')
+		setIsValid(false);
+		if (page === 0) {
+			setIsValid(true);
+		}
+		if (page === 1 && input.email.includes('@')
 			&& input.email.includes('.')
 			&& input.email.trim().length > 2
+			&& input.fullName.trim().length >= 2
+			&& input.dateOfBirth.trim().length > 0
 			&& input.gender !== 'Select gender'
 			&& input.placeOfBirth.trim().length >= 2) {
 			setIsValid(true);
-		} else if (page === 1 && input.sourceOfIncome.trim().length >= 2 && Number(input.yearlyIncome) > 0 && input.taxResidency !== 'Select country') {
+		} else if (page === 2 && input.file.identificationDoc1 && input.file.identificationDoc2 && input.file.identificationSelfie) {
 			setIsValid(true);
-		} else if (page === 2 && input.countryOfWork.length > 0) {
+		} else if (page === 3 && input.sourceOfIncome.trim().length >= 2 && Number(input.yearlyIncome) > 0 && input.taxResidency !== 'Select country') {
 			setIsValid(true);
-		} else if (page === 3 && input.workArea.length > 0) {
+		} else if (page === 4 && input.countryOfWork.length > 0) {
 			setIsValid(true);
-		} else if (page === 4 && input.sourceOfFunds.length > 0 && !input.sourceOfFunds.includes('Other') ||
-			page == 4 && input.sourceOfFunds.includes('Other') && input.sourceOfFundsOther.trim().length > 0) {
+		} else if (page === 5 && input.workArea.length > 0) {
 			setIsValid(true);
-		} else if (page === 5 && input.sourceOfIncomeNature.length > 0 && !input.sourceOfIncomeNature.includes('Other') ||
-			page === 5 && input.sourceOfIncomeNature.includes('Other') && input.sourceOfIncomeNatureOther.trim().length > 0) {
+		} else if (page === 6 && input.sourceOfFunds.length > 0 && !input.sourceOfFunds.includes('Other') ||
+			page == 6 && input.sourceOfFunds.includes('Other') && input.sourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 6 && input.citizenship.length > 0) {
+		} else if (page === 7 && input.sourceOfIncomeNature.length > 0 && !input.sourceOfIncomeNature.includes('Other') ||
+			page === 7 && input.sourceOfIncomeNature.includes('Other') && input.sourceOfIncomeNatureOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 7 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
-			page === 7 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
+		} else if (page === 8 && input.citizenship.length > 0) {
 			setIsValid(true);
-		} else if (page === 8 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
+		} else if (page === 9 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
+			page === 9 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 9 && input.hasCriminalRecords.length > 0) {
+		} else if (page === 10 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 10 && input.appliedSanctions.length > 0) {
+		} else if (page === 11 && input.hasCriminalRecords.length > 0) {
 			setIsValid(true);
-		} else if (page === 11 && input.politicallPerson.length > 0) {
+		} else if (page === 12 && input.appliedSanctions.length > 0) {
 			setIsValid(true);
-		} else if (page === 12 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
+		} else if (page === 13 && input.politicallPerson.length > 0) {
 			setIsValid(true);
-		} else if (page === 13 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
+		} else if (page === 14 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
 			setIsValid(true);
-		} else if (page === 14 && input.file.poaDoc1 && input.file.posofDoc1) {
+		} else if (page === 15 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
+			setIsValid(true);
+		} else if (page === 16 && input.file.poaDoc1 && input.file.posofDoc1) {
 			setIsValid(true);
 		}
 	}, [ page, input ]);
@@ -466,7 +481,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			size="large"
 			isOpen={showModal}
 			handleClose={handleOnClose}
-			hasBackButton
+			hasBackButton={page !== 0}
 			handleBack={handleOnBack}>
 			<Wrapper ref={myRef}>
 				<div
@@ -482,80 +497,124 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						<WrapContainer>
 							<Title>Disclaimer</Title>
 							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
-								<p style={{ marginBottom: '40px' }}>
+								<DisclaimerText>
 									“Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae soluta reiciendis commodi in aliquam
 									repellat, magnam sed, non voluptas debitis fugiat cumque. Vel commodi enim cum dolorem, aliquid
 									obcaecati accusantium.”
-								</p>
-								<div
-									style={{
-										display: 'flex',
-										justifyContent: 'flex-start',
-										marginBottom: '8px'
-									}}>
-									<input
-										type="checkbox"
-										name='isDisclaimerAgree'
-										id='disclaimerAgree-checkbox'
-										onChange={handleDisclaimerCheckBox}
-										checked={isDisclaimerAgree}
-										data-key="workArea"
-									/>
-									<label style={{ marginLeft: '4px' }} htmlFor='disclaimerAgree-checkbox'>
-										I agree
-									</label>
-								</div>
+								</DisclaimerText>
 							</div>
 						</WrapContainer>
 					)}
 					{page === 1 && (
 						<WrapContainer>
-							<div style={{ marginRight: '15px', display: 'flex', alignItems: 'baseline' }}>
-								<div style={{ marginRight: '10px' }}>
-									<label
-										htmlFor="label-full-name-natural"
-										style={{ marginBottom: '8px', display: 'inline-block' }}>
-										Name and Surname
-									</label>
-									<TextField
-										id="label-full-name-natural"
-										value={input.fullName}
-										placeholder="Name and Surname"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="fullName"
-										error={input.fullName.length < 2}
-										maxLength={100}
-									/>
+							<Title>KYC L2 form for Natural Person</Title>
+							<div style={{ marginRight: '15px' }}>
+								<div style={{ display: 'flex', alignItems: 'baseline' }}>
+									<div style={{ marginRight: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-full-name-natural"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Name and Surname
+										</label>
+										<TextField
+											id="label-full-name-natural"
+											value={input.fullName}
+											placeholder="Name and Surname"
+											type="text"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="fullName"
+											error={input.fullName.length < 2}
+											maxLength={100}
+										/>
+									</div>
+									<div style={{ marginBottom: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-place-of-birth"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Place of birth
+										</label>
+										<TextField
+											id="label-place-of-birth"
+											value={input.placeOfBirth}
+											placeholder="Place of birth"
+											type="text"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="placeOfBirth"
+											error={input.placeOfBirth.length < 2}
+											maxLength={100}
+										/>
+									</div>
 								</div>
-								<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
-									<label
-										htmlFor="label-natural-dateOfBirth"
-										style={{
-											margin: '8px 0',
-											display: 'inline-block'
-										}}>
-										Date of birth
-									</label>
-									<DateInput
-										style={{
-											backgroundColor: `${theme.background.secondary}`,
-											color: `${theme.font.default}`,
-											minHeight: '45px',
-											border: '1px solid grey',
-											borderRadius: `${DEFAULT_BORDER_RADIUS}`
-										}}
-										type="date"
-										id="label-natural-dateOfBirth"
-										value={input.dateOfBirth}
-										min="1900-01-01"
-										name="dateOfBirth"
-										onChange={(e: any) => handleChangeDate(e)}
-									/>
+								<div style={{ display: 'flex', alignItems: 'baseline' }}>
+									<div style={{ width: '48%', marginRight: '10px', display: 'flex', flexDirection: 'column' }}>
+										<label
+											htmlFor="label-natural-dateOfBirth"
+											style={{
+												margin: '8px 0',
+												display: 'inline-block'
+											}}>
+											Date of birth
+										</label>
+										<DateInput
+											type="date"
+											id="label-natural-dateOfBirth"
+											value={input.dateOfBirth}
+											min="1900-01-01"
+											name="dateOfBirth"
+											onChange={(e: any) => handleChangeDate(e)}
+										/>
+									</div>
+									<div style={{ marginBottom: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-email"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Email
+										</label>
+										<TextField
+											id="label-email"
+											value={input.email}
+											placeholder="Email"
+											type="email"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="email"
+											maxLength={100}
+										/>
+									</div>
+								</div>
+								<div>
+									<div style={{ marginBottom: '10px' }}>
+										<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'block' }}>
+											Gender
+										</label>
+										<Select
+											name="gender"
+											onChange={handleDropDownInput}
+											value={input.gender}
+											id="label-select-gender"
+											style={{
+												color: 'white',
+												borderRadius: '6px',
+												minHeight: '46px',
+												maxWidth: '48%'
+											}}>
+											<option value="Select gender">Select gender</option>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+											<option value="Other">Other</option>
+										</Select>
+									</div>
 								</div>
 							</div>
+						</WrapContainer>
+					)}
+					{page === 2 && (
+						<WrapContainer>
 							<div
 								style={{
 									padding: '0 10px',
@@ -565,11 +624,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									flexWrap: 'wrap',
 									justifyContent: 'space-between'
 								}}>
-								<ContentTitle style={{ textAlign: 'left', marginBottom: '0px' }}>Provide photos of one of the following
-									documents: Passport /
+								<ContentTitle>Provide photos of one of the following documents: <br/> Passport /
 									ID / Driving License</ContentTitle>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Front, second page for Passport
+									Front side (or second page for Passport)
 								</ContentTitle>
 								<LabelInput htmlFor="file-natural-identification-doc-1">
 									<FileInput
@@ -581,7 +639,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Back, third page for Passport
+									Back side (or third page for Passport)
 								</ContentTitle>
 								<LabelInput htmlFor="file-natural-identification-doc-2">
 									<FileInput
@@ -605,137 +663,73 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.file.identificationSelfie && input.file.identificationSelfie.name.length < 15 ? input.file.identificationSelfie.name : input.file.identificationSelfie && input.file.identificationSelfie.name.length >= 15 ? input.file.identificationSelfie.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 							</div>
+
 						</WrapContainer>
 					)}
+					{page === 3 && (
+						<WrapContainer>
+							<div style={{ margin: '10px 0', width: '100%' }}>
+								<label
+									htmlFor="label-sourceOfIncome"
+									style={{ marginBottom: '8px', display: 'inline-block' }}>
+									Prevailing source of such income
+								</label>
+								<TextField
+									id="label-sourceOfIncome"
+									value={input.sourceOfIncome}
+									placeholder="Employment/business, real estate, trading, etc."
+									type="text"
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="sourceOfIncome"
+									maxLength={100}
+									error={input.sourceOfIncome.length < 2}
+								/>
+							</div>
+							<div style={{ marginBottom: '10px' }}>
+								<label
+									htmlFor="label-net-yearly-income"
+									style={{ marginBottom: '8px', display: 'inline-block' }}>
+									Net yearly income (Euro)
+								</label>
+								<TextField
+									id="label-net-yearly-income"
+									value={input.yearlyIncome !== null && input.yearlyIncome}
+									placeholder="Net yearly income"
+									type="number"
+									onChange={handleChangeInput}
+									size="small"
+									align="left"
+									name="yearlyIncome"
+									maxLength={100}
+								/>
+							</div>
+							<div style={{ margin: '10px 0 30px', width: '100%' }}>
+								<label htmlFor="label-select-tax-residency" style={{ marginBottom: '8px', display: 'block' }}>
+									Tax Residency
+								</label>
+								<Select
+									style={{ minHeight: `${pxToRem(46)}` }}
+									name="taxResidency"
+									onChange={handleDropDownInput}
+									value={input.taxResidency}
+									id="label-select-tax-residency">
+									<option value="Select country">Select country</option>
+									{COUNTRIES.map((country: any) => {
+										return (
+											<option value={country.name} key={country.name}>
+												{country.name}
+											</option>
+										);
+									})}
+									;
+								</Select>
 
-					{/* {page === 0 && (*/}
-					{/*	<WrapContainer>*/}
-					{/*		<Title>KYC L2 form for Natural Person</Title>*/}
-					{/*		<div style={{ marginRight: '15px', marginBottom: '10px' }}>*/}
-					{/*			<div style={{ marginBottom: '10px' }}>*/}
-					{/*				<label*/}
-					{/*					htmlFor="label-place-of-birth"*/}
-					{/*					style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
-					{/*					Place of birth*/}
-					{/*				</label>*/}
-					{/*				<TextField*/}
-					{/*					id="label-place-of-birth"*/}
-					{/*					value={input.placeOfBirth}*/}
-					{/*					placeholder="Place of birth"*/}
-					{/*					type="text"*/}
-					{/*					onChange={handleChangeInput}*/}
-					{/*					size="small"*/}
-					{/*					align="left"*/}
-					{/*					name="placeOfBirth"*/}
-					{/*					error={input.placeOfBirth.length < 2}*/}
-					{/*					maxLength={100}*/}
-					{/*				/>*/}
-					{/*			</div>*/}
-					{/*			<div style={{ marginBottom: '10px' }}>*/}
-					{/*				<label*/}
-					{/*					htmlFor="label-email"*/}
-					{/*					style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
-					{/*					Email*/}
-					{/*				</label>*/}
-					{/*				<TextField*/}
-					{/*					id="label-email"*/}
-					{/*					value={input.email}*/}
-					{/*					placeholder="Email"*/}
-					{/*					type="email"*/}
-					{/*					onChange={handleChangeInput}*/}
-					{/*					size="small"*/}
-					{/*					align="left"*/}
-					{/*					name="email"*/}
-					{/*					maxLength={100}*/}
-					{/*				/>*/}
-					{/*			</div>*/}
-					{/*			<div style={{ marginBottom: '10px' }}>*/}
-					{/*				<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'block' }}>*/}
-					{/*					Gender*/}
-					{/*				</label>*/}
-					{/*				<Select*/}
-					{/*					name="gender"*/}
-					{/*					onChange={handleDropDownInput}*/}
-					{/*					value={input.gender}*/}
-					{/*					id="label-select-gender"*/}
-					{/*					style={{*/}
-					{/*						color: 'white',*/}
-					{/*						borderRadius: '6px',*/}
-					{/*						minHeight: '46px',*/}
-					{/*					}}>*/}
-					{/*					<option value="Select gender">Select gender</option>*/}
-					{/*					<option value="Male">Male</option>*/}
-					{/*					<option value="Female">Female</option>*/}
-					{/*					<option value="Other">Other</option>*/}
-					{/*				</Select>*/}
-
-					{/*			</div>*/}
-					{/*		</div>*/}
-
-					{/*	</WrapContainer>*/}
-					{/* )}*/}
-					{/* {page === 1 && (*/}
-					{/*	<WrapContainer>*/}
-					{/*		<div style={{ margin: '10px 0', width: '100%' }}>*/}
-					{/*			<label*/}
-					{/*				htmlFor="label-sourceOfIncome"*/}
-					{/*				style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
-					{/*				Prevailing source of such income*/}
-					{/*			</label>*/}
-					{/*			<TextField*/}
-					{/*				id="label-sourceOfIncome"*/}
-					{/*				value={input.sourceOfIncome}*/}
-					{/*				placeholder="Employment/business, real estate, trading, etc."*/}
-					{/*				type="text"*/}
-					{/*				onChange={handleChangeInput}*/}
-					{/*				size="small"*/}
-					{/*				align="left"*/}
-					{/*				name="sourceOfIncome"*/}
-					{/*				maxLength={100}*/}
-					{/*				error={input.sourceOfIncome.length < 2}*/}
-					{/*			/>*/}
-					{/*		</div>*/}
-					{/*		<div style={{ marginBottom: '10px' }}>*/}
-					{/*			<label*/}
-					{/*				htmlFor="label-net-yearly-income"*/}
-					{/*				style={{ marginBottom: '8px', display: 'inline-block' }}>*/}
-					{/*				Net yearly income (Euro)*/}
-					{/*			</label>*/}
-					{/*			<TextField*/}
-					{/*				id="label-net-yearly-income"*/}
-					{/*				value={input.yearlyIncome !== null && input.yearlyIncome}*/}
-					{/*				placeholder="Net yearly income"*/}
-					{/*				type="number"*/}
-					{/*				onChange={handleChangeInput}*/}
-					{/*				size="small"*/}
-					{/*				align="left"*/}
-					{/*				name="yearlyIncome"*/}
-					{/*				maxLength={100}*/}
-					{/*			/>*/}
-					{/*		</div>*/}
-					{/*		<div style={{ margin: '10px 0 30px', width: '100%' }}>*/}
-					{/*			<label htmlFor="label-select-tax-residency">*/}
-					{/*				Tax Residency*/}
-					{/*				<Select*/}
-					{/*					name="taxResidency"*/}
-					{/*					onChange={handleDropDownInput}*/}
-					{/*					value={input.taxResidency}*/}
-					{/*					id="label-select-tax-residency">*/}
-					{/*					<option value="Select country">Select country</option>*/}
-					{/*					{COUNTRIES.map((country: any) => {*/}
-					{/*						return (*/}
-					{/*							<option value={country.name} key={country.name}>*/}
-					{/*								{country.name}*/}
-					{/*							</option>*/}
-					{/*						);*/}
-					{/*					})}*/}
-					{/*					;*/}
-					{/*				</Select>*/}
-					{/*			</label>*/}
-					{/*		</div>*/}
-					{/*	</WrapContainer>*/}
-					{/* )}*/}
-					{page === 2 && (
+							</div>
+						</WrapContainer>
+					)}
+					{page === 4 && (
 						<div style={{ marginBottom: '10px', width: '100%' }}>
 							<ContentTitle>
 								State or country, in which a branch, organized unit or establishment of the client
@@ -780,7 +774,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 						</div>
 					)}
-					{page === 3 && (
+					{page === 5 && (
 						<WrapContainer>
 							<div
 								style={{
@@ -818,7 +812,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</WrapContainer>
 					)}
-					{page === 4 && (
+					{page === 6 && (
 						<WrapContainer>
 							<ContentTitle>
 								Source of funds intended for Transaction:
@@ -862,7 +856,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 5 && (
+					{page === 7 && (
 						<WrapContainer>
 							<ContentTitle>
 								Nature of prevailing source of income
@@ -906,7 +900,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 6 && (
+					{page === 8 && (
 						<div style={{ marginBottom: '10px', width: '70%' }}>
 							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
 							<SelectDropDown
@@ -949,7 +943,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 						</div>
 					)}
-					{page === 7 && (
+					{page === 9 && (
 						<WrapContainer>
 							<div style={{ marginBottom: '15px' }}>
 								<ContentTitle>
@@ -996,7 +990,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</WrapContainer>
 					)}
-					{page === 8 && (
+					{page === 10 && (
 						<WrapContainer>
 							<ContentTitle>
 								I declare that
@@ -1048,7 +1042,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 9 && (
+					{page === 11 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Have you ever been convicted or prosecuted for a criminal offense, in particular an
@@ -1079,7 +1073,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</label>
 						</div>
 					)}
-					{page === 10 && (
+					{page === 12 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Person against whom are applied CZ/international sanctions?
@@ -1107,9 +1101,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 						</div>
-
 					)}
-					{page === 11 && (
+					{page === 13 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
 							<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
@@ -1135,9 +1128,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 						</div>
-
 					)}
-					{page === 12 && (
+					{page === 14 && (
 						<div>
 							<ContentTitle>Residence</ContentTitle>
 							<div style={{ display: 'flex' }}>
@@ -1234,7 +1226,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</div>
 					)}
-					{page === 13 && (
+					{page === 15 && (
 						<>
 							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
@@ -1375,7 +1367,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							)}
 						</>
 					)}
-					{page === 14 && (
+					{page === 16 && (
 						<div
 							style={{
 								margin: '0 0 10px',
@@ -1411,12 +1403,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</LabelInput>
 						</div>
 					)}
-					{page < 14 && (
+					{page < 16 && (
 						<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
-							Next
+							{page === 0 ? 'I agree' : 'Next'}
 						</Button>
 					)}
-					{page >= 14 && (
+					{page >= 16 && (
 						<Button
 							variant="secondary"
 							disabled={!isValid}
