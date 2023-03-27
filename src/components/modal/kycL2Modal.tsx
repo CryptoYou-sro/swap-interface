@@ -512,16 +512,24 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<Title>Disclaimer</Title>
 							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
 								<DisclaimerText>
-									“Lorem ipsum dolor sit amet consectetur adipisicing elit. Vitae soluta reiciendis commodi in aliquam
-									repellat, magnam sed, non voluptas debitis fugiat cumque. Vel commodi enim cum dolorem, aliquid
-									obcaecati accusantium.”
+									This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as mandated by the European Union regulations.<br />
+									To complete this form, please ensure you have the following documents at hand:<br />
+									<ul>
+										<li>A valid government-issued identification document, such as a Passport, National ID card, or Driver's License.</li>
+										<li>Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated within the last three months).</li>
+										<li>A document proving information on your source of funds (bank statement, payslip, tax return etc.)</li>
+										<li>A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's date and the number of the document you will upload (Passport / ID / Driving License)</li>
+									</ul>
+									The estimated time required to complete this form is approximately 10 minutes.<br />
+									You will receive an email notification regarding the status of your verification process once it's completed. <br />
+									Click on "I Agree" to start.
 								</DisclaimerText>
 							</div>
 						</WrapContainer>
 					)}
 					{page === 1 && (
 						<WrapContainer>
-							<Title>KYC L2 form for Natural Person</Title>
+							<Title>KYC and AML Questionnaire for Individuals</Title>
 							<div style={{ marginRight: '15px' }}>
 								<div style={{ display: 'flex', alignItems: 'baseline' }}>
 									<div style={{ marginRight: '10px', width: '48%', }}>
@@ -618,7 +626,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											<option value="Select gender">Select gender</option>
 											<option value="Male">Male</option>
 											<option value="Female">Female</option>
-											<option value="Other">Other</option>
 										</Select>
 									</div>
 								</div>
@@ -639,7 +646,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<ContentTitle>Provide photos of one of the following documents: <br/> Passport /
 									ID / Driving License</ContentTitle>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Front side (or second page for Passport)
+									Front side / second page for Passport
 								</ContentTitle>
 								<LabelInput htmlFor="file-natural-identification-doc-1">
 									<FileInput
@@ -651,7 +658,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Back side (or third page for Passport)
+									Back side / third page for Passport
 								</ContentTitle>
 								<LabelInput htmlFor="file-natural-identification-doc-2">
 									<FileInput
@@ -663,8 +670,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Provide a photo of yourself (selfie) with your face only
-								</ContentTitle>
+									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>)
 								<LabelInput htmlFor="file-natural-selfie">
 									<FileInput
 										id="file-natural-selfie"
@@ -684,7 +690,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<label
 									htmlFor="label-sourceOfIncome"
 									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Prevailing source of such income
+									What is the prevailing source of your income?
 								</label>
 								<TextField
 									id="label-sourceOfIncome"
@@ -703,7 +709,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<label
 									htmlFor="label-net-yearly-income"
 									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Net yearly income (Euro €)
+									What is your net yearly income in € Euro ?
 								</label>
 								<TextField
 									id="label-net-yearly-income"
@@ -719,7 +725,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 							<div style={{ margin: '10px 0 30px', width: '100%' }}>
 								<label htmlFor="label-select-tax-residency" style={{ marginBottom: '8px', display: 'block' }}>
-									Tax Residency
+									Declare your tax Residency
 								</label>
 								<Select
 									style={{ minHeight: `${pxToRem(46)}` }}
@@ -744,8 +750,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 4 && (
 						<div style={{ marginBottom: '10px', width: '100%' }}>
 							<ContentTitle>
-								State or country, in which a branch, organized unit or establishment of the client
-								operates
+								State the country in which you are conducting your work / business activity
 							</ContentTitle>
 							<SelectDropDown
 								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
@@ -797,7 +802,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									marginBottom: '15px'
 								}}>
 								<ContentTitle>
-									The Client conducts his work / business activity in these areas:
+									Select the areas in which you conduct your work / business activity:
 								</ContentTitle>
 								{WORK_AREA_LIST.map((activity: string, index: number) => {
 									return (
@@ -827,7 +832,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 6 && (
 						<WrapContainer>
 							<ContentTitle>
-								Source of funds intended for Transaction:
+								State which is the source of funds intended for your transactions:
 							</ContentTitle>
 							{SOURCE_OF_FUNDS_LIST.map((activity: string, index: number) => {
 								return (
@@ -871,7 +876,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 7 && (
 						<WrapContainer>
 							<ContentTitle>
-								Nature of prevailing source of income
+								State which is the nature of your prevailing source of income
 							</ContentTitle>
 							{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
 								return (
@@ -959,7 +964,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						<WrapContainer>
 							<div style={{ marginBottom: '15px' }}>
 								<ContentTitle>
-									State, which of the stated incomes of funds intended for business is irregular:
+									State which of the following incomes of funds intended for business comes from irregular activities 
+									(select none if you don't conduct irregular activities):
 								</ContentTitle>
 								{FUNDS_IRREGULAR_FOR_BUSINESS_LIST.map((activity: string, index: number) => {
 									return (
@@ -1088,7 +1094,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 12 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
-								Person against whom are applied CZ/international sanctions?
+								Are you a person against whom are applied Czech and/or international sanctions?
 							</p>
 							<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 								<input
@@ -1116,7 +1122,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					)}
 					{page === 13 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
+							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Are you a politically exposed person?</p>
 							<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 								<input
 									id="politicallPersonTrue"
@@ -1143,7 +1149,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					)}
 					{page === 14 && (
 						<div>
-							<ContentTitle>Residence</ContentTitle>
+							<ContentTitle>Your Residence</ContentTitle>
 							<div style={{ display: 'flex' }}>
 								<div style={{ width: '50%', marginRight: '20px' }}>
 									<label
@@ -1205,7 +1211,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									<label
 										htmlFor="label-address-permanent-municipality"
 										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-address-permanent-municipality"
@@ -1341,7 +1347,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 													margin: '6px 0 8px 0',
 													display: 'inline-block'
 												}}>
-												Municipality
+												City
 											</label>
 											<TextField
 												id="label-input-mailAddress-municipality"
@@ -1389,7 +1395,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								flexWrap: 'wrap'
 							}}>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Copies of statements of account kept by an institution in the EEA (proof of address)
+								Provide a proof of address (copies of statements of account kept by an institution in the EEA) 
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-address">
 								<FileInput
@@ -1401,8 +1407,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Documents proving information on the source of funds (for instance: payslip, tax
-								return etc.)
+								Provide a document proving information on the source of your funds (bank statement, payslip, tax
+								returnm, etc.)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-proof">
 								<FileInput
