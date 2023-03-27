@@ -593,6 +593,10 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						type: KycL2BusinessEnum.STATUS,
 						payload: KycL2BusinessStatusEnum.BASIC
 					});
+					addToast(
+						'Your documents are under review, please wait for the results of the verification!',
+						'info'
+					);
 				})
 				.catch(function (response) {
 					// handle error
