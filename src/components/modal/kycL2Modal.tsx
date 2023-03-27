@@ -482,7 +482,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			isOpen={showModal}
 			handleClose={handleOnClose}
 			hasBackButton={page !== 0}
-			handleBack={handleOnBack}>
+			handleBack={handleOnBack}
+			closeOutside={false}>
 			<Wrapper ref={myRef}>
 				<div
 					style={{
