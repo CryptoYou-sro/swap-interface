@@ -311,7 +311,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		bodyFormData.append('declare', `${input.declare}${input.declareOther}`);
 
 		api.request({
-			method: 'PUT',
+			method: 'POST',
 			url: `${BASE_URL}${routes.kycL2NaturalForm}`,
 			data: bodyFormData,
 			headers: {
@@ -320,9 +320,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		})
 			.then(function (response) {
 				// handle success
-				// Status 200 OK
+				// Status 201 CREATED
 				console.log(response);
-				if (response.status === 200) {
+				if (response.status === 201) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					addToast(
 						'Your documents are under review, please wait for the results of the verification!',
