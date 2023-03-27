@@ -54,10 +54,18 @@ const FileInput = styled.input`
 `;
 
 export const DateInput = styled.input(() => {
+	const {
+		state: { theme }
+	} = useStore();
 
 	return css`
 		padding: 0 6px;
 		cursor: pointer;
+		background: none;
+		color: ${theme.font.default};
+		min-height: ${pxToRem(45)};
+		border: 1px solid ${theme.border.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 
 		::-webkit-calendar-picker-indicator {
 			color: transparent;

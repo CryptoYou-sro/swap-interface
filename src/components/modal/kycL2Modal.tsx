@@ -1,6 +1,6 @@
 import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { BASE_URL, button, ButtonEnum, findAndReplace, routes, useStore } from '../../helpers';
 import { TextField } from '../textField/textField';
 import { Button } from '../button/button';
@@ -17,6 +17,7 @@ import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
 import { ContentTitle } from './kycL2LegalModal';
 import makeAnimated from 'react-select/animated';
+import { DateInput } from './shareholdersModal';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -100,8 +101,16 @@ const Select = styled.select(() => {
 		height: 100%;
 		max-height: ${pxToRem(46)};
 		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
+		background: none;
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+	`;
+});
+
+const DisclaimerText = styled.p(() => {
+
+	return css`
+		margin-bottom: ${pxToRem(40)};
+		font-size: ${fontSize[16]};
 	`;
 });
 
@@ -167,6 +176,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		setShowModal(showKycL2);
 	}, [ showKycL2 ]);
 	const [ input, setInput ] = useState<{
+		fullName: string;
+		dateOfBirth: string;
 		appliedSanctions: string;
 		citizenship: string[];
 		countryOfWork: string[];
@@ -192,6 +203,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		workArea: string[];
 		yearlyIncome: number | null;
 	}>({
+		fullName: '',
+		dateOfBirth: '',
 		appliedSanctions: '',
 		citizenship: [],
 		countryOfWork: [],
@@ -200,7 +213,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		email: '',
 		file: {
 			poaDoc1: null,
-			posofDoc1: null
+			posofDoc1: null,
+			identificationDoc1: null,
+			identificationDoc2: null,
+			identificationSelfie: null,
+
 		},
 		gender: 'Select gender',
 		hasCriminalRecords: '',
@@ -238,6 +255,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 
 	const fileInputAddress = useRef<HTMLInputElement>();
 	const fileInputDocs = useRef<HTMLInputElement>();
+	const fileIdentificationDoc1 = useRef<HTMLInputElement>();
+	const fileIdentificationDoc2 = useRef<HTMLInputElement>();
+	const fileIdentificationDocSelfie = useRef<HTMLInputElement>();
 
 	const { addToast }: any | null = useToasts();
 	const {
@@ -256,6 +276,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		event.preventDefault();
 		const bodyFormData = new FormData();
 		bodyFormData.append('place_of_birth', input.placeOfBirth);
+		bodyFormData.append('full_name', input.fullName);
+		bodyFormData.append('dob', input.dateOfBirth);
 		bodyFormData.append('residence', JSON.stringify(input.residence));
 		if (input.mailAddress) {
 			bodyFormData.append('mail_address', JSON.stringify(input.mailAddress));
@@ -264,6 +286,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		bodyFormData.append('citizenship', input.citizenship.join(', '));
 		bodyFormData.append('poa_doc_1', input.file.poaDoc1);
 		bodyFormData.append('posof_doc_1', input.file.posofDoc1);
+		bodyFormData.append('identification_doc_1', input.file.identificationDoc1);
+		bodyFormData.append('identification_doc_2', input.file.identificationDoc2);
+		bodyFormData.append('identification_selfie', input.file.identificationSelfie);
 		bodyFormData.append('email', input.email);
 		bodyFormData.append('tax_residency', input.taxResidency);
 		bodyFormData.append('politicall_person', input.politicallPerson === 'Yes' ? 'true' : 'false');
@@ -286,7 +311,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		bodyFormData.append('declare', `${input.declare}${input.declareOther}`);
 
 		api.request({
-			method: 'PUT',
+			method: 'POST',
 			url: `${BASE_URL}${routes.kycL2NaturalForm}`,
 			data: bodyFormData,
 			headers: {
@@ -295,9 +320,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		})
 			.then(function (response) {
 				// handle success
-				// Status 200 OK
+				// Status 201 CREATED
 				console.log(response);
-				if (response.status === 200) {
+				if (response.status === 201) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					addToast(
 						'Your documents are under review, please wait for the results of the verification!',
@@ -345,6 +370,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		}
 	};
 
+	const handleChangeDate = (event: any) => {
+		setInput({ ...input, dateOfBirth: event.target.value });
+	};
+
 	const handleSelectDropdownCountryOfWork = (event: any) => {
 		setSelectWorkCountry([ ...event ]);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
@@ -358,15 +387,37 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const handleChangeFileInput = () => {
 		const filePosoaDoc1: any =
 			fileInputAddress?.current?.files && fileInputAddress.current.files[0];
-		const filePosofDoc1: any = fileInputDocs?.current?.files && fileInputDocs.current.files[0];
+		const filePosofDoc1: any =
+			fileInputDocs?.current?.files && fileInputDocs.current.files[0];
 		setInput({
 			...input,
-			file: { ...input.file, poaDoc1: filePosoaDoc1, posofDoc1: filePosofDoc1 }
+			file: {
+				...input.file,
+				poaDoc1: filePosoaDoc1,
+				posofDoc1: filePosofDoc1,
+			}
+		});
+	};
+
+	const handleFileIdentification = () => {
+		const fileIdentification1: any =
+			fileIdentificationDoc1?.current?.files && fileIdentificationDoc1.current.files[0];
+		const fileIdentification2: any =
+			fileIdentificationDoc2?.current?.files && fileIdentificationDoc2.current.files[0];
+		const fileIdentificationSelfie: any =
+			fileIdentificationDocSelfie?.current?.files && fileIdentificationDocSelfie.current.files[0];
+		setInput({
+			...input,
+			file: {
+				...input.file,
+				identificationDoc1: fileIdentification1,
+				identificationDoc2: fileIdentification2,
+				identificationSelfie: fileIdentificationSelfie
+			}
 		});
 	};
 
 	const handleDropDownInput = (event: any) => {
-		console.log(event.target.name);
 		setInput({ ...input, [event.target.name]: event.target.value });
 	};
 	const handleDropDownInputResidence = (event: any) => {
@@ -391,42 +442,49 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 
 	useEffect(() => {
 		setIsValid(false);
-		if (page === 0 && input.email.includes('@')
+		if (page === 0) {
+			setIsValid(true);
+		}
+		if (page === 1 && input.email.includes('@')
 			&& input.email.includes('.')
 			&& input.email.trim().length > 2
+			&& input.fullName.trim().length >= 2
+			&& input.dateOfBirth.trim().length > 0
 			&& input.gender !== 'Select gender'
 			&& input.placeOfBirth.trim().length >= 2) {
 			setIsValid(true);
-		} else if (page === 1 && input.sourceOfIncome.trim().length >= 2 && Number(input.yearlyIncome) > 0 && input.taxResidency !== 'Select country') {
+		} else if (page === 2 && input.file.identificationDoc1 && input.file.identificationDoc2 && input.file.identificationSelfie) {
 			setIsValid(true);
-		} else if (page === 2 && input.countryOfWork.length > 0) {
+		} else if (page === 3 && input.sourceOfIncome.trim().length >= 2 && Number(input.yearlyIncome) > 0 && input.taxResidency !== 'Select country') {
 			setIsValid(true);
-		} else if (page === 3 && input.workArea.length > 0) {
+		} else if (page === 4 && input.countryOfWork.length > 0) {
 			setIsValid(true);
-		} else if (page === 4 && input.sourceOfFunds.length > 0 && !input.sourceOfFunds.includes('Other') ||
-			page == 4 && input.sourceOfFunds.includes('Other') && input.sourceOfFundsOther.trim().length > 0) {
+		} else if (page === 5 && input.workArea.length > 0) {
 			setIsValid(true);
-		} else if (page === 5 && input.sourceOfIncomeNature.length > 0 && !input.sourceOfIncomeNature.includes('Other') ||
-			page === 5 && input.sourceOfIncomeNature.includes('Other') && input.sourceOfIncomeNatureOther.trim().length > 0) {
+		} else if (page === 6 && input.sourceOfFunds.length > 0 && !input.sourceOfFunds.includes('Other') ||
+			page == 6 && input.sourceOfFunds.includes('Other') && input.sourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 6 && input.citizenship.length > 0) {
+		} else if (page === 7 && input.sourceOfIncomeNature.length > 0 && !input.sourceOfIncomeNature.includes('Other') ||
+			page === 7 && input.sourceOfIncomeNature.includes('Other') && input.sourceOfIncomeNatureOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 7 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
-			page === 7 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
+		} else if (page === 8 && input.citizenship.length > 0) {
 			setIsValid(true);
-		} else if (page === 8 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
+		} else if (page === 9 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
+			page === 9 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 9 && input.hasCriminalRecords.length > 0) {
+		} else if (page === 10 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 10 && input.appliedSanctions.length > 0) {
+		} else if (page === 11 && input.hasCriminalRecords.length > 0) {
 			setIsValid(true);
-		} else if (page === 11 && input.politicallPerson.length > 0) {
+		} else if (page === 12 && input.appliedSanctions.length > 0) {
 			setIsValid(true);
-		} else if (page === 12 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
+		} else if (page === 13 && input.politicallPerson.length > 0) {
 			setIsValid(true);
-		} else if (page === 13 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
+		} else if (page === 14 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
 			setIsValid(true);
-		} else if (page === 14 && input.file.poaDoc1 && input.file.posofDoc1) {
+		} else if (page === 15 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
+			setIsValid(true);
+		} else if (page === 16 && input.file.poaDoc1 && input.file.posofDoc1) {
 			setIsValid(true);
 		}
 	}, [ page, input ]);
@@ -436,8 +494,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			size="large"
 			isOpen={showModal}
 			handleClose={handleOnClose}
-			hasBackButton
-			handleBack={handleOnBack}>
+			hasBackButton={page !== 0}
+			handleBack={handleOnBack}
+			closeOutside={false}>
 			<Wrapper ref={myRef}>
 				<div
 					style={{
@@ -450,71 +509,188 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					}}>
 					{page === 0 && (
 						<WrapContainer>
-							<Title>KYC L2 form for Natural Person</Title>
-							<div style={{ marginRight: '15px', marginBottom: '10px' }}>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-place-of-birth"
-										style={{ marginBottom: '8px', display: 'inline-block' }}>
-										Place of birth
-									</label>
-									<TextField
-										id="label-place-of-birth"
-										value={input.placeOfBirth}
-										placeholder="Place of birth"
-										type="text"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="placeOfBirth"
-										error={input.placeOfBirth.length < 2}
-										maxLength={100}
-									/>
+							<Title>Disclaimer</Title>
+							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+								<DisclaimerText>
+									This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as mandated by the European Union regulations.<br />
+									To complete this form, please ensure you have the following documents at hand:<br />
+									<ul>
+										<li>A valid government-issued identification document, such as a Passport, National ID card, or Driver's License.</li>
+										<li>Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated within the last three months).</li>
+										<li>A document proving information on your source of funds (bank statement, payslip, tax return etc.)</li>
+										<li>A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's date and the number of the document you will upload (Passport / ID / Driving License)</li>
+									</ul>
+									The estimated time required to complete this form is approximately 10 minutes.<br />
+									You will receive an email notification regarding the status of your verification process once it's completed. <br />
+									Click on "I Agree" to start.
+								</DisclaimerText>
+							</div>
+						</WrapContainer>
+					)}
+					{page === 1 && (
+						<WrapContainer>
+							<Title>KYC and AML Questionnaire for Individuals</Title>
+							<div style={{ marginRight: '15px' }}>
+								<div style={{ display: 'flex', alignItems: 'baseline' }}>
+									<div style={{ marginRight: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-full-name-natural"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Name and Surname
+										</label>
+										<TextField
+											id="label-full-name-natural"
+											value={input.fullName}
+											placeholder="Name and Surname"
+											type="text"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="fullName"
+											error={input.fullName.length < 2}
+											maxLength={100}
+										/>
+									</div>
+									<div style={{ marginBottom: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-place-of-birth"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Place of birth
+										</label>
+										<TextField
+											id="label-place-of-birth"
+											value={input.placeOfBirth}
+											placeholder="Place of birth"
+											type="text"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="placeOfBirth"
+											error={input.placeOfBirth.length < 2}
+											maxLength={100}
+										/>
+									</div>
 								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label
-										htmlFor="label-email"
-										style={{ marginBottom: '8px', display: 'inline-block' }}>
-										Email
-									</label>
-									<TextField
-										id="label-email"
-										value={input.email}
-										placeholder="Email"
-										type="email"
-										onChange={handleChangeInput}
-										size="small"
-										align="left"
-										name="email"
-										maxLength={100}
-									/>
+								<div style={{ display: 'flex', alignItems: 'baseline' }}>
+									<div style={{ width: '48%', marginRight: '10px', display: 'flex', flexDirection: 'column' }}>
+										<label
+											htmlFor="label-natural-dateOfBirth"
+											style={{
+												margin: '8px 0',
+												display: 'inline-block'
+											}}>
+											Date of birth
+										</label>
+										<DateInput
+											type="date"
+											id="label-natural-dateOfBirth"
+											value={input.dateOfBirth}
+											min="1900-01-01"
+											name="dateOfBirth"
+											onChange={(e: any) => handleChangeDate(e)}
+										/>
+									</div>
+									<div style={{ marginBottom: '10px', width: '48%', }}>
+										<label
+											htmlFor="label-email"
+											style={{ marginBottom: '8px', display: 'inline-block' }}>
+											Email
+										</label>
+										<TextField
+											id="label-email"
+											value={input.email}
+											placeholder="Email"
+											type="email"
+											onChange={handleChangeInput}
+											size="small"
+											align="left"
+											name="email"
+											maxLength={100}
+										/>
+									</div>
 								</div>
-								<div style={{ marginBottom: '10px' }}>
-									<label htmlFor="label-select-gender">
-										Gender
+								<div>
+									<div style={{ marginBottom: '10px' }}>
+										<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'block' }}>
+											Gender
+										</label>
 										<Select
 											name="gender"
 											onChange={handleDropDownInput}
 											value={input.gender}
-											id="label-select-gender">
+											id="label-select-gender"
+											style={{
+												minHeight: '46px',
+												maxWidth: '48%'
+											}}>
 											<option value="Select gender">Select gender</option>
 											<option value="Male">Male</option>
 											<option value="Female">Female</option>
-											<option value="Other">Other</option>
 										</Select>
-									</label>
+									</div>
 								</div>
+							</div>
+						</WrapContainer>
+					)}
+					{page === 2 && (
+						<WrapContainer>
+							<div
+								style={{
+									padding: '0 10px',
+									textAlign: 'left',
+									display: 'flex',
+									alignItems: 'baseline',
+									flexWrap: 'wrap',
+									justifyContent: 'space-between'
+								}}>
+								<ContentTitle>Provide photos of one of the following documents: <br/> Passport /
+									ID / Driving License</ContentTitle>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Front side / second page for Passport
+								</ContentTitle>
+								<LabelInput htmlFor="file-natural-identification-doc-1">
+									<FileInput
+										id="file-natural-identification-doc-1"
+										type="file"
+										ref={fileIdentificationDoc1 as any}
+										onChange={handleFileIdentification}>
+									</FileInput>
+									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Back side / third page for Passport
+								</ContentTitle>
+								<LabelInput htmlFor="file-natural-identification-doc-2">
+									<FileInput
+										id="file-natural-identification-doc-2"
+										type="file"
+										ref={fileIdentificationDoc2 as any}
+										onChange={handleFileIdentification}>
+									</FileInput>
+									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
+								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>)
+								<LabelInput htmlFor="file-natural-selfie">
+									<FileInput
+										id="file-natural-selfie"
+										type="file"
+										ref={fileIdentificationDocSelfie as any}
+										onChange={handleFileIdentification}>
+									</FileInput>
+									{input.file.identificationSelfie && input.file.identificationSelfie.name.length < 15 ? input.file.identificationSelfie.name : input.file.identificationSelfie && input.file.identificationSelfie.name.length >= 15 ? input.file.identificationSelfie.name.slice(0, 15).concat('...') : 'Upload File'}
+								</LabelInput>
 							</div>
 
 						</WrapContainer>
 					)}
-					{page === 1 && (
+					{page === 3 && (
 						<WrapContainer>
 							<div style={{ margin: '10px 0', width: '100%' }}>
 								<label
 									htmlFor="label-sourceOfIncome"
 									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Prevailing source of such income
+									What is the prevailing source of your income?
 								</label>
 								<TextField
 									id="label-sourceOfIncome"
@@ -533,7 +709,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<label
 									htmlFor="label-net-yearly-income"
 									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									Net yearly income (Euro)
+									What is your net yearly income in € Euro ?
 								</label>
 								<TextField
 									id="label-net-yearly-income"
@@ -548,32 +724,33 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								/>
 							</div>
 							<div style={{ margin: '10px 0 30px', width: '100%' }}>
-								<label htmlFor="label-select-tax-residency">
-									Tax Residency
-									<Select
-										name="taxResidency"
-										onChange={handleDropDownInput}
-										value={input.taxResidency}
-										id="label-select-tax-residency">
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
+								<label htmlFor="label-select-tax-residency" style={{ marginBottom: '8px', display: 'block' }}>
+									Declare your tax Residency
 								</label>
+								<Select
+									style={{ minHeight: `${pxToRem(46)}` }}
+									name="taxResidency"
+									onChange={handleDropDownInput}
+									value={input.taxResidency}
+									id="label-select-tax-residency">
+									<option value="Select country">Select country</option>
+									{COUNTRIES.map((country: any) => {
+										return (
+											<option value={country.name} key={country.name}>
+												{country.name}
+											</option>
+										);
+									})}
+									;
+								</Select>
+
 							</div>
 						</WrapContainer>
 					)}
-					{page === 2 && (
+					{page === 4 && (
 						<div style={{ marginBottom: '10px', width: '100%' }}>
 							<ContentTitle>
-								State or country, in which a branch, organized unit or establishment of the client
-								operates
+								State the country in which you are conducting your work / business activity
 							</ContentTitle>
 							<SelectDropDown
 								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
@@ -593,7 +770,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									} ),
 									menu: (base): any => ( {
 										...base,
-										backgroundColor: `${theme.background.secondary}`
+										background: `${theme.background.secondary}`
 									} ),
 									option: (base, state): any => ( {
 										...base,
@@ -606,7 +783,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									control: (baseStyles): any => ( {
 										...baseStyles,
 										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
+										background: 'none',
 										color: `${theme.font.default}`,
 										padding: 0
 									} )
@@ -614,7 +791,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 						</div>
 					)}
-					{page === 3 && (
+					{page === 5 && (
 						<WrapContainer>
 							<div
 								style={{
@@ -625,7 +802,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									marginBottom: '15px'
 								}}>
 								<ContentTitle>
-									The Client conducts his work / business activity in these areas:
+									Select the areas in which you conduct your work / business activity:
 								</ContentTitle>
 								{WORK_AREA_LIST.map((activity: string, index: number) => {
 									return (
@@ -652,10 +829,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</WrapContainer>
 					)}
-					{page === 4 && (
+					{page === 6 && (
 						<WrapContainer>
 							<ContentTitle>
-								Source of funds intended for Transaction:
+								State which is the source of funds intended for your transactions:
 							</ContentTitle>
 							{SOURCE_OF_FUNDS_LIST.map((activity: string, index: number) => {
 								return (
@@ -696,10 +873,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 5 && (
+					{page === 7 && (
 						<WrapContainer>
 							<ContentTitle>
-								Nature of prevailing source of income
+								State which is the nature of your prevailing source of income
 							</ContentTitle>
 							{SOURCE_OF_INCOME_NATURE_LIST.map((activity: string, index: number) => {
 								return (
@@ -740,7 +917,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 6 && (
+					{page === 8 && (
 						<div style={{ marginBottom: '10px', width: '70%' }}>
 							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
 							<SelectDropDown
@@ -775,7 +952,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									control: (baseStyles): any => ( {
 										...baseStyles,
 										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
+										background: 'none',
 										color: `${theme.font.default}`,
 										padding: 0
 									} )
@@ -783,11 +960,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							/>
 						</div>
 					)}
-					{page === 7 && (
+					{page === 9 && (
 						<WrapContainer>
 							<div style={{ marginBottom: '15px' }}>
 								<ContentTitle>
-									State, which of the stated incomes of funds intended for business is irregular:
+									State which of the following incomes of funds intended for business comes from irregular activities 
+									(select none if you don't conduct irregular activities):
 								</ContentTitle>
 								{FUNDS_IRREGULAR_FOR_BUSINESS_LIST.map((activity: string, index: number) => {
 									return (
@@ -830,7 +1008,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</WrapContainer>
 					)}
-					{page === 8 && (
+					{page === 10 && (
 						<WrapContainer>
 							<ContentTitle>
 								I declare that
@@ -882,7 +1060,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							) : null}
 						</WrapContainer>
 					)}
-					{page === 9 && (
+					{page === 11 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Have you ever been convicted or prosecuted for a criminal offense, in particular an
@@ -913,10 +1091,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</label>
 						</div>
 					)}
-					{page === 10 && (
+					{page === 12 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
-								Person against whom are applied CZ/international sanctions?
+								Are you a person against whom are applied Czech and/or international sanctions?
 							</p>
 							<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
 								<input
@@ -941,11 +1119,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 						</div>
-
 					)}
-					{page === 11 && (
+					{page === 13 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Politically exposed person?</p>
+							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Are you a politically exposed person?</p>
 							<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 								<input
 									id="politicallPersonTrue"
@@ -969,11 +1146,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								No
 							</label>
 						</div>
-
 					)}
-					{page === 12 && (
+					{page === 14 && (
 						<div>
-							<ContentTitle>Residence</ContentTitle>
+							<ContentTitle>Your Residence</ContentTitle>
 							<div style={{ display: 'flex' }}>
 								<div style={{ width: '50%', marginRight: '20px' }}>
 									<label
@@ -1035,7 +1211,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									<label
 										htmlFor="label-address-permanent-municipality"
 										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Municipality
+										City
 									</label>
 									<TextField
 										id="label-address-permanent-municipality"
@@ -1068,7 +1244,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</div>
 						</div>
 					)}
-					{page === 13 && (
+					{page === 15 && (
 						<>
 							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
@@ -1171,7 +1347,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 													margin: '6px 0 8px 0',
 													display: 'inline-block'
 												}}>
-												Municipality
+												City
 											</label>
 											<TextField
 												id="label-input-mailAddress-municipality"
@@ -1209,7 +1385,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							)}
 						</>
 					)}
-					{page === 14 && (
+					{page === 16 && (
 						<div
 							style={{
 								margin: '0 0 10px',
@@ -1219,7 +1395,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								flexWrap: 'wrap'
 							}}>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Copies of statements of account kept by an institution in the EEA (proof of address)
+								Provide a proof of address (copies of statements of account kept by an institution in the EEA) 
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-address">
 								<FileInput
@@ -1231,8 +1407,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Documents proving information on the source of funds (for instance: payslip, tax
-								return etc.)
+								Provide a document proving information on the source of your funds (bank statement, payslip, tax
+								returnm, etc.)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-proof">
 								<FileInput
@@ -1245,12 +1421,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</LabelInput>
 						</div>
 					)}
-					{page < 14 && (
+					{page < 16 && (
 						<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
-							Next
+							{page === 0 ? 'I agree' : 'Next'}
 						</Button>
 					)}
-					{page >= 14 && (
+					{page >= 16 && (
 						<Button
 							variant="secondary"
 							disabled={!isValid}

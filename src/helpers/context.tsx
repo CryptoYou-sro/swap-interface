@@ -229,8 +229,8 @@ export const button: ButtonStatus = {
 	CHANGE_NETWORK: { color: 'error', text: 'Change Network' },
 	PASS_KYC: { color: 'warning', text: 'Pass KYC L1' },
 	CHECK_KYC: { color: 'success', text: 'Check KYC L1' },
-	PASS_KYC_L2: { color: 'warning', text: 'Pass KYC L2' },
-	CHECK_KYC_L2: { color: 'warning', text: 'Check KYC L2' },
+	PASS_KYC_L2: { color: 'warning', text: 'Pass KYC' },
+	CHECK_KYC_L2: { color: 'warning', text: 'Check KYC' },
 	LOGIN: { color: 'default', text: 'Login' }
 };
 
@@ -312,7 +312,7 @@ const authReducer = (state: State, action: Action): State => {
 		case PairEnum.PAIR:
 			return { ...state, pair: action.payload };
 		case AvailableCurrenciesEnum.SET:
-			return { 
+			return {
 				...state,
 				availableSourceNetworks: action.payload.sourceNetworks,
 				availableDestinationNetworks: action.payload.destinationNetworks
@@ -325,7 +325,7 @@ const authReducer = (state: State, action: Action): State => {
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 	const [ state, dispatch ] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
-	const { account, isNetworkConnected, kycStatus, kycL2Status } = state;
+	const { account, isNetworkConnected, kycL2Status } = state;
 
 	useEffect(() => {
 		if (!account) {
@@ -346,7 +346,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
-		if (kycStatus === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED && account && isNetworkConnected) {
+		if (kycL2Status === KycL2StatusEnum.PASSED && account && isNetworkConnected) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		} else {
 			dispatch({ type: VerificationEnum.USER, payload: false });
@@ -364,19 +364,19 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		// ) {
 		// 	dispatch({ type: VerificationEnum.USER, payload: true });
 		// }
-	}, [ account, isNetworkConnected, kycStatus, kycL2Status ]);
+	}, [ account, isNetworkConnected, kycL2Status ]);
 
 	useEffect(() => {
 		axios.request({
 			url: `${BASE_URL}cex/currencies`
 		})
-			.then(function(response: any) {
+			.then(function (response: any) {
 				dispatch({
 					type: AvailableCurrenciesEnum.SET,
 					payload: response.data
 				});
 			})
-			.catch(function(response: any) {
+			.catch(function (response: any) {
 				console.log(response);
 				console.error();
 			});
