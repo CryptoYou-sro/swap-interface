@@ -10,7 +10,7 @@ import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { useAxios } from '../../hooks';
 import { BASE_URL, useStore } from '../../helpers';
-import SelectDropDown from 'react-select';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Select = styled.select(() => {
 	const {
@@ -120,7 +120,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			citizenship: '',
+			countryOfIncorporate: '',
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -156,7 +156,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			citizenship: '',
+			countryOfIncorporate: '',
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -206,7 +206,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 		setClient({ ...client, citizenship: countries });
 	};
 	const handleSelectDropdownShareHolderInfo = (event: any) => {
-		setClient({ ...client, shareHolderInfo: { ...client.shareHolderInfo, citizenship: event.value } });
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setClient({ ...client, shareHolderInfo: { ...client.shareHolderInfo, countryOfIncorporate: countries } });
 	};
 	const handleChangeResidenceInput = (event: any) => {
 		setClient({
@@ -242,7 +243,6 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			bodyFormData.append('gender', client.gender);
 			bodyFormData.append('tax_residency', client.taxResidency);
 			bodyFormData.append('citizenship', client.citizenship.join(', '));
-			// TODO: ask Daniel about key for backend
 			bodyFormData.append('identification_doc', client.fileIdentification);
 			bodyFormData.append('residence_address', JSON.stringify(client.residence));
 			if (client.permanentAndMailAddressSame === 'No') {
@@ -252,12 +252,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			bodyFormData.append('applied_sanctions', client.appliedSanctions === 'Yes' ? 'true' : 'false');
 		} else if (isShareHolderLegal === 'legal') {
 			bodyFormData.append('full_name', client.companyName);
-			// TODO: ask Daniel about key for backend
 			bodyFormData.append('identification_doc', client.fileIdentification);
 			bodyFormData.append('statutory_full_name', client.shareHolderInfo.nameAndSurname);
 			bodyFormData.append('statutory_doi', client.shareHolderInfo.dateOfBirth);
 			bodyFormData.append('statutory_permanent_residence', client.shareHolderInfo.permanentResidence);
-			bodyFormData.append('statutory_coi', client.shareHolderInfo.citizenship);
+			bodyFormData.append('statutory_coi', client.shareHolderInfo.countryOfIncorporate);
 			bodyFormData.append('statutory_subsequently_business', client.shareHolderInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_office_address', client.shareHolderInfo.registeredOffice);
 			bodyFormData.append('statutory_id', client.shareHolderInfo.idNumber);
@@ -294,40 +293,6 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 	useEffect(() => {
 		setShowModal(addShareHolder);
 	}, [ addShareHolder ]);
-
-	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
-			...styles,
-			color: 'red',
-			':hover': {
-				backgroundColor: 'red',
-				color: 'white'
-			}
-		} ),
-		menu: (base: any): any => ( {
-			...base,
-			backgroundColor: `${theme.background.secondary}`
-		} ),
-		option: (base: any, state: any): any => ( {
-			...base,
-			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
-			cursor: 'pointer'
-		} ),
-		control: (baseStyles: any): any => ( {
-			...baseStyles,
-			borderColor: 'grey',
-			background: 'none',
-			color: `${theme.font.default}`,
-			padding: 0
-		} ),
-		input: (provided: any): any => ( {
-			...provided,
-			color: `${theme.font.default}`
-		} ),
-	};
 
 	return (
 		<Portal
@@ -481,14 +446,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Citizenship(s)
 									</label>
-									<SelectDropDown
-										id="label-citizenship-natural-share"
-										name='citizenship'
+									<SelectDropdown
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
 										options={countries}
-										isMulti
-										isSearchable
-										styles={selectDropDownStyles}/>
+										placeholder='Select country...'
+									/>
 								</div>
 							</div>
 
@@ -922,12 +884,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										style={{ margin: '8px 0', display: 'inline-block' }}>
 										Country of incorporation
 									</label>
-									<SelectDropDown
+									<SelectDropdown
 										onChange={(e: any) => handleSelectDropdownShareHolderInfo(e)}
 										options={countries}
-										isSearchable
-										isMulti
-										styles={selectDropDownStyles}/>
+										placeholder='Select country...'
+									/>
 								</div>
 								<div style={{ width: '48%' }}>
 									<label

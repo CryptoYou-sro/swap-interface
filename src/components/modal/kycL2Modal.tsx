@@ -13,11 +13,10 @@ import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
 import FUNDS_IRREGULAR_FOR_BUSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import DECLARE_LIST from '../../data/declareList.json';
-import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
 import { ContentTitle } from './kycL2LegalModal';
-import makeAnimated from 'react-select/animated';
 import { DateInput } from './shareholdersModal';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -172,10 +171,6 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
-	const {
-		state: { theme }
-	} = useStore();
-	const animatedComponents = makeAnimated();
 	const [ showModal, setShowModal ] = useState<boolean>(showKycL2);
 	useEffect(() => {
 		setShowModal(showKycL2);
@@ -494,40 +489,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		}
 	}, [ page, input ]);
 
-	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
-			...styles,
-			color: 'red',
-			':hover': {
-				backgroundColor: 'red',
-				color: 'white'
-			}
-		} ),
-		menu: (base: any): any => ( {
-			...base,
-			backgroundColor: `${theme.background.secondary}`
-		} ),
-		option: (base: any, state: any): any => ( {
-			...base,
-			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
-			cursor: 'pointer'
-		} ),
-		control: (baseStyles: any): any => ( {
-			...baseStyles,
-			borderColor: 'grey',
-			background: 'none',
-			color: `${theme.font.default}`,
-			padding: 0
-		} ),
-		input: (provided: any): any => ( {
-			...provided,
-			color: `${theme.font.default}`
-		} ),
-	};
-
 	return (
 		<Portal
 			size="large"
@@ -802,14 +763,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<ContentTitle>
 								State the country in which you are conducting your work / business activity
 							</ContentTitle>
-							<SelectDropDown
-								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
+							<SelectDropdown
+								onChange={(e) => handleSelectDropdownCountryOfWork(e)}
 								defaultValue={selectWorkCountry}
+								placeholder='Select country...'
 								options={countries}
-								isMulti
-								components={animatedComponents}
-								isSearchable
-								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}
@@ -942,15 +900,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 8 && (
 						<div style={{ marginBottom: '10px', width: '70%' }}>
 							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
-							<SelectDropDown
+							<SelectDropdown
 								name='citizenship'
-								placeholder='Select country'
+								placeholder='Select country...'
 								defaultValue={selectCitizenShip}
 								onChange={(e: any) => handleSelectDropdownNatural(e)}
 								options={countries}
-								isMulti
-								isSearchable
-								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}
