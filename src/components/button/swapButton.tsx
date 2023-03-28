@@ -112,7 +112,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			: !isUserVerified && buttonStatus.text === 'Login'
 				? 'Log in to swap'
 				: !isUserVerified && kycL2Status !== KycL2StatusEnum.PASSED
-					? 'Pass KYC to swap'
+					? 'Verify account to swap'
 					: !isTokenSelected(destinationToken)
 						? 'Select Network and Token'
 						: +amount < +minAmount

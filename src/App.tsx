@@ -14,7 +14,7 @@ import {
 	spacing,
 	viewport
 } from './styles';
-import { Header, Footer } from './components';
+import { Footer, Header } from './components';
 import { SwapForm, TransactionHistory } from './pages';
 import { useStore } from './helpers';
 import { TabModal } from './components/tabs/tabModal';
@@ -64,8 +64,8 @@ export const GlobalStyles = createGlobalStyle`
 const MainWrapper = styled.main`
 	margin: 0;
 	min-height: 100vh;
-    display: flex;
-  	flex-direction: column;
+	display: flex;
+	flex-direction: column;
 `;
 
 const ContentWrapper = styled.main`
@@ -99,9 +99,9 @@ const App = () => {
 						path="/"
 						element={
 							<ContentWrapper>
-								<Title>Swap over 20 Ethereum and Moonbeam tokens for 150+ tokens across 80+ different networks directly
-									from
-									your wallet</Title>
+								<Title>Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+ different networks
+									directly from your wallet.
+								</Title>
 								<SwapForm/>
 								<TabModal/>
 							</ContentWrapper>
