@@ -446,7 +446,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
-		setIsValid(true);
+		setIsValid(false);
 		if (page === 0) {
 			setIsValid(true);
 		}

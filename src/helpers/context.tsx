@@ -229,7 +229,7 @@ export const button: ButtonStatus = {
 	CHANGE_NETWORK: { color: 'error', text: 'Change Network' },
 	PASS_KYC: { color: 'warning', text: 'Pass KYC L1' },
 	CHECK_KYC: { color: 'success', text: 'Check KYC L1' },
-	PASS_KYC_L2: { color: 'warning', text: 'Pass KYC' },
+	PASS_KYC_L2: { color: 'warning', text: 'Verify account' },
 	CHECK_KYC_L2: { color: 'warning', text: 'Check KYC' },
 	LOGIN: { color: 'default', text: 'Login' }
 };
