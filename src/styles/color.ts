@@ -58,7 +58,7 @@ export const lightTheme: Theme = {
 		transparent: 'transparent'
 	},
 	border: {
-		default: '#E5E5E5',
+		default: '#B4B4B4',
 		secondary: '#E5E5E5'
 	},
 	modal: {
@@ -108,4 +108,4 @@ export const darkTheme: Theme = {
 	}
 };
 
-export const theme: { light: Theme; dark: Theme } = {light: lightTheme, dark: darkTheme};
+export const theme: { light: Theme; dark: Theme } = { light: lightTheme, dark: darkTheme };
