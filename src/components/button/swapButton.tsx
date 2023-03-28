@@ -57,7 +57,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			isUserVerified,
 			destinationAmount,
 			pair,
-			kycStatus,
 			kycL2Status,
 			buttonStatus,
 			availableSourceNetworks: SOURCE_NETWORKS,
@@ -76,7 +75,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0 ||
-		kycStatus !== 'PASS' ||
 		kycL2Status !== 2;
 
 	useEffect(() => {
@@ -103,7 +101,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			);
 			setIsDestinationMemoValid(() => memoRegEx.test(destinationMemo));
 		} else {
-			setIsDestinationMemoValid(false);
+			setIsDestinationMemoValid(true);
 		}
 	}, [ destinationMemo, destinationAmount ]);
 
@@ -164,17 +162,23 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			const productId = utils.id(makeId(32));
 			setSwapProductId(productId);
 
-			const namedValues = {
+			const namedValues: any = {
 				scoin: sourceToken,
 				samt: utils.parseUnits(amount, sourceTokenData?.decimals).toString(),
 				fcoin: destinationToken,
 				net: destinationNetwork,
 				daddr: destinationAddress,
-				tag: destinationMemo
 			};
+			const hasTag =
+				// @ts-ignore
+				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
+					'hasTag'
+					];
+			if (hasTag) {
+				namedValues.tag = destinationMemo;
+			}
 			const shortNamedValues = JSON.stringify(namedValues);
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
-
 			if (sourceTokenData?.isNative) {
 				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
 			} else {

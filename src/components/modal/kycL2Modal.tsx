@@ -103,6 +103,11 @@ const Select = styled.select(() => {
 		color: ${theme.font.default};
 		background: none;
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		option {
+			color: ${theme.font.default};;
+			background: ${theme.background.default};;
+		}
 	`;
 });
 
@@ -441,7 +446,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
-		setIsValid(false);
+		setIsValid(true);
 		if (page === 0) {
 			setIsValid(true);
 		}
@@ -489,6 +494,40 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		}
 	}, [ page, input ]);
 
+	const selectDropDownStyles: any = {
+		multiValueRemove: (styles: any): any => ( {
+			...styles,
+			color: 'red',
+			':hover': {
+				backgroundColor: 'red',
+				color: 'white'
+			}
+		} ),
+		menu: (base: any): any => ( {
+			...base,
+			backgroundColor: `${theme.background.secondary}`
+		} ),
+		option: (base: any, state: any): any => ( {
+			...base,
+			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+			height: '100%',
+			color: `${theme.font.default}`,
+			backgroundColor: `${theme.background.secondary}`,
+			cursor: 'pointer'
+		} ),
+		control: (baseStyles: any): any => ( {
+			...baseStyles,
+			borderColor: 'grey',
+			background: 'none',
+			color: `${theme.font.default}`,
+			padding: 0
+		} ),
+		input: (provided: any): any => ( {
+			...provided,
+			color: `${theme.font.default}`
+		} ),
+	};
+
 	return (
 		<Portal
 			size="large"
@@ -512,16 +551,26 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<Title>Disclaimer</Title>
 							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
 								<DisclaimerText>
-									This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as mandated by the European Union regulations.<br />
-									To complete this form, please ensure you have the following documents at hand:<br />
+									This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as mandated
+									by the European Union regulations.<br/>
+									To complete this form, please ensure you have the following documents at hand:<br/>
 									<ul>
-										<li>A valid government-issued identification document, such as a Passport, National ID card, or Driver's License.</li>
-										<li>Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated within the last three months).</li>
-										<li>A document proving information on your source of funds (bank statement, payslip, tax return etc.)</li>
-										<li>A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's date and the number of the document you will upload (Passport / ID / Driving License)</li>
+										<li>A valid government-issued identification document, such as a Passport, National ID card, or
+											Driver's License.
+										</li>
+										<li>Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated
+											within the last three months).
+										</li>
+										<li>A document proving information on your source of funds (bank statement, payslip, tax return
+											etc.)
+										</li>
+										<li>A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's
+											date and the number of the document you will upload (Passport / ID / Driving License)
+										</li>
 									</ul>
-									The estimated time required to complete this form is approximately 10 minutes.<br />
-									You will receive an email notification regarding the status of your verification process once it's completed. <br />
+									The estimated time required to complete this form is approximately 10 minutes.<br/>
+									You will receive an email notification regarding the status of your verification process once it's
+									completed. <br/>
 									Click on "I Agree" to start.
 								</DisclaimerText>
 							</div>
@@ -670,7 +719,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
 								</LabelInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>)
+									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the
+									number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>
 								<LabelInput htmlFor="file-natural-selfie">
 									<FileInput
 										id="file-natural-selfie"
@@ -759,35 +809,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								isMulti
 								components={animatedComponents}
 								isSearchable
-								styles={{
-									multiValueRemove: (styles) => ( {
-										...styles,
-										color: 'red',
-										':hover': {
-											backgroundColor: 'red',
-											color: 'white'
-										}
-									} ),
-									menu: (base): any => ( {
-										...base,
-										background: `${theme.background.secondary}`
-									} ),
-									option: (base, state): any => ( {
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer'
-									} ),
-									control: (baseStyles): any => ( {
-										...baseStyles,
-										borderColor: 'grey',
-										background: 'none',
-										color: `${theme.font.default}`,
-										padding: 0
-									} )
-								}}
+								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}
@@ -928,35 +950,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								options={countries}
 								isMulti
 								isSearchable
-								styles={{
-									multiValueRemove: (styles) => ( {
-										...styles,
-										color: 'red',
-										':hover': {
-											backgroundColor: 'red',
-											color: 'white'
-										}
-									} ),
-									menu: (base): any => ( {
-										...base,
-										backgroundColor: `${theme.background.secondary}`
-									} ),
-									option: (base, state): any => ( {
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer'
-									} ),
-									control: (baseStyles): any => ( {
-										...baseStyles,
-										borderColor: 'grey',
-										background: 'none',
-										color: `${theme.font.default}`,
-										padding: 0
-									} )
-								}}
+								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}
@@ -964,7 +958,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						<WrapContainer>
 							<div style={{ marginBottom: '15px' }}>
 								<ContentTitle>
-									State which of the following incomes of funds intended for business comes from irregular activities 
+									State which of the following incomes of funds intended for business comes from irregular activities
 									(select none if you don't conduct irregular activities):
 								</ContentTitle>
 								{FUNDS_IRREGULAR_FOR_BUSINESS_LIST.map((activity: string, index: number) => {
@@ -1395,7 +1389,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								flexWrap: 'wrap'
 							}}>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-								Provide a proof of address (copies of statements of account kept by an institution in the EEA) 
+								Provide a proof of address (copies of statements of account kept by an institution in the EEA)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-address">
 								<FileInput
@@ -1408,7 +1402,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							</LabelInput>
 							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 								Provide a document proving information on the source of your funds (bank statement, payslip, tax
-								returnm, etc.)
+								return, etc.)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-proof">
 								<FileInput

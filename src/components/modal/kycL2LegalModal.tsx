@@ -661,6 +661,39 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			setIsValid(true);
 		}
 	}, [ page, input ]);
+	const selectDropDownStyles: any = {
+		multiValueRemove: (styles: any): any => ( {
+			...styles,
+			color: 'red',
+			':hover': {
+				backgroundColor: 'red',
+				color: 'white'
+			}
+		} ),
+		menu: (base: any): any => ( {
+			...base,
+			backgroundColor: `${theme.background.secondary}`
+		} ),
+		option: (base: any, state: any): any => ( {
+			...base,
+			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
+			height: '100%',
+			color: `${theme.font.default}`,
+			backgroundColor: `${theme.background.secondary}`,
+			cursor: 'pointer'
+		} ),
+		control: (baseStyles: any): any => ( {
+			...baseStyles,
+			borderColor: 'grey',
+			background: 'none',
+			color: `${theme.font.default}`,
+			padding: 0
+		} ),
+		input: (provided: any): any => ( {
+			...provided,
+			color: `${theme.font.default}`
+		} ),
+	};
 
 	return (
 		<Portal
@@ -1194,35 +1227,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								options={countries}
 								isMulti
 								isSearchable
-								styles={{
-									multiValueRemove: (styles) => ( {
-										...styles,
-										color: 'red',
-										':hover': {
-											backgroundColor: 'red',
-											color: 'white'
-										}
-									} ),
-									menu: (base): any => ( {
-										...base,
-										backgroundColor: `${theme.background.secondary}`
-									} ),
-									option: (base, state): any => ( {
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer'
-									} ),
-									control: (baseStyles): any => ( {
-										...baseStyles,
-										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
-										color: `${theme.font.default}`,
-										padding: 0
-									} )
-								}}
+								styles={selectDropDownStyles}
 							/>
 							<ContentTitle style={{ marginTop: '50px' }}>
 								State or country, in which your company conducts its business
@@ -1234,35 +1239,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								isMulti
 								components={animatedComponents}
 								isSearchable
-								styles={{
-									multiValueRemove: (styles) => ( {
-										...styles,
-										color: 'red',
-										':hover': {
-											backgroundColor: 'red',
-											color: 'white'
-										}
-									} ),
-									menu: (base): any => ( {
-										...base,
-										backgroundColor: `${theme.background.secondary}`
-									} ),
-									option: (base, state): any => ( {
-										...base,
-										border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-										height: '100%',
-										color: `${theme.font.default}`,
-										backgroundColor: `${theme.background.secondary}`,
-										cursor: 'pointer'
-									} ),
-									control: (baseStyles): any => ( {
-										...baseStyles,
-										borderColor: 'grey',
-										backgroundColor: `${theme.background.secondary}`,
-										color: `${theme.font.default}`,
-										padding: 0
-									} )
-								}}
+								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}
