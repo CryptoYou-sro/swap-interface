@@ -110,11 +110,12 @@ const Select = styled.select(() => {
 	`;
 });
 
-const DisclaimerText = styled.p(() => {
+const DisclaimerText = styled.div(() => {
 
 	return css`
 		margin-bottom: ${pxToRem(40)};
 		font-size: ${fontSize[16]};
+		padding: 0 ${pxToRem(2)};
 	`;
 });
 
@@ -512,9 +513,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<Title>Disclaimer</Title>
 							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
 								<DisclaimerText>
-									This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as mandated
-									by the European Union regulations.<br/>
-									To complete this form, please ensure you have the following documents at hand:<br/>
+									<p>This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as
+										mandated
+										by the European Union regulations.<br/>
+										To complete this form, please ensure you have the following documents at hand:<br/></p>
 									<ul>
 										<li>A valid government-issued identification document, such as a Passport, National ID card, or
 											Driver's License.
@@ -529,10 +531,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											date and the number of the document you will upload (Passport / ID / Driving License)
 										</li>
 									</ul>
-									The estimated time required to complete this form is approximately 10 minutes.<br/>
-									You will receive an email notification regarding the status of your verification process once it's
-									completed. <br/>
-									Click on "I Agree" to start.
+									<p>The estimated time required to complete this form is approximately 10 minutes.<br/>
+										You will receive an email notification regarding the status of your verification process once it's
+										completed. <br/>
+										Click on "I Agree" to start.</p>
 								</DisclaimerText>
 							</div>
 						</WrapContainer>
