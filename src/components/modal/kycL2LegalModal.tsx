@@ -23,9 +23,8 @@ import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryMembers } from './supervisoryMembers';
 import { useAxios, useMedia } from '../../hooks';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
-import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
-import makeAnimated from 'react-select/animated';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -176,10 +175,6 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) => {
-	const {
-		state: { theme }
-	} = useStore();
-	const animatedComponents = makeAnimated();
 	const [ showModal, setShowModal ] = useState<boolean>(showKycL2);
 	const [ isValid, setIsValid ] = useState(false);
 	const [ isFirstPartSent, setIsFirstPartSent ] = useState(false);
@@ -661,39 +656,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			setIsValid(true);
 		}
 	}, [ page, input ]);
-	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
-			...styles,
-			color: 'red',
-			':hover': {
-				backgroundColor: 'red',
-				color: 'white'
-			}
-		} ),
-		menu: (base: any): any => ( {
-			...base,
-			backgroundColor: `${theme.background.secondary}`
-		} ),
-		option: (base: any, state: any): any => ( {
-			...base,
-			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
-			cursor: 'pointer'
-		} ),
-		control: (baseStyles: any): any => ( {
-			...baseStyles,
-			borderColor: 'grey',
-			background: 'none',
-			color: `${theme.font.default}`,
-			padding: 0
-		} ),
-		input: (provided: any): any => ( {
-			...provided,
-			color: `${theme.font.default}`
-		} ),
-	};
 
 	return (
 		<Portal
@@ -1221,25 +1183,18 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								State or country, in which a branch, organized unit or establishment of your company
 								operates
 							</ContentTitle>
-							<SelectDropDown
+							<SelectDropdown
 								onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
 								defaultValue={selectOperatesCountry}
 								options={countries}
-								isMulti
-								isSearchable
-								styles={selectDropDownStyles}
 							/>
 							<ContentTitle style={{ marginTop: '50px' }}>
 								State or country, in which your company conducts its business
 							</ContentTitle>
-							<SelectDropDown
+							<SelectDropdown
 								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
 								defaultValue={selectWorkCountry}
 								options={countries}
-								isMulti
-								components={animatedComponents}
-								isSearchable
-								styles={selectDropDownStyles}
 							/>
 						</div>
 					)}

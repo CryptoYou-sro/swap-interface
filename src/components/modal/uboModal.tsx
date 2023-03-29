@@ -8,10 +8,10 @@ import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { BASE_URL, useStore } from '../../helpers';
 import { DateInput } from './shareholdersModal';
-import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
 import { useAxios } from '../../hooks';
 import { useToasts } from '../toast/toast';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Select = styled.select(() => {
 	const {
@@ -98,7 +98,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			citizenship: [],
+			countryOfIncorporate: [],
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -135,7 +135,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			citizenship: '',
+			countryOfIncorporate: [],
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -180,7 +180,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	};
 
 	const handleSelectDropdownUboInfo = (event: any) => {
-		setClient({ ...client, uboInfo: { ...client.uboInfo, citizenship: event.value } });
+		const countries = event.map((country: { value: string; label: string }) => country.value);
+		setClient({ ...client, uboInfo: { ...client.uboInfo, countryOfIncorporate: countries } });
 	};
 
 	const handleChangeResidenceInput = (event: any) => {
@@ -239,7 +240,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		} else if (isUBOLegalEntity === 'legal') {
 			bodyFormData.append('full_name', client.companyName);
 			bodyFormData.append('identification_doc', client.fileIdentification);
-			bodyFormData.append('statutory_coi', client.uboInfo.citizenship);
+			bodyFormData.append('statutory_coi', client.uboInfo.countryOfIncorporate.join(', '));
 			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
 			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
@@ -279,39 +280,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	useEffect(() => {
 		setShowModal(addUbo);
 	}, [ addUbo ]);
-	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
-			...styles,
-			color: 'red',
-			':hover': {
-				backgroundColor: 'red',
-				color: 'white'
-			}
-		} ),
-		menu: (base: any): any => ( {
-			...base,
-			backgroundColor: `${theme.background.secondary}`
-		} ),
-		option: (base: any, state: any): any => ( {
-			...base,
-			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
-			cursor: 'pointer'
-		} ),
-		control: (baseStyles: any): any => ( {
-			...baseStyles,
-			borderColor: 'grey',
-			background: 'none',
-			color: `${theme.font.default}`,
-			padding: 0
-		} ),
-		input: (provided: any): any => ( {
-			...provided,
-			color: `${theme.font.default}`
-		} ),
-	};
 
 	return (
 		<Portal
@@ -457,14 +425,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Citizenship(s)
 									</label>
-									<SelectDropDown
-										id="label-citizenship-natural-ubo"
-										name='citizenship'
+									<SelectDropdown
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
+										id='label-citizenship-natural-ubo'
 										options={countries}
-										isMulti
-										isSearchable
-										styles={selectDropDownStyles}
+										placeholder='Select country...'
 									/>
 								</div>
 							</div>
@@ -880,12 +845,10 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											style={{ margin: '8px 0', display: 'inline-block' }}>
 											Country of incorporation
 										</label>
-										<SelectDropDown
+										<SelectDropdown
 											onChange={(e: any) => handleSelectDropdownUboInfo(e)}
 											options={countries}
-											isSearchable
-											isMulti
-											styles={selectDropDownStyles}/>
+										/>
 									</div>
 									<div style={{ width: '48%' }}>
 										<label

@@ -9,9 +9,9 @@ import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { useAxios } from '../../hooks';
 import { BASE_URL, useStore } from '../../helpers';
-import SelectDropDown from 'react-select';
 import countries from '../../data/countries.json';
 import { DateInput } from './shareholdersModal';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Wrapper = styled.div(() => {
 	return css`
@@ -124,7 +124,6 @@ export const SupervisoryMembers = ({
 	};
 
 	const handleSelectDropdownNatural = (event: any) => {
-		console.log(event);
 		const countries = event.map((country: { value: string; label: string }) => country.value);
 		setClient({ ...client, citizenship: countries });
 	};
@@ -185,40 +184,6 @@ export const SupervisoryMembers = ({
 	useEffect(() => {
 		setShowModal(addSupervisor);
 	}, [ addSupervisor ]);
-
-	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
-			...styles,
-			color: 'red',
-			':hover': {
-				backgroundColor: 'red',
-				color: 'white'
-			}
-		} ),
-		menu: (base: any): any => ( {
-			...base,
-			backgroundColor: `${theme.background.secondary}`
-		} ),
-		option: (base: any, state: any): any => ( {
-			...base,
-			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
-			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
-			cursor: 'pointer'
-		} ),
-		control: (baseStyles: any): any => ( {
-			...baseStyles,
-			borderColor: 'grey',
-			background: 'none',
-			color: `${theme.font.default}`,
-			padding: 0
-		} ),
-		input: (provided: any): any => ( {
-			...provided,
-			color: `${theme.font.default}`
-		} ),
-	};
 
 	return (
 		<Portal
@@ -329,12 +294,11 @@ export const SupervisoryMembers = ({
 						<ContentTitle>
 							Citizenship(s)
 						</ContentTitle>
-						<SelectDropDown
+						<SelectDropdown
 							onChange={(e: any) => handleSelectDropdownNatural(e)}
 							options={countries}
-							isMulti
-							isSearchable
-							styles={selectDropDownStyles}/>
+							placeholder='Select country...'
+						/>
 					</div>
 					<ContentTitle>
 						Permanent or other residence
