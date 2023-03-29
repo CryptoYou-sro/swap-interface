@@ -120,7 +120,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			countryOfIncorporate: '',
+			countryOfIncorporate: [],
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -156,7 +156,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			countryOfIncorporate: '',
+			countryOfIncorporate: [],
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -256,7 +256,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			bodyFormData.append('statutory_full_name', client.shareHolderInfo.nameAndSurname);
 			bodyFormData.append('statutory_doi', client.shareHolderInfo.dateOfBirth);
 			bodyFormData.append('statutory_permanent_residence', client.shareHolderInfo.permanentResidence);
-			bodyFormData.append('statutory_coi', client.shareHolderInfo.countryOfIncorporate);
+			bodyFormData.append('statutory_coi', client.shareHolderInfo.countryOfIncorporate.join(', '));
 			bodyFormData.append('statutory_subsequently_business', client.shareHolderInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_office_address', client.shareHolderInfo.registeredOffice);
 			bodyFormData.append('statutory_id', client.shareHolderInfo.idNumber);

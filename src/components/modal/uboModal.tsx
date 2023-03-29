@@ -135,7 +135,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			nameAndSurname: '',
 			dateOfBirth: '',
 			permanentResidence: '',
-			countryOfIncorporate: '',
+			countryOfIncorporate: [],
 			subsequentlyBusinessCompany: '',
 			registeredOffice: '',
 			idNumber: ''
@@ -240,7 +240,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		} else if (isUBOLegalEntity === 'legal') {
 			bodyFormData.append('full_name', client.companyName);
 			bodyFormData.append('identification_doc', client.fileIdentification);
-			bodyFormData.append('statutory_coi', client.uboInfo.countryOfIncorporate);
+			bodyFormData.append('statutory_coi', client.uboInfo.countryOfIncorporate.join(', '));
 			bodyFormData.append('statutory_full_name', client.uboInfo.nameAndSurname);
 			bodyFormData.append('statutory_subsequently_business', client.uboInfo.subsequentlyBusinessCompany);
 			bodyFormData.append('statutory_permanent_residence', client.uboInfo.permanentResidence);
