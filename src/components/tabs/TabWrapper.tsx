@@ -57,8 +57,8 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
 				? // @ts-ignore
-				  SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
-				: [],
+				  SOURCE_NETWORKS?.[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+				: null,
 		[sourceToken, sourceNetwork]
 	);
 
