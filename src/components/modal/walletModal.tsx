@@ -122,7 +122,6 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	const { dispatch } = useStore();
 	const [ isCopied, setIsCopied ] = useState(false);
 	const { mobileWidth: isMobile } = useMedia('xs');
-	console.log(isMobile);
 
 	const handleCopy = () => {
 		setIsCopied(true);
