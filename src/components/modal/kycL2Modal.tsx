@@ -12,7 +12,6 @@ import WORK_AREA_LIST from '../../data/workAreaList.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
 import FUNDS_IRREGULAR_FOR_BUSINESS_LIST from '../../data/fundsIrregularForBussinesList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
-import DECLARE_LIST from '../../data/declareList.json';
 import countries from '../../data/countries.json';
 import { ContentTitle } from './kycL2LegalModal';
 import { DateInput } from './shareholdersModal';
@@ -439,6 +438,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		}
 	};
 
+	useEffect(() => {
+		setInput({ ...input, declareOther: '' });
+	}, [ input.declare ]);
+
 	const [ isValid, setIsValid ] = useState(false);
 
 	useEffect(() => {
@@ -473,7 +476,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		} else if (page === 9 && !input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFunds.length > 0 ||
 			page === 9 && input.irregularSourceOfFunds.includes('Other') && input.irregularSourceOfFundsOther.trim().length > 0) {
 			setIsValid(true);
-		} else if (page === 10 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 8 && input.declareOther.trim().length > 0) {
+		} else if (page === 10 && input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country') && !input.declareOther.trim().length || page === 10 && input.declareOther.trim().length > 0) {
 			setIsValid(true);
 		} else if (page === 11 && input.hasCriminalRecords.length > 0) {
 			setIsValid(true);
@@ -964,23 +967,33 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<ContentTitle>
 								I declare that
 							</ContentTitle>
-							{DECLARE_LIST.map((activity: string, index: number) => {
-								return (
-									<div style={{ marginBottom: '14px' }} key={activity}>
-										<label htmlFor={`declare-${index}`}>
-											<input
-												id={`declare-${index}`}
-												type="radio"
-												value={activity}
-												checked={input.declare.includes(activity)}
-												onChange={handleChangeInput}
-												name="declare"
-											/>
-											{activity}
-										</label>
-									</div>
-								);
-							})}
+							<div style={{ marginBottom: '14px' }}>
+								<label htmlFor='declare-nationonal-sole-state'>
+									<input
+										id='declare-nationonal-sole-state'
+										type="radio"
+										value='I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country'
+										checked={input.declare.includes('I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country')}
+										onChange={handleChangeInput}
+										name="declare"
+									/>
+									I am a national of the aforementioned sole state or country and simultaneously I am registered to a
+									permanent or other type of residency in this state or country
+								</label>
+							</div>
+							<div style={{ marginBottom: '14px' }}>
+								<label htmlFor='declare-nationonal-other-country-or-state'>
+									<input
+										id='declare-nationonal-other-country-or-state'
+										type="radio"
+										value='I am a national of another state or country, specifically:'
+										checked={input.declare.includes('I am a national of another state or country, specifically:')}
+										onChange={handleChangeInput}
+										name="declare"
+									/>
+									I am a national of another state or country, specifically:
+								</label>
+							</div>
 							{input.declare.includes(
 								'I am a national of another state or country, specifically:'
 							) ? (
@@ -995,6 +1008,19 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									maxLength={100}
 								/>
 							) : null}
+							<div style={{ marginBottom: '14px' }}>
+								<label htmlFor='declare-permanent-register'>
+									<input
+										id='declare-permanent-register'
+										type="radio"
+										value='I am registered to a permanent or other type of residency in another state or country, specifically:'
+										checked={input.declare.includes('I am registered to a permanent or other type of residency in another state or country, specifically:')}
+										onChange={handleChangeInput}
+										name="declare"
+									/>
+									I am a national of another state or country, specifically:
+								</label>
+							</div>
 							{input.declare.includes(
 								'I am registered to a permanent or other type of residency in another state or country, specifically:'
 							) ? (
