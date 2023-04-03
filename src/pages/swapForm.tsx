@@ -3,7 +3,6 @@ import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
-import type { Fee } from '../helpers';
 import {
 	AmountEnum,
 	beautifyNumbers,
@@ -161,7 +160,7 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
+	const { withdrawFee, cexFee, minAmount, maxAmount, networkFee } = useFees();
 	const [ showDestinationModal, setShowDestinationModal ] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [ showSourceModal, setShowSourceModal ] = useState(false);
@@ -195,7 +194,7 @@ export const SwapForm = () => {
 		if (startAmount > 0) {
 			if (( pair === `${currency1}${currency2}` && startCurrency === currency1 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency2 )) {
 				if (res) {
-					console.log('SELL');
+					// console.log('SELL');
 					const bids: string[] = res.bids;
 					let leftToSwap: any = startAmount;
 
@@ -221,7 +220,7 @@ export const SwapForm = () => {
 			} else if
 			(( pair === `${currency1}${currency2}` && startCurrency === currency2 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency1 )) {
 				if (res) {
-					console.log('Buy');
+					// console.log('Buy');
 					const asks: string[] = res.asks;
 					let leftToSwap: any = startAmount;
 
@@ -283,12 +282,11 @@ export const SwapForm = () => {
 
 			void getDestinationAmount();
 		}
-	}, [ cexFee, withdrawFee, amount ]);
+	}, [ networkFee, withdrawFee, cexFee, amount ]);
 
 	useEffect(() => {
 		if (exchangeRate?.price) {
-			const calcDestinationAmount =
-				( +amount / ( 1 + BINANCE_FEE ) ) * exchangeRate.price - withdrawFee.amount - cexFee.reduce((total: number, fee: Fee) => ( total += fee.amount ), 0);
+			const calcDestinationAmount = +amount * exchangeRate.price * ( 1 - BINANCE_FEE ) - withdrawFee.amount;
 
 			dispatch({
 				type: DestinationEnum.AMOUNT,

@@ -4,6 +4,7 @@ import { Button, JazzIcon, Portal } from '../../components';
 import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 import { button, ButtonEnum, useStore } from '../../helpers';
 import { useEthers } from '@usedapp/core';
+import { useMedia } from '../../hooks';
 
 type Props = {
 	showModal: boolean;
@@ -120,6 +121,8 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	const { deactivate } = useEthers();
 	const { dispatch } = useStore();
 	const [ isCopied, setIsCopied ] = useState(false);
+	const { mobileWidth: isMobile } = useMedia('xs');
+	console.log(isMobile);
 
 	const handleCopy = () => {
 		setIsCopied(true);
@@ -142,7 +145,7 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 		<Portal
 			handleClose={() => setShowModal(false)}
 			isOpen={showModal}
-			size='xs'>
+			size={isMobile ? 'small' : 'xs'}>
 			<ModalWrapper>
 				<div>
 					<AccountTitle>Account</AccountTitle>
