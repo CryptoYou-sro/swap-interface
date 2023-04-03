@@ -175,6 +175,7 @@ type Props = {
 	updateShowKycL2?: any;
 };
 export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) => {
+	const { mobileWidth: isMobile } = useMedia('s');
 	const [ showModal, setShowModal ] = useState<boolean>(showKycL2);
 	const [ isValid, setIsValid ] = useState(false);
 	const [ isFirstPartSent, setIsFirstPartSent ] = useState(false);
@@ -846,7 +847,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						</WrapContainer>
 					)}
 					{page === 1 && (
-						<WrapContainer>
+						<WrapContainer style={{ padding: '0 10px' }}>
 							<Title>Business verification</Title>
 							<label
 								htmlFor="taxResidency"
@@ -862,7 +863,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								}}>
 								<Select
 									id="taxResidency"
-									style={{ width: '300px', height: '40px' }}
+									style={{ height: '40px' }}
 									name="taxResidency"
 									onChange={handleDropDownInput}
 									value={input.taxResidency}>
@@ -1177,7 +1178,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						</WrapContainer>
 					)}
 					{page === 4 && (
-						<div style={{ marginBottom: '10px', width: '70%' }}>
+						<div style={{ marginBottom: '10px', width: `${isMobile ? '100%' : '70%'}` }}>
 							<Title>Business verification</Title>
 							<ContentTitle>
 								State or country, in which a branch, organized unit or establishment of your company
@@ -1209,7 +1210,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									paddingRight: '10px'
 								}}>
 								<div>
-									<ContentTitle style={{ textAlign: 'left', lineHeight: '1.6' }}>
+									<ContentTitle style={{ textAlign: 'left', lineHeight: '1.6', marginTop: '0' }}>
 										Source of income
 									</ContentTitle>
 									{PREVAILING_SOURCE_OF_INCOME_COMPANY.map((activity: string, index: number) => {
@@ -1363,7 +1364,6 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									</div>
 								</div>
 								<div style={{ width: '100%' }}>
-
 									<div
 										style={{
 											display: 'flex',
@@ -1373,7 +1373,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											alignItems: 'baseline'
 										}}>
 										<label>The representative of the client is a:</label>
-										<div style={{ margin: '0 36px' }}>
+										<div style={{ margin: '0 10px' }}>
 											<label htmlFor="representativeTypeOfClientTrue">
 												<input
 													id="representativeTypeOfClientTrue"

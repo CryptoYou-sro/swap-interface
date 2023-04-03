@@ -7,7 +7,7 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
 import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { useAxios } from '../../hooks';
+import { useAxios, useMedia } from '../../hooks';
 import { BASE_URL, useStore } from '../../helpers';
 import countries from '../../data/countries.json';
 import { DateInput } from './shareholdersModal';
@@ -49,6 +49,8 @@ export const SupervisoryMembers = ({
 	const {
 		state: { theme }
 	} = useStore();
+	const { mobileWidth: isMobile } = useMedia('s');
+
 	const [ showModal, setShowModal ] = useState<boolean>(false);
 	const [ isValid, setIsValid ] = useState<boolean>(false);
 	// @ts-ignore
@@ -270,7 +272,12 @@ export const SupervisoryMembers = ({
 								error={client.placeOfBirth.length < 2}
 							/>
 						</div>
-						<div style={{ width: '48%' }}>
+						<div style={{
+							width: '48%',
+							display: 'flex',
+							flexDirection: 'column',
+							justifyContent: 'flex-end'
+						}}>
 							<label htmlFor="label-shareholder-select-gender">
 								Gender
 							</label>
@@ -290,7 +297,7 @@ export const SupervisoryMembers = ({
 							</Select>
 						</div>
 					</div>
-					<div style={{ width: '48%' }}>
+					<div style={{ width: `${isMobile ? '100%' : '48%'}` }}>
 						<ContentTitle>
 							Citizenship(s)
 						</ContentTitle>
