@@ -286,12 +286,9 @@ export const SwapForm = () => {
 	}, [ cexFee, withdrawFee, amount ]);
 
 	useEffect(() => {
-		if (exchangeRate?.totalAmount) {
+		if (exchangeRate?.price) {
 			const calcDestinationAmount =
-				// @ts-ignore
-				( +amount / ( 1 + BINANCE_FEE ) ) * exchangeRate.totalAmount -
-				withdrawFee.amount -
-				cexFee.reduce((total: number, fee: Fee) => ( total += fee.amount ), 0);
+				( +amount / ( 1 + BINANCE_FEE ) ) * exchangeRate.price - withdrawFee.amount - cexFee.reduce((total: number, fee: Fee) => ( total += fee.amount ), 0);
 
 			dispatch({
 				type: DestinationEnum.AMOUNT,
