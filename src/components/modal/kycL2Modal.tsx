@@ -172,6 +172,7 @@ type Props = {
 };
 export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const [ showModal, setShowModal ] = useState<boolean>(showKycL2);
+	const { mobileWidth: isMobile } = useMedia('s');
 	useEffect(() => {
 		setShowModal(showKycL2);
 	}, [ showKycL2 ]);
@@ -903,7 +904,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						</WrapContainer>
 					)}
 					{page === 8 && (
-						<div style={{ marginBottom: '10px', width: '70%' }}>
+						<div style={{ marginBottom: '10px', width: `${isMobile ? '100%' : '70%'}` }}>
 							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
 							<SelectDropdown
 								name='citizenship'
@@ -1363,15 +1364,14 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						</>
 					)}
 					{page === 16 && (
-						<div
+						<WrapContainer
 							style={{
-								margin: '0 0 10px',
 								textAlign: 'left',
 								display: 'flex',
 								alignItems: 'baseline',
 								flexWrap: 'wrap'
 							}}>
-							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+							<ContentTitle style={{ maxWidth: `${isMobile ? '100%' : '75%'}` }}>
 								Provide a proof of address (copies of statements of account kept by an institution in the EEA)
 							</ContentTitle>
 							<LabelInput htmlFor="file-input-address">
@@ -1383,7 +1383,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</FileInput>
 								{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
-							<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
+							<ContentTitle style={{ maxWidth: `${isMobile ? '100%' : '75%'}` }}>
 								Provide a document proving information on the source of your funds (bank statement, payslip, tax
 								return, etc.)
 							</ContentTitle>
@@ -1396,7 +1396,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</FileInput>
 								{input.file.posofDoc1 && input.file.posofDoc1.name.length < 15 ? input.file.posofDoc1.name : input.file.posofDoc1 && input.file.posofDoc1.name.length >= 15 ? input.file.posofDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 							</LabelInput>
-						</div>
+						</WrapContainer>
 					)}
 					{page < 16 && (
 						<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
