@@ -27,6 +27,35 @@ const Wrapper = styled.div(() => {
 	`;
 });
 
+const ContentContainer = styled.div(() => {
+	return css`
+		display: flex;
+		width: 100%;
+		height: 100%;
+		flex-direction: column;
+		justify-content: space-between;
+		align-items: center;
+	`;
+});
+
+const DisclaimerContainer = styled.div(() => {
+
+	return css`
+		display: flex;
+		align-items: center;
+		flex-direction: column;
+	`;
+});
+
+const Label = styled.label(() => {
+
+	return css`
+		display: inline-block;
+		margin-bottom: ${spacing[8]};
+	`;
+});
+
+
 export const WrapContainer = styled.div(() => {
 	const {
 		state: { theme }
@@ -62,7 +91,7 @@ const Title = styled.h2`
 	text-align: center;
 `;
 
-const LabelInput = styled.label(() => {
+const LabelFileInput = styled.label(() => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -115,6 +144,16 @@ const DisclaimerText = styled.div(() => {
 		margin-bottom: ${pxToRem(40)};
 		font-size: ${fontSize[16]};
 		padding: 0 ${pxToRem(2)};
+	`;
+});
+
+const SpecifyContainer = styled.div(() => {
+	const { mobileWidth: isMobile } = useMedia('s');
+
+	return css`
+		width: ${isMobile ? '100%' : '70%'};
+		margin-bottom: ${spacing[10]};
+
 	`;
 });
 
@@ -487,7 +526,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			setIsValid(true);
 		} else if (page === 14 && !Object.values(input.residence).includes('') && !input.residence.country.includes('Select country')) {
 			setIsValid(true);
-		} else if (page === 15 && input.permanentAndMailAddressSame === 'Yes' || page === 13 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
+		} else if (page === 15 && input.permanentAndMailAddressSame === 'Yes' || page === 15 && !Object.values(input.mailAddress).includes('') && !input.mailAddress.country.includes('Select country')) {
 			setIsValid(true);
 		} else if (page === 16 && input.file.poaDoc1 && input.file.posofDoc1) {
 			setIsValid(true);
@@ -503,19 +542,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 			handleBack={handleOnBack}
 			closeOutside={false}>
 			<Wrapper ref={myRef}>
-				<div
-					style={{
-						display: 'flex',
-						width: '100%',
-						height: '100%',
-						flexDirection: 'column',
-						justifyContent: 'space-between',
-						alignItems: 'center'
-					}}>
+				<ContentContainer>
 					{page === 0 && (
 						<WrapContainer>
 							<Title>Disclaimer</Title>
-							<div style={{ display: 'flex', alignItems: 'center', flexDirection: 'column' }}>
+							<DisclaimerContainer>
 								<DisclaimerText>
 									<p>This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as
 										mandated
@@ -540,7 +571,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										completed. <br/>
 										Click on "I Agree" to start.</p>
 								</DisclaimerText>
-							</div>
+							</DisclaimerContainer>
 						</WrapContainer>
 					)}
 					{page === 1 && (
@@ -549,11 +580,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<div style={{ marginRight: '15px' }}>
 								<div style={{ display: 'flex', alignItems: 'baseline' }}>
 									<div style={{ marginRight: '10px', width: '48%', }}>
-										<label
-											htmlFor="label-full-name-natural"
-											style={{ marginBottom: '8px', display: 'inline-block' }}>
+										<Label htmlFor="label-full-name-natural">
 											Name and Surname
-										</label>
+										</Label>
 										<TextField
 											id="label-full-name-natural"
 											value={input.fullName}
@@ -568,11 +597,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										/>
 									</div>
 									<div style={{ marginBottom: '10px', width: '48%', }}>
-										<label
-											htmlFor="label-place-of-birth"
-											style={{ marginBottom: '8px', display: 'inline-block' }}>
-											Place of birth
-										</label>
+										<Label htmlFor="label-place-of-birth">Place of birth</Label>
 										<TextField
 											id="label-place-of-birth"
 											value={input.placeOfBirth}
@@ -589,14 +614,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</div>
 								<div style={{ display: 'flex', alignItems: 'baseline' }}>
 									<div style={{ width: '48%', marginRight: '10px', display: 'flex', flexDirection: 'column' }}>
-										<label
-											htmlFor="label-natural-dateOfBirth"
-											style={{
-												margin: '8px 0',
-												display: 'inline-block'
-											}}>
-											Date of birth
-										</label>
+										<Label htmlFor="label-natural-dateOfBirth">Date of birth</Label>
 										<DateInput
 											type="date"
 											id="label-natural-dateOfBirth"
@@ -607,11 +625,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										/>
 									</div>
 									<div style={{ marginBottom: '10px', width: '48%', }}>
-										<label
-											htmlFor="label-email"
-											style={{ marginBottom: '8px', display: 'inline-block' }}>
-											Email
-										</label>
+										<Label htmlFor="label-email">Email</Label>
 										<TextField
 											id="label-email"
 											value={input.email}
@@ -627,9 +641,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</div>
 								<div>
 									<div style={{ marginBottom: '10px' }}>
-										<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'block' }}>
+										<Label htmlFor="label-select-gender" style={{ display: 'block' }}>
 											Gender
-										</label>
+										</Label>
 										<Select
 											name="gender"
 											onChange={handleDropDownInput}
@@ -664,7 +678,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Front side / second page for Passport
 								</ContentTitle>
-								<LabelInput htmlFor="file-natural-identification-doc-1">
+								<LabelFileInput htmlFor="file-natural-identification-doc-1">
 									<FileInput
 										id="file-natural-identification-doc-1"
 										type="file"
@@ -672,11 +686,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								</LabelFileInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Back side / third page for Passport
 								</ContentTitle>
-								<LabelInput htmlFor="file-natural-identification-doc-2">
+								<LabelFileInput htmlFor="file-natural-identification-doc-2">
 									<FileInput
 										id="file-natural-identification-doc-2"
 										type="file"
@@ -684,11 +698,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								</LabelFileInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the
 									number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>
-								<LabelInput htmlFor="file-natural-selfie">
+								<LabelFileInput htmlFor="file-natural-selfie">
 									<FileInput
 										id="file-natural-selfie"
 										type="file"
@@ -696,7 +710,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										onChange={handleFileIdentification}>
 									</FileInput>
 									{input.file.identificationSelfie && input.file.identificationSelfie.name.length < 15 ? input.file.identificationSelfie.name : input.file.identificationSelfie && input.file.identificationSelfie.name.length >= 15 ? input.file.identificationSelfie.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								</LabelFileInput>
 							</div>
 
 						</WrapContainer>
@@ -704,11 +718,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 3 && (
 						<WrapContainer>
 							<div style={{ margin: '10px 0', width: '100%' }}>
-								<label
-									htmlFor="label-sourceOfIncome"
-									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									What is the prevailing source of your income?
-								</label>
+								<Label htmlFor="label-sourceOfIncome">What is the prevailing source of your income?</Label>
 								<TextField
 									id="label-sourceOfIncome"
 									value={input.sourceOfIncome}
@@ -723,11 +733,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								/>
 							</div>
 							<div style={{ marginBottom: '10px' }}>
-								<label
-									htmlFor="label-net-yearly-income"
-									style={{ marginBottom: '8px', display: 'inline-block' }}>
-									What is your net yearly income in € Euro ?
-								</label>
+								<Label htmlFor="label-net-yearly-income">What is your net yearly income in € Euro ?</Label>
 								<TextField
 									id="label-net-yearly-income"
 									value={input.yearlyIncome !== null && input.yearlyIncome}
@@ -741,9 +747,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								/>
 							</div>
 							<div style={{ margin: '10px 0 30px', width: '100%' }}>
-								<label htmlFor="label-select-tax-residency" style={{ marginBottom: '8px', display: 'block' }}>
-									Declare your tax Residency
-								</label>
+								<Label style={{ display: 'block' }} htmlFor="label-select-tax-residency">Declare your tax
+									Residency</Label>
 								<Select
 									style={{ minHeight: `${pxToRem(46)}` }}
 									name="taxResidency"
@@ -808,7 +813,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												checked={input.workArea.includes(`${activity}`)}
 												data-key="workArea"
 											/>
-											<label style={{ marginLeft: '4px' }} htmlFor={`workAreaList-checkbox-${index}`}>{activity}</label>
+											<Label
+												style={{ margin: '0 0 0 4px' }}
+												htmlFor={`workAreaList-checkbox-${index}`}>{activity}</Label>
 										</div>
 									);
 								})}
@@ -838,13 +845,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											checked={input.sourceOfFunds.includes(`${activity}`)}
 											data-key="sourceOfFunds"
 										/>
-										<label style={{ marginLeft: '4px' }}
-													 htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</label>
+										<Label style={{ margin: '0 0 0 4px' }}
+													 htmlFor={`sourceOfFundsList-checkbox-${index}`}>{activity}</Label>
 									</div>
 								);
 							})}
 							{input.sourceOfFunds.includes('Other') ? (
-								<div style={{ width: '70%' }}>
+								<SpecifyContainer>
 									<TextField
 										value={input.sourceOfFundsOther}
 										type="text"
@@ -855,7 +862,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="sourceOfFundsOther"
 										maxLength={100}
 									/>
-								</div>
+								</SpecifyContainer>
 							) : null}
 						</WrapContainer>
 					)}
@@ -882,13 +889,14 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											checked={input.sourceOfIncomeNature.includes(`${activity}`)}
 											data-key="sourceOfIncomeNature"
 										/>
-										<label style={{ marginLeft: '4px' }}
-													 htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</label>
+										<Label
+											style={{ margin: '0 0 0 4px' }}
+											htmlFor={`sourceOfIncomeNatureList-checkbox-${index}`}>{activity}</Label>
 									</div>
 								);
 							})}
 							{input.sourceOfIncomeNature.includes('Other') ? (
-								<div style={{ width: '70%' }}>
+								<SpecifyContainer>
 									<TextField
 										value={input.sourceOfIncomeNatureOther}
 										type="text"
@@ -899,12 +907,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="sourceOfIncomeNatureOther"
 										maxLength={100}
 									/>
-								</div>
+								</SpecifyContainer>
 							) : null}
 						</WrapContainer>
 					)}
 					{page === 8 && (
-						<div style={{ marginBottom: '10px', width: `${isMobile ? '100%' : '70%'}` }}>
+						<SpecifyContainer>
 							<ContentTitle style={{ textAlign: 'center' }}>Citizenship(s)</ContentTitle>
 							<SelectDropdown
 								name='citizenship'
@@ -913,7 +921,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								onChange={(e: any) => handleSelectDropdownNatural(e)}
 								options={countries}
 							/>
-						</div>
+						</SpecifyContainer>
 					)}
 					{page === 9 && (
 						<WrapContainer>
@@ -940,14 +948,16 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												checked={input.irregularSourceOfFunds.includes(`${activity}`)}
 												data-key="irregularSourceOfFunds"
 											/>
-											<label style={{ marginLeft: '4px' }} htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
+											<Label
+												style={{ margin: '0 0 0 4px' }}
+												htmlFor={`fundsIrregularForBusinessList-checkbox-${index}`}>
 												{activity}
-											</label>
+											</Label>
 										</div>
 									);
 								})}
 								{input.irregularSourceOfFunds.includes('Other') ? (
-									<div style={{ width: '70%' }}>
+									<SpecifyContainer>
 										<TextField
 											value={input.irregularSourceOfFundsOther}
 											type="text"
@@ -958,7 +968,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											name="irregularSourceOfFundsOther"
 											maxLength={100}
 										/>
-									</div>
+									</SpecifyContainer>
 								) : null}
 							</div>
 						</WrapContainer>
@@ -969,7 +979,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								I declare that
 							</ContentTitle>
 							<div style={{ marginBottom: '14px' }}>
-								<label htmlFor='declare-nationonal-sole-state'>
+								<Label htmlFor='declare-nationonal-sole-state'>
 									<input
 										id='declare-nationonal-sole-state'
 										type="radio"
@@ -980,10 +990,10 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									/>
 									I am a national of the aforementioned sole state or country and simultaneously I am registered to a
 									permanent or other type of residency in this state or country
-								</label>
+								</Label>
 							</div>
 							<div style={{ marginBottom: '14px' }}>
-								<label htmlFor='declare-nationonal-other-country-or-state'>
+								<Label htmlFor='declare-nationonal-other-country-or-state'>
 									<input
 										id='declare-nationonal-other-country-or-state'
 										type="radio"
@@ -993,24 +1003,26 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="declare"
 									/>
 									I am a national of another state or country, specifically:
-								</label>
+								</Label>
 							</div>
 							{input.declare.includes(
 								'I am a national of another state or country, specifically:'
 							) ? (
-								<TextField
-									value={input.declareOther}
-									type="text"
-									placeholder="Specify..."
-									onChange={handleChangeInput}
-									size="small"
-									align="left"
-									name="declareOther"
-									maxLength={100}
-								/>
+								<div style={{ marginBottom: '10px' }}>
+									<TextField
+										value={input.declareOther}
+										type="text"
+										placeholder="Specify..."
+										onChange={handleChangeInput}
+										size="small"
+										align="left"
+										name="declareOther"
+										maxLength={100}
+									/>
+								</div>
 							) : null}
 							<div style={{ marginBottom: '14px' }}>
-								<label htmlFor='declare-permanent-register'>
+								<Label htmlFor='declare-permanent-register'>
 									<input
 										id='declare-permanent-register'
 										type="radio"
@@ -1020,7 +1032,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="declare"
 									/>
 									I am a national of another state or country, specifically:
-								</label>
+								</Label>
 							</div>
 							{input.declare.includes(
 								'I am registered to a permanent or other type of residency in another state or country, specifically:'
@@ -1045,7 +1057,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								offense against property or economic offense committed not only in relation with
 								work or business activities (without regards to presumption of innocence)?
 							</p>
-							<label htmlFor="hasCriminalRecordsTrue" style={{ display: 'block', marginRight: '10px' }}>
+							<Label htmlFor="hasCriminalRecordsTrue" style={{ margin: '0 10px 0 0' }}>
 								<input
 									id="hasCriminalRecordsTrue"
 									type="radio"
@@ -1055,8 +1067,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="hasCriminalRecords"
 								/>
 								Yes
-							</label>
-							<label htmlFor="hasCriminalRecordsFalse">
+							</Label>
+							<Label htmlFor="hasCriminalRecordsFalse">
 								<input
 									id="hasCriminalRecordsFalse"
 									type="radio"
@@ -1066,7 +1078,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="hasCriminalRecords"
 								/>
 								No
-							</label>
+							</Label>
 						</div>
 					)}
 					{page === 12 && (
@@ -1074,7 +1086,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 								Are you a person against whom are applied Czech and/or international sanctions?
 							</p>
-							<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
+							<Label htmlFor="appliedSanctionsTrue" style={{ margin: ' 0 10px 0 0' }}>
 								<input
 									id="appliedSanctionsTrue"
 									type="radio"
@@ -1084,8 +1096,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="appliedSanctions"
 								/>
 								Yes
-							</label>
-							<label htmlFor="appliedSanctionsFalse">
+							</Label>
+							<Label htmlFor="appliedSanctionsFalse">
 								<input
 									id="appliedSanctionsFalse"
 									type="radio"
@@ -1095,13 +1107,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="appliedSanctions"
 								/>
 								No
-							</label>
+							</Label>
 						</div>
 					)}
 					{page === 13 && (
 						<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
 							<p style={{ marginBottom: '25px', marginRight: '30px' }}>Are you a politically exposed person?</p>
-							<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
+							<Label htmlFor="politicallPersonTrue" style={{ margin: '0 10px 0 0' }}>
 								<input
 									id="politicallPersonTrue"
 									type="radio"
@@ -1111,8 +1123,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="politicallPerson"
 								/>
 								Yes
-							</label>
-							<label htmlFor="politicallPersonFalse">
+							</Label>
+							<Label htmlFor="politicallPersonFalse">
 								<input
 									id="politicallPersonFalse"
 									type="radio"
@@ -1122,7 +1134,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									name="politicallPerson"
 								/>
 								No
-							</label>
+							</Label>
 						</div>
 					)}
 					{page === 14 && (
@@ -1130,13 +1142,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<ContentTitle>Your Residence</ContentTitle>
 							<div style={{ display: 'flex' }}>
 								<div style={{ width: '50%', marginRight: '20px' }}>
-									<label
-										htmlFor="input.residence.country" style={{
-										margin: '6px 0 8px 0',
-										display: 'inline-block'
-									}}>
+									<Label htmlFor="input.residence.country" style={{ marginTop: '6px' }}>
 										Country
-									</label>
+									</Label>
 									<Select
 										style={{ width: '100%' }}
 										onChange={handleDropDownInputResidence}
@@ -1152,11 +1160,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										})}
 										;
 									</Select>
-									<label
+									<Label
 										htmlFor="label-address-permanent-street"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ marginTop: '6px' }}>
 										Street
-									</label>
+									</Label>
 									<TextField
 										id="label-address-permanent-street"
 										value={input.residence.street}
@@ -1168,11 +1176,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="street"
 										maxLength={100}
 									/>
-									<label
+									<Label
 										htmlFor="label-address-permanent-street-number"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ marginTop: '6px' }}>
 										Street number
-									</label>
+									</Label>
 									<TextField
 										id="label-address-permanent-street-number"
 										value={input.residence.streetNumber}
@@ -1186,11 +1194,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									/>
 								</div>
 								<div style={{ width: '50%' }}>
-									<label
+									<Label
 										htmlFor="label-address-permanent-municipality"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ marginTop: '6px' }}>
 										City
-									</label>
+									</Label>
 									<TextField
 										id="label-address-permanent-municipality"
 										value={input.residence.municipality}
@@ -1202,11 +1210,11 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="municipality"
 										maxLength={100}
 									/>
-									<label
+									<Label
 										htmlFor="label-address-permanent-zipCode"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ marginTop: '6px' }}>
 										ZIP Code
-									</label>
+									</Label>
 									<TextField
 										id="label-address-permanent-zipCode"
 										value={input.residence.zipCode}
@@ -1228,7 +1236,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
-								<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
+								<Label htmlFor="label-mailing-permanent-address-true" style={{ marginRight: '10px' }}>
 									<input
 										id="label-mailing-permanent-address-true"
 										type="radio"
@@ -1238,8 +1246,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="permanentAndMailAddressSame"
 									/>
 									Yes
-								</label>
-								<label htmlFor="label-mailing-permanent-address-false">
+								</Label>
+								<Label htmlFor="label-mailing-permanent-address-false">
 									<input
 										id="label-mailing-permanent-address-false"
 										type="radio"
@@ -1249,20 +1257,19 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										name="permanentAndMailAddressSame"
 									/>
 									No
-								</label>
+								</Label>
 							</div>
 							{input.permanentAndMailAddressSame === 'No' && (
 								<>
 									<div style={{ display: 'flex' }}>
 										<div style={{ width: '50%', marginRight: '20px' }}>
-											<label
+											<Label
 												htmlFor="label-input-mailAddress-country"
 												style={{
-													margin: '6px 0 8px 0',
-													display: 'inline-block'
+													marginTop: '6px'
 												}}>
 												Country
-											</label>
+											</Label>
 											<Select
 												style={{ width: '100%' }}
 												name="mailAddressStateOrCountry"
@@ -1279,14 +1286,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												})}
 												;
 											</Select>
-											<label
+											<Label
 												htmlFor="label-input-mailAddress-street"
 												style={{
-													margin: '6px 0 8px 0',
-													display: 'inline-block'
+													marginTop: '6px'
 												}}>
 												Street
-											</label>
+											</Label>
 											<TextField
 												id="label-input-mailAddress-street"
 												value={input.mailAddress.street}
@@ -1298,14 +1304,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												name="street"
 												maxLength={100}
 											/>
-											<label
+											<Label
 												htmlFor="label-input-mailAddress-streetNumber"
 												style={{
-													margin: '6px 0 8px 0',
-													display: 'inline-block'
+													marginTop: '6px'
 												}}>
 												Street number
-											</label>
+											</Label>
 											<TextField
 												id="label-input-mailAddress-streetNumber"
 												value={input.mailAddress.streetNumber}
@@ -1319,14 +1324,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											/>
 										</div>
 										<div style={{ width: '50%' }}>
-											<label
+											<Label
 												htmlFor="label-input-mailAddress-municipality"
 												style={{
-													margin: '6px 0 8px 0',
-													display: 'inline-block'
+													marginTop: '6px'
 												}}>
 												City
-											</label>
+											</Label>
 											<TextField
 												id="label-input-mailAddress-municipality"
 												value={input.mailAddress.municipality}
@@ -1338,14 +1342,13 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												name="municipality"
 												maxLength={100}
 											/>
-											<label
+											<Label
 												htmlFor="label-input-mailAddress-zipCode"
 												style={{
-													margin: '6px 0 8px 0',
-													display: 'inline-block'
+													marginTop: '6px'
 												}}>
 												ZIP Code
-											</label>
+											</Label>
 											<TextField
 												id="label-input-mailAddress-zipCode"
 												value={input.mailAddress.zipCode}
@@ -1374,7 +1377,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							<ContentTitle style={{ maxWidth: `${isMobile ? '100%' : '75%'}` }}>
 								Provide a proof of address (copies of statements of account kept by an institution in the EEA)
 							</ContentTitle>
-							<LabelInput htmlFor="file-input-address">
+							<LabelFileInput htmlFor="file-input-address">
 								<FileInput
 									id="file-input-address"
 									type="file"
@@ -1382,12 +1385,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									onChange={handleChangeFileInput}>
 								</FileInput>
 								{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-							</LabelInput>
+							</LabelFileInput>
 							<ContentTitle style={{ maxWidth: `${isMobile ? '100%' : '75%'}` }}>
 								Provide a document proving information on the source of your funds (bank statement, payslip, tax
 								return, etc.)
 							</ContentTitle>
-							<LabelInput htmlFor="file-input-proof">
+							<LabelFileInput htmlFor="file-input-proof">
 								<FileInput
 									id="file-input-proof"
 									type="file"
@@ -1395,7 +1398,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									onChange={handleChangeFileInput}>
 								</FileInput>
 								{input.file.posofDoc1 && input.file.posofDoc1.name.length < 15 ? input.file.posofDoc1.name : input.file.posofDoc1 && input.file.posofDoc1.name.length >= 15 ? input.file.posofDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-							</LabelInput>
+							</LabelFileInput>
 						</WrapContainer>
 					)}
 					{page < 16 && (
@@ -1412,7 +1415,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 							Submit
 						</Button>
 					)}
-				</div>
+				</ContentContainer>
 			</Wrapper>
 		</Portal>
 	);
