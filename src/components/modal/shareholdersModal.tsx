@@ -8,7 +8,7 @@ import COUNTRIES from '../../data/listOfAllCountries.json';
 import countries from '../../data/countries.json';
 import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { useAxios } from '../../hooks';
+import { useAxios, useMedia } from '../../hooks';
 import { BASE_URL, useStore } from '../../helpers';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
@@ -76,6 +76,10 @@ export const DateInput = styled.input(() => {
 	`;
 });
 
+const ShareHoldersContainer = styled.div`
+	padding: 0 ${spacing[6]};
+`;
+
 type Props = {
 	addShareHolder?: boolean;
 	updateShareHoldersModalShow?: any;
@@ -84,6 +88,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 	const {
 		state: { theme }
 	} = useStore();
+	const { mobileWidth: isMobile } = useMedia('s');
+
 	const [ showModal, setShowModal ] = useState<boolean>(false);
 	const [ isValid, setIsValid ] = useState<boolean>(false);
 	const [ isShareHolderLegal, setIsShareHolderLegal ] = useState<string>('empty');
@@ -449,18 +455,18 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									<SelectDropdown
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
 										options={countries}
-										placeholder='Select country...'
+										placeholder='Select...'
 									/>
 								</div>
 							</div>
 
-							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
 									personal
 									identification or
 									passport of the representatives
 								</ContentTitle>
-								<div style={{ textAlign: 'left', margin: '20px 0 40px' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
 									<LabelInput htmlFor="label-input-file-natural">
 										<FileInput
 											id="label-input-file-natural"
@@ -786,8 +792,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 							</div>
 						</>
 					) : isShareHolderLegal === 'legal' ? (
-						<div>
-							<div style={{ width: '48%' }}>
+						<ShareHoldersContainer>
+							<div style={{ width: `${isMobile ? '100%' : '48%'}` }}>
 								<label
 									htmlFor="label-shareholder-company-name"
 									style={{
@@ -808,13 +814,13 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline' }}>
+							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Copy of
 									excerpt of public register or
 									other valid documents proving the existence of legal entity
 									(Articles of Associations, Deed of Foundation etc.).
 								</ContentTitle>
-								<div style={{ textAlign: 'left', margin: '40px 0' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
 									<LabelInput htmlFor="file-input">
 										<FileInput
 											id="file-input"
@@ -834,7 +840,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									display: 'flex',
 									flexWrap: 'wrap',
 									justifyContent: 'space-between',
-									alignItems: 'baseline'
+									alignItems: 'flex-end',
 								}}>
 								<div style={{ width: '48%' }}>
 									<label
@@ -853,7 +859,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										name="nameAndSurname"
 									/>
 								</div>
-								<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
+								<div style={{
+									width: '48%',
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'space-between'
+								}}>
 									<label
 										htmlFor="label-shareHolderInfo-dateOfBirth"
 										style={{
@@ -887,7 +898,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									<SelectDropdown
 										onChange={(e: any) => handleSelectDropdownShareHolderInfo(e)}
 										options={countries}
-										placeholder='Select country...'
+										placeholder='Select...'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -959,7 +970,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									/>
 								</div>
 							</div>
-						</div>
+						</ShareHoldersContainer>
 					) : null}
 				</div>
 				<div style={{ textAlign: 'center' }}>

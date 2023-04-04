@@ -9,7 +9,7 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { BASE_URL, useStore } from '../../helpers';
 import { DateInput } from './shareholdersModal';
 import countries from '../../data/countries.json';
-import { useAxios } from '../../hooks';
+import { useAxios, useMedia } from '../../hooks';
 import { useToasts } from '../toast/toast';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
@@ -54,6 +54,10 @@ const LabelInput = styled.label(() => {
 	`;
 });
 
+const UboLegalContainer = styled.div`
+	padding: 0 ${spacing[6]};
+`;
+
 type Props = {
 	addUbo?: any;
 	updateUboModalShow?: any;
@@ -62,6 +66,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
+	const { mobileWidth: isMobile } = useMedia('s');
 	const fileIdentification = useRef<HTMLInputElement>();
 	const [ isUBOLegalEntity, setIsUBOLegalEntity ] = useState<string>('empty');
 	const [ showModal, setShowModal ] = useState<boolean>(false);
@@ -288,8 +293,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			handleClose={handleClose}
 			handleBack={handleBack}
 			hasBackButton>
-			<WrapContainer
-				style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 10px' }}>
+			<WrapContainer>
 				<div>
 					<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
 					<div
@@ -377,7 +381,12 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										error={client.idNumber.length < 2}
 									/>
 								</div>
-								<div style={{ width: '48%' }}>
+								<div style={{
+									width: '48%',
+									display: 'flex',
+									flexDirection: 'column',
+									justifyContent: 'space-between'
+								}}>
 									<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Gender
 									</label>
@@ -429,11 +438,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
 										id='label-citizenship-natural-ubo'
 										options={countries}
-										placeholder='Select country...'
+										placeholder='Select...'
 									/>
 								</div>
 							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px', flexDirection: 'column' }}>
 								<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
 									personal identification
 									or passport of the
@@ -556,7 +565,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</div>
 							</div>
 							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+								<p style={{ marginBottom: '25px' }}>
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
 								<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
@@ -692,7 +701,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</>
 							)}
 							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px', marginRight: '30px' }}>Are you a politically exposed person?</p>
+								<p style={{ marginBottom: '25px' }}>Are you a politically exposed person?</p>
 								<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="politicallPersonTrue"
@@ -717,7 +726,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</label>
 							</div>
 							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px', marginRight: '30px' }}>
+								<p style={{ marginBottom: '25px' }}>
 									Are you a person against whom are applied Czech or international sanctions?
 								</p>
 								<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
@@ -745,8 +754,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 							</div>
 						</>
 					) : isUBOLegalEntity === 'legal' ? (
-						<div>
-							<div style={{ width: '48%' }}>
+						<UboLegalContainer>
+							<div style={{ width: `${isMobile ? '100%' : '48%'}` }}>
 								<label
 									style={{ display: 'block', marginBottom: '10px' }}
 									htmlFor="label-ubo-company-name">
@@ -764,7 +773,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									error={client.companyName.length < 2}
 								/>
 							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px' }}>
+							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
 									or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
 									Foundation etc.)</ContentTitle>
@@ -786,7 +795,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									display: 'flex',
 									flexDirection: 'column'
 								}}>
-								<ContentTitle>
+								<ContentTitle style={{ marginBottom: '16px' }}>
 									Provide information about your statutory body
 								</ContentTitle>
 								<div
@@ -795,7 +804,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										display: 'flex',
 										flexWrap: 'wrap',
 										justifyContent: 'space-between',
-										alignItems: 'baseline',
+										alignItems: 'flex-end',
 									}}>
 									<div style={{ width: '48%' }}>
 										<label
@@ -814,7 +823,12 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											name="nameAndSurname"
 										/>
 									</div>
-									<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
+									<div style={{
+										width: '48%',
+										display: 'flex',
+										flexDirection: 'column',
+										justifyContent: 'space-between'
+									}}>
 										<label
 											htmlFor="label-uboInfo-dateOfBirth"
 											style={{
@@ -920,7 +934,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									</div>
 								</div>
 							</div>
-						</div>
+						</UboLegalContainer>
 					) : null}
 				</div>
 				<div style={{ textAlign: 'center' }}>

@@ -1,8 +1,8 @@
-import { useEffect, useRef, useState } from 'react';
+import axios from 'axios';
 import styled, { css } from 'styled-components';
+import { useEffect, useRef, useState } from 'react';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
-import type { Fee } from '../helpers';
 import {
 	AmountEnum,
 	beautifyNumbers,
@@ -137,6 +137,11 @@ const WithdrawTips = styled.div(
 
 type Limit = { message: string; value: string; error: boolean };
 
+interface DepthResponse {
+	bids?: Array<[ string, string ]>;
+	asks?: Array<[ string, string ]>;
+}
+
 export const SwapForm = () => {
 	const {
 		state: {
@@ -155,7 +160,7 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
+	const { withdrawFee, cexFee, minAmount, maxAmount, networkFee } = useFees();
 	const [ showDestinationModal, setShowDestinationModal ] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [ showSourceModal, setShowSourceModal ] = useState(false);
@@ -164,8 +169,85 @@ export const SwapForm = () => {
 	const [ destinationAddressIsValid, setDestinationAddressIsValid ] = useState(false);
 	const [ destinationMemoIsValid, setDestinationMemoIsValid ] = useState(false);
 	const [ limit, setLimit ] = useState<Limit>({ message: '', value: '', error: false });
+	const [ exchangeRate, setExchangeRate ] = useState<{ price: number; totalAmount: number } | null>(null);
 
 	// const { mobileWidth } = useMedia('xs');
+
+	async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
+		let pair: string | '' = '';
+		let res: DepthResponse | any = null;
+		let totalPrice: string | number = 0;
+		let totalCurrencyAmount: string | number = 0;
+		try {
+			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency1}${currency2}`).then(r => res = r.data);
+			console.log('first variant');
+			if (res) {
+				pair = `${currency1}${currency2}`;
+			}
+		} catch (error: any) {
+			console.log('second variant', error);
+			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency2}${currency1}`).then(r => res = r.data);
+			if (res) {
+				pair = `${currency2}${currency1}`;
+			}
+		}
+		if (startAmount > 0) {
+			if (( pair === `${currency1}${currency2}` && startCurrency === currency1 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency2 )) {
+				if (res) {
+					// console.log('SELL');
+					const bids: string[] = res.bids;
+					let leftToSwap: any = startAmount;
+
+					for (let i = 0; i < res.bids.length; i++) {
+						let orderBookAmount = 0;
+						if (leftToSwap === 0) {
+							break;
+						}
+						const price = parseFloat(bids[i][0]);
+						const amount = parseFloat(bids[i][1]);
+
+						if (amount < leftToSwap) {
+							orderBookAmount = amount;
+						} else {
+							orderBookAmount = leftToSwap;
+						}
+
+						leftToSwap -= orderBookAmount;
+						totalCurrencyAmount += price * orderBookAmount;
+						totalPrice = totalCurrencyAmount / startAmount;
+					}
+				}
+			} else if
+			(( pair === `${currency1}${currency2}` && startCurrency === currency2 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency1 )) {
+				if (res) {
+					// console.log('Buy');
+					const asks: string[] = res.asks;
+					let leftToSwap: any = startAmount;
+
+					for (let i = 0; i < res.asks.length; i++) {
+						let orderBookAmount = 0;
+						if (leftToSwap === 0) {
+							break;
+						}
+						const price = parseFloat(asks[i][0]);
+						const amount = parseFloat(asks[i][1]);
+
+						if (amount * price < leftToSwap) {
+							orderBookAmount = amount * price;
+						} else {
+							orderBookAmount = leftToSwap;
+						}
+
+						leftToSwap -= orderBookAmount;
+						totalCurrencyAmount = totalCurrencyAmount + 1 / price * orderBookAmount;
+						totalPrice = totalCurrencyAmount / startAmount;
+					}
+				}
+			}
+		}
+
+		return { price: totalPrice, totalAmount: totalCurrencyAmount };
+	}
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -188,16 +270,33 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
-			const calculatedDestinationAmount =
-				( +amount / ( 1 + BINANCE_FEE ) ) * getPrice(sourceToken, destinationToken) -
-				withdrawFee.amount -
-				cexFee.reduce((total: number, fee: Fee) => ( total += fee.amount ), 0);
+			const getDestinationAmount = async () => {
+				const orderBookPrice = await getOrderBookPrice(
+					sourceToken,
+					destinationToken,
+					amount,
+					sourceToken
+				);
+				setExchangeRate(orderBookPrice);
+			};
+
+			void getDestinationAmount();
+		}
+	}, [ networkFee, withdrawFee, cexFee, amount ]);
+
+	useEffect(() => {
+		if (exchangeRate?.price) {
+			const calcDestinationAmount = +amount * exchangeRate.price * ( 1 - BINANCE_FEE ) - withdrawFee.amount;
+
 			dispatch({
 				type: DestinationEnum.AMOUNT,
-				payload: calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
+				payload:
+					calcDestinationAmount < 0
+						? ''
+						: calcDestinationAmount.toString(),
 			});
 		}
-	}, [ amount, destinationToken, cexFee, withdrawFee ]);
+	}, [ exchangeRate ]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
@@ -347,9 +446,7 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.default}>
 				{!isTokenSelected(destinationToken)
 					? ''
-					: `1 ${sourceToken} = ${beautifyNumbers({
-						n: getPrice(sourceToken, destinationToken)
-					})} ${destinationToken}`}
+					: exchangeRate?.price ? `1 ${sourceToken} = ${beautifyNumbers({ n: exchangeRate.price })} ${destinationToken}` : null}
 			</ExchangeRate>
 			<TextField
 				autocomplete='off'
