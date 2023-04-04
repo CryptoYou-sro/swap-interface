@@ -937,13 +937,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											value={input.mailAddress.stateOrCountry}
 											id="label-mail-address-state-Or-Country"
 											style={{
-												marginTop: '0px',
 												width: '100%',
-												height: 'auto',
 												minHeight: '46px',
-												backgroundColor: '#1c2125',
-												color: 'white',
-												borderRadius: '6px'
+
 											}}>
 											<option value="Select country">Select country</option>
 											{COUNTRIES.map((country: any) => {
@@ -1205,8 +1201,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 							<div
 								style={{
 									display: 'flex',
-									flexWrap: 'wrap',
-									justifyContent: 'space-between',
+									flexDirection: 'column',
 									paddingRight: '10px'
 								}}>
 								<div>
@@ -1239,7 +1234,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									})}
 									{input.sourceOfIncomeNature.includes('Other') ? (
-										<div style={{ marginTop: '16px', maxWidth: '315px' }}>
+										<div style={{ marginTop: '16px', width: `${isMobile ? '100%' : '70%'}` }}>
 											<TextField
 												value={input.sourceOfIncomeNatureOther}
 												type="text"
@@ -1302,7 +1297,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										);
 									})}
 									{input.sourceOfFunds.includes('Other') ? (
-										<div style={{ marginTop: '16px', maxWidth: '315px' }}>
+										<div style={{ marginTop: '16px', width: `${isMobile ? '100%' : '70%'}` }}>
 											<TextField
 												value={input.sourceOfFundsOther}
 												type="text"

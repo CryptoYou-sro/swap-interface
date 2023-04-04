@@ -396,7 +396,6 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										value={client.gender}
 										id="label-select-gender"
 										style={{
-											color: 'white',
 											borderRadius: '6px'
 										}}>
 										<option value="Select gender">Select gender</option>
