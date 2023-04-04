@@ -40,7 +40,7 @@ export const routes = {
 
 export const PROTOCOL_FEE = 0.002;
 export const BINANCE_FEE = 0.002;
-export const PROTOCOL_FEE_FACTOR = 1 / (1 - PROTOCOL_FEE);
+export const PROTOCOL_FEE_FACTOR = 1 / ( 1 - PROTOCOL_FEE );
 export const FEE_CURRENCY = 'USDT';
 
 export const ESTIMATED_NETWORK_TRANSACTION_GAS = 55_437;
@@ -49,6 +49,7 @@ export const SERVICE_ADDRESS = '0x47b211c494107C98160DF6dFA93D98175Ec2F27E';
 export const BLOCK_CONTRACT_NUMBER = 2_075_594;
 export const BLOCK_CHUNK_SIZE = 7_500;
 export const WEI_TO_GLMR = 1 / 1_000_000_000_000_000_000;
+export const MIN_START_AMOUNT = 10000;
 
 export const CONTRACT_ADDRESSES = {
 	1: '0xa9EB7218Fd8153c93aD1b4acf42330E7044E75A1',
