@@ -263,7 +263,7 @@ export const useFees = () => {
 	}, [ destinationToken, destinationAddress, sourceNetwork, sourceToken ]);
 
 	const networkFee = useMemo((): Fee => {
-		if (gasAmount && gasPrice) {
+		if (isTokenSelected(destinationToken) && gasAmount && gasPrice) {
 			const calculatedProcessFee = BigNumber.from(gasAmount['_hex']).mul(
 				BigNumber.from(gasPrice['_hex'])
 			);
@@ -286,7 +286,7 @@ export const useFees = () => {
 		} else {
 			return { amount: 0, currency: '', name: 'Network' };
 		}
-	}, [ gasAmount, sourceNetwork ]);
+	}, [ gasAmount, sourceNetwork, destinationToken ]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
