@@ -50,20 +50,20 @@ root.render(
 			ethereumClient={ethereumClient}
 			themeMode="dark"
 			themeVariables={{
-				'--w3m-accent-color': '#2d2d2d',
+				'--w3m-accent-color': '#00A8E8',
 				'--w3m-accent-fill-color': 'white',
 				'--w3m-background-color': '#1d75a2',
 				'--w3m-background-border-radius': '6px',
 				'--w3m-container-border-radius': '6px',
-				'--w3m-wallet-icon-border-radius': '0px',
+				'--w3m-wallet-icon-border-radius': '6px',
 				'--w3m-input-border-radius': '6px',
 				'--w3m-button-border-radius': '6px',
-				'--w3m-secondary-button-border-radius': '6px',
-				'--w3m-notification-border-radius': '6px',
+				'--w3m-secondary-button-border-radius': '0px',
+				'--w3m-notification-border-radius': '0px',
 				'--w3m-icon-button-border-radius': '6px',
-				'--w3m-button-hover-highlight-border-radius': '0px',
+				'--w3m-button-hover-highlight-border-radius': '6px',
 				'--w3m-font-family': 'Open Sans',
-				'--w3m-z-index': '100000'
+				'--w3m-z-index': '100000000'
 			}}
 		/>
 	</StrictMode>
