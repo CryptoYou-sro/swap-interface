@@ -388,7 +388,7 @@ export const Header = () => {
 			{isConnected && isUserVerified && accountAddr && isNetworkConnected ? (
 				<WalletContainer>
 					<WalletBalance>
-						{data?.formatted} {data?.symbol}
+						{data?.formatted.slice(0, 11)} {data?.symbol}
 					</WalletBalance>
 					<Web3Button balance={'hide'} icon="show" />
 				</WalletContainer>
