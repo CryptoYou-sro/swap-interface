@@ -1,7 +1,7 @@
 import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useNetwork, useSignMessage } from 'wagmi';
 import { Button, Icon, KycL2Modal, useToasts } from '../../components';
 import {
@@ -94,6 +94,21 @@ const WalletContainer = styled.div`
 	display: flex;
 	align-items: center;
 `;
+
+const WalletBalance = styled.div(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+	color: ${theme.font.default};
+	border: 1px solid rgb(64, 64, 64);
+	padding: ${spacing[10]} ${spacing[18]} ${spacing[10]} ${spacing[14]};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	margin-right: -5px;
+`;
+
+});
 
 export const Header = () => {
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
@@ -427,9 +442,9 @@ export const Header = () => {
 			)}
 			{isConnected && isUserVerified && accountAddr && isNetworkConnected ? (
 				<WalletContainer>
-					<div style={{ marginRight: '10px', color: `${theme.font.default}` }}>
-						{data?.formatted}{data?.symbol}
-					</div>
+					<WalletBalance>
+						{data?.formatted} {data?.symbol}
+					</WalletBalance>
 					<Web3Button balance={'hide'} icon="show" />
 				</WalletContainer>
 			) : (
