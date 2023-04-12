@@ -101,7 +101,7 @@ const WalletBalance = styled.div(() => {
 	return css`
 	color: ${theme.font.default};
 	border: 1px solid rgb(64, 64, 64);
-	padding: ${spacing[10]} ${spacing[18]} ${spacing[10]} ${spacing[14]};
+	padding: ${spacing[10]} ${spacing[18]} ${spacing[10]} ${spacing[12]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-right-radius: 0px;
 	border-bottom-right-radius: 0px;
@@ -204,61 +204,6 @@ export const Header = () => {
 			await setTokensInStorageAndContext();
 		}
 	};
-	// 	setShowNetworksList(!showNetworksList);
-	// 	if (isUserVerified) {
-	// 		try {
-	// 			// @ts-ignore
-	// 			await ethereum.request({
-	// 				method: 'wallet_switchEthereumChain',
-	// 				params: [
-	// 					{
-	// 						chainId: ethers.utils.hexValue(wagmiChain?.id === 1 ? Moonbeam.chainId : Mainnet.chainId)
-	// 					}
-	// 				]
-	// 			});
-	// 		} catch (error: any) {
-	// 			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-	// 				try {
-	// 					// @ts-ignore
-	// 					await ethereum.request({
-	// 						method: 'wallet_addEthereumChain',
-	// 						params: NETWORK_PARAMS['1284']
-	// 					});
-	// 					dispatch({
-	// 						type: SourceEnum.NETWORK,
-	// 						payload: name
-	// 					});
-	// 					dispatch({
-	// 						type: SourceEnum.TOKEN,
-	// 						payload: name
-	// 					});
-	// 				} catch (e) {
-	// 					dispatch({
-	// 						type: SourceEnum.NETWORK,
-	// 						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-	// 					});
-	// 					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-	// 				}
-	// 			} else if (error.code === 4001) {
-	// 				return;
-	// 			} else {
-	// 				addToast('Something went wrong - please try again');
-	// 			}
-	// 		}
-
-	// 	} else {
-	// 		dispatch({
-	// 			type: SourceEnum.NETWORK,
-	// 			payload: name
-	// 		});
-	// 		dispatch({
-	// 			type: SourceEnum.TOKEN,
-	// 			payload: name
-	// 		});
-	// 	}
-	// 	dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
-	// 	dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	// };
 
 	const checkStatus = async () => {
 		if (!isUserVerified && accountAddr === userAccount && isNetworkConnected) {
