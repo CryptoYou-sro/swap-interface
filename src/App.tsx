@@ -1,23 +1,23 @@
-import './styles/fonts/font.css';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
 import styled, { createGlobalStyle, css } from 'styled-components';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Footer, Header } from './components';
+import { TabModal } from './components/tabs/tabModal';
+import { useStore } from './helpers';
+import { SwapForm, TransactionHistory } from './pages';
 import type { Theme } from './styles';
 import {
 	DEFAULT_TRANSITION,
+	MAIN_MAX_WIDTH,
 	fontFamily,
 	fontSize,
 	fontStyle,
 	fontWeight,
-	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
 	spacing,
 	viewport
 } from './styles';
-import { Footer, Header } from './components';
-import { SwapForm, TransactionHistory } from './pages';
-import { useStore } from './helpers';
-import { TabModal } from './components/tabs/tabModal';
+import './styles/fonts/font.css';
 
 type Props = {
 	theme: Theme;
@@ -48,11 +48,11 @@ export const GlobalStyles = createGlobalStyle`
 		-moz-osx-font-smoothing: grayscale;
 		transition: ${DEFAULT_TRANSITION};
 		background: ${(props: Props) =>
-			`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
+		`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
-				`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 52px, ${props.theme.background.default} 52px);`}
+		`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 52px, ${props.theme.background.default} 52px);`}
 		}
 	}
 
@@ -80,7 +80,7 @@ const Title = styled.p(() => {
 	return css`
 		text-align: center;
 		margin: 0 0 ${spacing[48]};
-		color: ${theme.font.default}
+		color: ${theme.font.default};
 	`;
 });
 
@@ -92,24 +92,25 @@ const App = () => {
 	return (
 		<Router>
 			<MainWrapper>
-				<GlobalStyles theme={theme}/>
-				<Header/>
+				<GlobalStyles theme={theme} />
+				<Header />
 				<Routes>
 					<Route
 						path="/"
 						element={
 							<ContentWrapper>
-								<Title>Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+ different networks
-									directly from your wallet.
+								<Title>
+									Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+
+									different networks directly from your wallet.
 								</Title>
-								<SwapForm/>
-								<TabModal/>
+								<SwapForm />
+								<TabModal />
 							</ContentWrapper>
 						}
 					/>
-					<Route path="/transaction-history" element={<TransactionHistory/>}/>
+					<Route path="/transaction-history" element={<TransactionHistory />} />
 				</Routes>
-				<Footer/>
+				<Footer />
 			</MainWrapper>
 		</Router>
 	);

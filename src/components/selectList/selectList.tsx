@@ -4,12 +4,14 @@ import {
 	AmountEnum,
 	DefaultSelectEnum,
 	DestinationEnum,
+	ETHEREUM_URL,
+	MOONBEAM_URL,
 	SourceEnum,
 	useStore
 } from '../../helpers';
 import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
 import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { Icon, NETWORK_PARAMS, TextField, useToasts } from '../../components';
+import { Icon, TextField, useToasts } from '../../components';
 import type { IconType } from '../../components';
 import { ethers } from 'ethers';
 
@@ -92,6 +94,35 @@ type Props = {
 	value: Value | 'WALLET';
 };
 
+export const NETWORK_PARAMS = {
+	'1': [
+		{
+			chainId: ethers.utils.hexValue(Mainnet.chainId),
+			chainName: Mainnet.chainName,
+			rpcUrls: [ETHEREUM_URL],
+			nativeCurrency: {
+				name: 'Ethereum',
+				symbol: 'ETH',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://etherscan.io/']
+		}
+	],
+	'1284': [
+		{
+			chainId: ethers.utils.hexValue(Moonbeam.chainId),
+			chainName: Moonbeam.chainName,
+			rpcUrls: [MOONBEAM_URL],
+			nativeCurrency: {
+				name: 'Glimer',
+				symbol: 'GLMR',
+				decimals: 18
+			},
+			blockExplorerUrls: ['https://moonscan.io/']
+		}
+	]
+};
+
 export const SelectList = ({ data, placeholder, value }: Props) => {
 	const { chainId } = useEthers();
 	// @ts-ignore
@@ -125,7 +156,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					payload: name
 				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
-				if(isUserVerified) {
+				if (isUserVerified) {
 					try {
 						// @ts-ignore
 						await ethereum.request({
