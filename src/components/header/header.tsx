@@ -250,10 +250,6 @@ export const Header = () => {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
-				// if (res.data.errorData === noKycStatusMessage) {
-				// 	await getBinanceToken();
-				// }
-				// const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
 				const {
 					status: kycL2Status,
 					statusBusiness: kycL2StatusBusiness,
@@ -342,10 +338,6 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: JSON.parse(localStorageAuth).account });
 			dispatch({ type: VerificationEnum.ACCESS, payload: JSON.parse(localStorageAuth).access });
 			dispatch({ type: VerificationEnum.REFRESH, payload: JSON.parse(localStorageAuth).refresh });
-			// dispatch({
-			// 	type: KycEnum.STATUS,
-			// 	payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
-			// });
 			dispatch({
 				type: KycL2Enum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced
@@ -375,10 +367,6 @@ export const Header = () => {
 			);
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
-			// dispatch({
-			// 	type: KycEnum.STATUS,
-			// 	payload: KycStatusEnum.INITIAL
-			// });
 			dispatch({
 				type: KycL2Enum.STATUS,
 				payload: KycL2StatusEnum.INITIAL
