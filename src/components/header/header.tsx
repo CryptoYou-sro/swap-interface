@@ -15,6 +15,7 @@ import {
 	KycL2StatusEnum,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
+	NETWORK_TO_WC,
 	ThemeEnum,
 	VerificationEnum,
 	button,
@@ -117,7 +118,13 @@ export const Header = () => {
 		address: accountAddr,
 	});
 	const { chain: wagmiChain } = useNetwork();
-	const { open } = useWeb3Modal();
+	const { open, setDefaultChain } = useWeb3Modal();
+
+	// const network = useSwitchNetwork({
+	// 	onSettled(data, error) {
+	// 		console.log('Settled', { data, error });
+	// 	},
+	// });
 	const [signMessage, setSignMessage] = useState('');
 	const { signMessage: requestSignMsg } = useSignMessage({
 		message: signMessage,
@@ -128,7 +135,6 @@ export const Header = () => {
 				data: { address: accountAddr, signature: data }
 			}).then((r) => {
 				if (accountAddr) {
-					console.log(r);
 					dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
 					dispatch({ type: VerificationEnum.REFRESH, payload: r.data.refresh });
 					setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
@@ -346,8 +352,11 @@ export const Header = () => {
 	const handleButtonClick = async () => {
 		if (!isConnected) {
 			console.log('handleButtonClick if !isConnected');
+			// @ts-ignore
+			setDefaultChain(NETWORK_TO_WC[sourceNetwork]);
 			await open();
-		} else if (wagmiChain && wagmiChain.id && accountAddr) {
+		}
+		if (wagmiChain && wagmiChain.id && accountAddr) {
 			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
 				await getBinanceToken();
 			} else if (buttonStatus === button.PASS_KYC_L2) {
@@ -361,6 +370,12 @@ export const Header = () => {
 			}
 		}
 	};
+
+	useEffect(() => {
+		// @ts-ignore
+		// const startNetworkId = Number(Object.keys(CHAINS).find((key) => CHAINS[key].name === sourceNetwork));
+
+	}, [wagmiChain]);
 
 	useEffect(() => {
 		void checkStatus();

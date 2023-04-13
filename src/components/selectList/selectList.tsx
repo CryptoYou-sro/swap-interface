@@ -1,5 +1,10 @@
+import { Mainnet, Moonbeam } from '@usedapp/core';
+import { ethers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { useNetwork, useSwitchNetwork } from 'wagmi';
+import type { IconType } from '../../components';
+import { Icon, TextField, useToasts } from '../../components';
 import {
 	AmountEnum,
 	DefaultSelectEnum,
@@ -9,11 +14,7 @@ import {
 	SourceEnum,
 	useStore
 } from '../../helpers';
-import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
-import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { Icon, TextField, useToasts } from '../../components';
-import type { IconType } from '../../components';
-import { ethers } from 'ethers';
+import { DEFAULT_BORDER_RADIUS, fontSize, spacing } from '../../styles';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -124,10 +125,10 @@ export const NETWORK_PARAMS = {
 };
 
 export const SelectList = ({ data, placeholder, value }: Props) => {
-	const { chainId } = useEthers();
+	const { chain: wagmiChain } = useNetwork();
 	// @ts-ignore
 	const { addToast } = useToasts();
-
+	const { switchNetwork } = useSwitchNetwork();
 	const [search, setSearch] = useState('');
 	const dataList =
 		data &&
@@ -138,7 +139,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	} = useStore();
 
 	const handleClick = useCallback(
-		async (name: string) => {
+		(name: string) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationEnum.WALLET,
@@ -159,22 +160,28 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				if (isUserVerified) {
 					try {
 						// @ts-ignore
-						await ethereum.request({
-							method: 'wallet_switchEthereumChain',
-							params: [
-								{
-									chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
-								}
-							]
-						});
+						// await ethereum.request({
+						// 	method: 'wallet_switchEthereumChain',
+						// 	params: [
+						// 		{
+						// 			chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+						// 		}
+						// 	]
+						// });
+
+
+						if (wagmiChain.id === 1) {
+							console.log('main id', wagmiChain?.id);
+							switchNetwork?.(Moonbeam.chainId);
+						} else {
+							console.log('else id', wagmiChain?.id);
+							switchNetwork?.(Mainnet.chainId);
+						}
+
 					} catch (error: any) {
 						if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
 							try {
-								// @ts-ignore
-								await ethereum.request({
-									method: 'wallet_addEthereumChain',
-									params: NETWORK_PARAMS['1284']
-								});
+								switchNetwork?.(Moonbeam.chainId);
 								dispatch({
 									type: SourceEnum.NETWORK,
 									payload: name

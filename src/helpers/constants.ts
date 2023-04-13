@@ -1,4 +1,5 @@
 import { Mainnet, Moonbeam } from '@usedapp/core';
+import { mainnet, moonbeam } from 'wagmi/chains';
 
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
@@ -65,6 +66,11 @@ export const CHAINS = {
 export const NETWORK_TO_ID = {
 	GLMR: '1284',
 	ETH: '1'
+};
+
+export const NETWORK_TO_WC = {
+	GLMR: moonbeam,
+	ETH: mainnet
 };
 
 export const BLOCKS_AMOUNT = 30;

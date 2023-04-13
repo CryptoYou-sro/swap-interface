@@ -1,16 +1,15 @@
-import type { Config } from '@usedapp/core';
-import { DAppProvider, Mainnet, Moonbeam } from '@usedapp/core';
+import { Config, DAppProvider, Mainnet, Moonbeam } from '@usedapp/core';
 import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
 import { Web3Modal } from '@web3modal/react';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
-import { bsc, mainnet, moonbeam, polygon } from 'wagmi/chains';
+import { bsc, mainnet, moonbeam } from 'wagmi/chains';
 import App from './App';
 import { ToastProvider } from './components';
 import { AuthProvider } from './helpers';
 
-const chains = [mainnet, polygon, moonbeam, bsc];
+const chains = [moonbeam, mainnet, bsc];
 const projectId = 'a023072fed8e9b347297fa5ad22a5a9e';
 const { provider } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiClient = createClient({
@@ -29,7 +28,7 @@ const config: Config = {
 	readOnlyChainId: Mainnet.chainId,
 	readOnlyUrls: {
 		[Mainnet.chainId]: 'https://ethereum.publicnode.com',
-		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network'
+		[Moonbeam.chainId]: 'https://rpc.api.moonbeam.network',
 	},
 	networks: [Mainnet, Moonbeam]
 };

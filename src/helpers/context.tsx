@@ -1,8 +1,8 @@
+import axios from 'axios';
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import { BASE_URL } from './constants';
 import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
-import axios from 'axios';
+import { BASE_URL } from './constants';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -247,8 +247,8 @@ const initialState: State = {
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
-	sourceNetwork: DefaultSelectEnum.NETWORK as SourceNetworks,
-	sourceToken: DefaultSelectEnum.TOKEN,
+	sourceNetwork: 'ETH',
+	sourceToken: 'ETH',
 	destinationNetwork: DefaultSelectEnum.NETWORK,
 	destinationToken: DefaultSelectEnum.TOKEN,
 	destinationAddress: '',
@@ -323,7 +323,7 @@ const authReducer = (state: State, action: Action): State => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [ state, dispatch ] = useReducer(authReducer, initialState);
+	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
 	const { account, isNetworkConnected, kycL2Status } = state;
 
@@ -364,7 +364,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		// ) {
 		// 	dispatch({ type: VerificationEnum.USER, payload: true });
 		// }
-	}, [ account, isNetworkConnected, kycL2Status ]);
+	}, [account, isNetworkConnected, kycL2Status]);
 
 	useEffect(() => {
 		axios.request({

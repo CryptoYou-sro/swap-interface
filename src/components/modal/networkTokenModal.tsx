@@ -1,22 +1,19 @@
+import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
 import styled from 'styled-components';
-import { mediaQuery, spacing } from '../../styles';
-import { SelectList, Portal, Button } from '../../components';
-import { useMedia } from '../../hooks';
+import { useDisconnect, useNetwork } from 'wagmi';
+import { Button, Portal, SelectList, useToasts } from '../../components';
 import {
-	CHAINS,
+	AmountEnum, CHAINS,
 	DefaultSelectEnum,
-	DestinationEnum,
+	DestinationEnum, DestinationNetworks, NETWORK_TO_ID,
+	SourceEnum,
 	isNetworkSelected,
 	isTokenSelected,
-	NETWORK_TO_ID,
-	SourceEnum,
-	AmountEnum,
 	useStore
 } from '../../helpers';
-import type { DestinationNetworks } from '../../helpers';
-import _ from 'lodash';
-import { useEthers } from '@usedapp/core';
+import { useMedia } from '../../hooks';
+import { mediaQuery, spacing } from '../../styles';
 
 const Wrapper = styled.div`
 	display: flex;
@@ -48,13 +45,15 @@ type Props = {
 };
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
-	const { chainId } = useEthers();
-
+	const { chain: wagmiChain } = useNetwork();
+	const { disconnect } = useDisconnect();
+	// @ts-ignore
+	const { addToast } = useToasts();
 	const [showsNetworkList, setShowsNetworkList] = useState(true);
 	const { mobileWidth: isMobile } = useMedia('xs');
 	const {
 		dispatch,
-		state: { 
+		state: {
 			destinationNetwork,
 			destinationToken,
 			sourceNetwork,
@@ -86,7 +85,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		() =>
 			SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)
 				? // @ts-ignore
-				  _.orderBy(Object.keys(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']))
+				_.orderBy(Object.keys(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens']))
 				: [],
 		[SOURCE_NETWORKS, sourceNetwork]
 	);
@@ -117,13 +116,13 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			const tokensFromJson =
 				// @ts-ignore
 				DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
-					destinationNetwork as DestinationNetworks
+				destinationNetwork as DestinationNetworks
 				]?.['tokens'];
 
 			const filteredTokens = (tokensFromJson ? Object.keys(tokensFromJson) : []).filter(
 				(token) => token !== sourceToken
 			);
-			
+
 			return _.orderBy(filteredTokens);
 		} else {
 			return [];
@@ -147,21 +146,26 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [showModal]);
 
 	useEffect(() => {
-		if (chainId && Object.keys(CHAINS).includes(chainId.toString())) {
+		console.log(wagmiChain);
+
+		if (wagmiChain && Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
 			dispatch({
 				type: SourceEnum.NETWORK,
 				// @ts-ignore
-				payload: CHAINS[chainId.toString()]?.name
+				payload: CHAINS[wagmiChain?.id.toString()]?.name
 			});
 			dispatch({
 				type: SourceEnum.TOKEN,
 				// @ts-ignore
-				payload: CHAINS[chainId.toString()].name
+				payload: CHAINS[wagmiChain?.id.toString()].name
 			});
 			dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 			dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
+		} else if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
+			disconnect();
+			addToast('Please change the network to one that is supported', 'warning');
 		}
-	}, [chainId]);
+	}, [wagmiChain]);
 
 	return !isMobile ? (
 		<Portal handleClose={() => setShowModal(false)} isOpen={showModal} size="large">
