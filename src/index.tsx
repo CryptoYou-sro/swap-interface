@@ -5,8 +5,7 @@ import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { bsc, mainnet, moonbeam } from 'wagmi/chains';
 import App from './App';
-import { ToastProvider } from './components';
-import { Web3ModalConnect } from './components/modal/web3ModalConnect';
+import { ToastProvider, Web3ModalConnect } from './components';
 import { AuthProvider } from './helpers';
 
 const chains = [moonbeam, mainnet, bsc];
