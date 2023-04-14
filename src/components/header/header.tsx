@@ -402,9 +402,11 @@ export const Header = () => {
 			)}
 			{isConnected && isUserVerified && accountAddr && isNetworkConnected ? (
 				<WalletContainer>
-					<WalletBalance>
-						{data?.formatted.slice(0, 11)} {data?.symbol}
-					</WalletBalance>
+					{!isMobile && (
+						<WalletBalance>
+							{data?.formatted.slice(0, 15)} {data?.symbol}
+						</WalletBalance>
+					)}
 					<Web3Button balance={'hide'} icon="show" />
 				</WalletContainer>
 			) : (
