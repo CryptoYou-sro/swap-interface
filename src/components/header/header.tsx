@@ -101,7 +101,7 @@ const WalletBalance = styled.div(() => {
 
 	return css`
 	color: ${theme.font.default};
-	border: 1px solid rgb(64, 64, 64);
+	border: 1px solid ${theme.border.default};
 	padding: ${spacing[10]} ${spacing[18]} ${spacing[10]} ${spacing[12]};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-right-radius: 0px;
