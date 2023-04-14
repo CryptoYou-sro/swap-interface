@@ -119,12 +119,6 @@ export const Header = () => {
 	});
 	const { chain: wagmiChain } = useNetwork();
 	const { open, setDefaultChain } = useWeb3Modal();
-
-	// const network = useSwitchNetwork({
-	// 	onSettled(data, error) {
-	// 		console.log('Settled', { data, error });
-	// 	},
-	// });
 	const [signMessage, setSignMessage] = useState('');
 	const { signMessage: requestSignMsg } = useSignMessage({
 		message: signMessage,

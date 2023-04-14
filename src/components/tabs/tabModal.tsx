@@ -5,8 +5,8 @@ import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles'
 import { useStore } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
 import { TabWrapper } from './TabWrapper';
-import { useEthers } from '@usedapp/core';
 import PHRASES from '../../data/phrases.json';
+import { useAccount } from 'wagmi';
 
 const Wrapper = styled.div`
 	max-width: 100%;
@@ -72,34 +72,34 @@ const TextContainer = styled.div`
 `;
 
 export const TabModal = () => {
-	const [ swaps, setSwaps ] = useState<Props[]>([]);
+	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
 		state: { isUserVerified, theme }
 	} = useStore();
-	const [ swapsStorage ] = useLocalStorage<Props[]>('localSwaps', []);
-	const { account } = useEthers();
+	const [swapsStorage] = useLocalStorage<Props[]>('localSwaps', []);
+	const { address } = useAccount();
 
 	// GET ALL UNFINISHED SWAPS
 	useEffect(() => {
 		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
 		setSwaps(filteredSwaps);
-	}, [ swapsStorage.length ]);
+	}, [swapsStorage.length]);
 
-	const [ selectedProductId, setSelectedProductId ] = useState('');
-	const [ toggleIndex, setToggleIndex ] = useState<number>(0);
+	const [selectedProductId, setSelectedProductId] = useState('');
+	const [toggleIndex, setToggleIndex] = useState<number>(0);
 
-	const [ accountSwaps, setAccountSwaps ] = useState<Props[]>([]);
+	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);
 	useEffect(() => {
-		if (account) {
-			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === account);
+		if (address) {
+			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === address);
 			setAccountSwaps(accountSwaps);
 			if (swaps.length > 0) {
 				setSelectedProductId(swaps[0].swapProductId);
 			}
 		}
-	}, [ swaps, account ]);
+	}, [swaps, address]);
 
-	const [ number, setNumber ] = useState(0);
+	const [number, setNumber] = useState(0);
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			const randomNum = Math.floor(Math.random() * PHRASES.length);

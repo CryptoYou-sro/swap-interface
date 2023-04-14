@@ -1,7 +1,7 @@
 import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
 import styled, { css } from 'styled-components';
 import { DEFAULT_BORDER_RADIUS, DEFAULT_TRANSITION, fontSize, mediaQuery, pxToRem, spacing, Theme } from '../../styles';
-import { useBlockNumber } from '@usedapp/core';
+import { useBlockNumber } from 'wagmi';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { Icon } from '../icon/icon';
@@ -84,7 +84,7 @@ export const ContentItemText = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${(props: StyleProps) => ( props.color ? props.color : theme.font.select )};
+		color: ${(props: StyleProps) => (props.color ? props.color : theme.font.select)};
 		line-height: ${fontSize[22]};
 	`;
 });
@@ -111,14 +111,16 @@ const IconWrapper = styled.div`
 `;
 
 export const TabContentNew = ({ swap, type = 'swap' }: any) => {
-	const [ withdrawLink, setWithdrawLink ] = useState<{
+	const [withdrawLink, setWithdrawLink] = useState<{
 		amount: string;
 		status: number;
 		type: number;
 		url: string | any;
 		withdrawFee: string;
 	} | null>(null);
-	const currentBlockNumber = useBlockNumber();
+	const currentBlockNumber = useBlockNumber({
+		watch: true,
+	});
 	const {
 		state: { theme }
 	} = useStore();
@@ -139,7 +141,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 	};
 	useEffect(() => {
 		void getWithDrawLink();
-	}, [ withdrawal ]);
+	}, [withdrawal]);
 
 	return swap ? (
 		// @ts-ignore
@@ -151,13 +153,13 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 						<ContentItemTitle>
 							Request validation
 						</ContentItemTitle>
-						<br/>
+						<br />
 						<ContentItemText>
 							{swap.costRequestCounter < 2
 								? '...in progress'
 								: 'Done'}
-							<br/>
-							<br/>
+							<br />
+							<br />
 						</ContentItemText>
 						<ContentItemText>
 							{swap.depositBlock <= 0
@@ -166,18 +168,18 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && swap.depositBlock ? (
+				{currentBlockNumber.data && swap.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
 							{!swap?.action.length
 								? 'Initiating swap'
 								: 'Swap initiated'}
 						</ContentItemTitle>
-						<br/>
+						<br />
 						<ContentItemText>
-							{currentBlockNumber - swap.depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber.data - swap.depositBlock < BLOCKS_AMOUNT
 								? 'Your request is being processed. Please wait'
-								: currentBlockNumber - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
+								: currentBlockNumber.data - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
 									? 'Your request will be confirmed soon'
 									: null}
 						</ContentItemText>
@@ -191,7 +193,7 @@ export const TabContentNew = ({ swap, type = 'swap' }: any) => {
 						<ContentItemText>Market: {swap.sourceToken}-{orders.s.replace(swap.sourceToken, '')}</ContentItemText>
 						<ContentItemText>Exchange rate: {orders.p}</ContentItemText>
 
-						<br/>
+						<br />
 						<ContentItemTitle>
 							Finalising the transaction now
 						</ContentItemTitle>

@@ -1,4 +1,10 @@
+import { Contract } from '@ethersproject/contracts';
+import { formatEther, formatUnits } from '@ethersproject/units';
+import axios from 'axios';
+import { BigNumber, providers, utils } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
+import { useAccount, useBalance, useFeeData, useNetwork, useProvider } from 'wagmi';
+import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
 import {
 	BINANCE_EXCHANGE_INFO,
@@ -7,22 +13,16 @@ import {
 	CONTRACT_ADDRESSES,
 	ESTIMATED_NETWORK_TRANSACTION_GAS,
 	Graph,
-	isNetworkSelected,
-	isTokenSelected,
-	makeId,
 	MIN_START_AMOUNT,
 	NETWORK_TO_ID,
 	PROTOCOL_FEE,
 	PROTOCOL_FEE_FACTOR,
 	SERVICE_ADDRESS,
+	isNetworkSelected,
+	isTokenSelected,
+	makeId,
 	useStore
 } from '../helpers';
-import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
-import { useEtherBalance, useEthers, useGasPrice, useTokenBalance } from '@usedapp/core';
-import { BigNumber, providers, utils } from 'ethers';
-import { Contract } from '@ethersproject/contracts';
-import { formatEther, formatUnits } from '@ethersproject/units';
-import axios from 'axios';
 
 type Ticker = {
 	baseAsset: string;
@@ -33,13 +33,13 @@ type Ticker = {
 
 export const useFees = () => {
 	// TODO: error handling if API calls fail
-	const [ allPrices, setAllPrices ] = useState<Price[]>([]);
-	const [ allFilteredPrices, setAllFilteredPrices ] = useState<Price[]>([]);
-	const [ allPairs, setAllPairs ] = useState<Ticker[]>([]);
-	const [ cexGraph, setCexGraph ] = useState<Graph>();
-	const [ gasAmount, setGasAmount ] = useState(null);
+	const [allPrices, setAllPrices] = useState<Price[]>([]);
+	const [allFilteredPrices, setAllFilteredPrices] = useState<Price[]>([]);
+	const [allPairs, setAllPairs] = useState<Ticker[]>([]);
+	const [cexGraph, setCexGraph] = useState<Graph>();
+	const [gasAmount, setGasAmount] = useState(null);
 
-	const [ allFilteredPairs, setAllFilteredPairs ] = useState<Ticker[]>([]);
+	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
 	const {
 		state: {
 			sourceToken,
@@ -55,27 +55,41 @@ export const useFees = () => {
 		}
 	} = useStore();
 
-	const { chainId, library: web3Provider } = useEthers();
+	// const { library: web3Provider } = useEthers();
+	const wagmiProvider = useProvider();
+	const { chain: wagmiChain } = useNetwork();
+	const feeData = useFeeData({
+		watch: true,
+	});
+
 	const sourceTokenData = useMemo(
 		() =>
 			// eslint-disable-next-line
 			SOURCE_NETWORKS ?
 				// @ts-ignore
 				// eslint-disable-next-line
-				SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
 				: {},
-		[ SOURCE_NETWORKS, sourceToken ]
+		[SOURCE_NETWORKS, sourceToken]
 	);
-	const gasPrice = useGasPrice();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
-	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const contract = new Contract(contractAddress, contractInterface, web3Provider);
+	const gasPrice = feeData.data?.formatted.gasPrice;
+	// TODO: bigNumber type or sting??? ask Daniel
 
-	if (web3Provider && isNetworkConnected && !( web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider )) {
-		contract.connect(web3Provider.getSigner());
+
+	const contractAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as keyof typeof CONTRACT_ADDRESSES] || '';
+	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
+	const contract = new Contract(contractAddress, contractInterface, wagmiProvider);
+
+	if (wagmiProvider && isNetworkConnected && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		contract.connect(wagmiProvider.getSigner());
 	}
-	const walletBalance = useEtherBalance(account);
-	const tokenBalance = useTokenBalance(sourceTokenData?.contractAddr, account);
+	const { address } = useAccount();
+	const balanceWagmi = useBalance({
+		address,
+		watch: true,
+	});
+	const walletBalance = balanceWagmi.data?.formatted;
+	const tokenBalance = balanceWagmi.data?.formatted;
 
 	const getExchangeInfo = async () => {
 		try {
@@ -109,18 +123,18 @@ export const useFees = () => {
 						const networkTokens = Object.keys(
 							// @ts-ignore
 							DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[
-								network as DestinationNetworks
-								]?.['tokens']
+							network as DestinationNetworks
+							]?.['tokens']
 						);
 
-						const allTokens = [ ...tokens, ...networkTokens ];
+						const allTokens = [...tokens, ...networkTokens];
 
-						return [ ...new Set(allTokens) ];
+						return [...new Set(allTokens)];
 					},
-					[ sourceToken ]
+					[sourceToken]
 				)
 				: [],
-		[ DESTINATION_NETWORKS, sourceToken ]
+		[DESTINATION_NETWORKS, sourceToken]
 	);
 
 	const uniquePairs: string[] = useMemo(
@@ -150,7 +164,7 @@ export const useFees = () => {
 				return [];
 			}
 		},
-		[ uniqueTokens, sourceToken ]
+		[uniqueTokens, sourceToken]
 	);
 
 	useEffect(() => {
@@ -170,14 +184,14 @@ export const useFees = () => {
 				});
 			setAllFilteredPairs(filteredPairs);
 		}
-	}, [ allPairs, uniqueTokens ]);
+	}, [allPairs, uniqueTokens]);
 
 	useEffect(() => {
 		if (allPrices) {
 			const filteredPrices = allPrices.filter((price: any) => uniquePairs.includes(price.symbol));
 			setAllFilteredPrices(filteredPrices);
 		}
-	}, [ allPrices, uniqueTokens ]);
+	}, [allPrices, uniqueTokens]);
 
 	const getPrice = useCallback(
 		(base: string, quote: string): number => {
@@ -194,22 +208,22 @@ export const useFees = () => {
 				}
 			}
 		},
-		[ allFilteredPrices ]
+		[allFilteredPrices]
 	);
 
 	const withdrawFee = useMemo((): Fee => {
 		if (isTokenSelected(destinationToken)) {
 			const withdrawFee =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['withdrawFee'];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['withdrawFee'];
 
 			return { amount: +withdrawFee, currency: destinationToken, name: 'Withdrawal' };
 		} else {
 			return { amount: 0, currency: destinationToken, name: 'Withdrawal' };
 		}
-	}, [ destinationToken, sourceToken ]);
+	}, [destinationToken, sourceToken]);
 
 	const protocolFee = useMemo((): Fee => {
 		if (amount) {
@@ -217,7 +231,7 @@ export const useFees = () => {
 		} else {
 			return { amount: 0, currency: sourceToken, name: 'Protocol' };
 		}
-	}, [ amount ]);
+	}, [amount]);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken) && isTokenSelected(sourceToken)) {
@@ -260,7 +274,7 @@ export const useFees = () => {
 					});
 			}
 		}
-	}, [ destinationToken, destinationAddress, sourceNetwork, sourceToken ]);
+	}, [destinationToken, destinationAddress, sourceNetwork, sourceToken]);
 
 	const networkFee = useMemo((): Fee => {
 		if (isTokenSelected(destinationToken) && gasAmount && gasPrice) {
@@ -286,7 +300,7 @@ export const useFees = () => {
 		} else {
 			return { amount: 0, currency: '', name: 'Network' };
 		}
-	}, [ gasAmount, sourceNetwork, destinationToken ]);
+	}, [gasAmount, sourceNetwork, destinationToken]);
 
 	useEffect(() => {
 		const localGraph = new Graph();
@@ -296,7 +310,7 @@ export const useFees = () => {
 				setCexGraph(localGraph);
 			}
 		}
-	}, [ allFilteredPairs ]);
+	}, [allFilteredPairs]);
 
 	const cexFee = useMemo((): Fee[] => {
 		if (cexGraph && isTokenSelected(destinationToken)) {
@@ -328,28 +342,28 @@ export const useFees = () => {
 
 				return allCexFees;
 			} else {
-				return [ { amount: 0, currency: sourceToken, name: 'CEX' } ];
+				return [{ amount: 0, currency: sourceToken, name: 'CEX' }];
 			}
 		} else {
-			return [ { amount: 0, currency: sourceToken, name: 'CEX' } ];
+			return [{ amount: 0, currency: sourceToken, name: 'CEX' }];
 		}
-	}, [ destinationToken, amount ]);
+	}, [destinationToken, amount]);
 
 	const allFees = useMemo((): Fee => {
-		const allFees = [ ...cexFee, withdrawFee, protocolFee, networkFee ].reduce(
+		const allFees = [...cexFee, withdrawFee, protocolFee, networkFee].reduce(
 			(total: number, fee: Fee) =>
 				fee.currency === sourceToken
-					? ( total += fee.amount )
-					: ( total += fee.amount * getPrice(fee.currency, sourceToken) ),
+					? (total += fee.amount)
+					: (total += fee.amount * getPrice(fee.currency, sourceToken)),
 			0
 		);
 
 		return { amount: allFees, currency: sourceToken };
-	}, [ withdrawFee, networkFee, protocolFee, cexFee ]);
+	}, [withdrawFee, networkFee, protocolFee, cexFee]);
 
 	const percentageOfAllFeesToAmount = useMemo(
-		() => ( amount ? ( allFees.amount / +amount ) * 100 : '' ),
-		[ allFees.amount, destinationToken, amount ]
+		() => (amount ? (allFees.amount / +amount) * 100 : ''),
+		[allFees.amount, destinationToken, amount]
 	);
 
 	const marginalCosts = useMemo(() => {
@@ -363,20 +377,20 @@ export const useFees = () => {
 		) {
 			const destTokenMinWithdrawal =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['withdrawMin'];
-			const [ pair ] = allFilteredPairs.filter(
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['withdrawMin'];
+			const [pair] = allFilteredPairs.filter(
 				(pair: Ticker) =>
 					pair.symbol === `${sourceToken}${destinationToken}` ||
 					pair.symbol === `${destinationToken}${sourceToken}`
 			);
 			if (pair) {
 				const { filters } = pair;
-				const [ lot, notional ] = filters;
+				const [lot, notional] = filters;
 				let notionalMinAmount = +notional.minNotional;
 				const price = getPrice(destinationToken, sourceToken);
-				const usdTokens = [ 'USDT', 'BUSD', 'USDC' ];
+				const usdTokens = ['USDT', 'BUSD', 'USDC'];
 				let usdPrice = 0;
 				for (const token of usdTokens) {
 					const price: number = getPrice(sourceToken, token);
@@ -414,7 +428,7 @@ export const useFees = () => {
 		}
 
 		return { minAmount, maxAmount };
-	}, [ destinationToken, account, networkFee, allFilteredPairs, tokenBalance, walletBalance ]);
+	}, [destinationToken, account, networkFee, allFilteredPairs, tokenBalance, walletBalance]);
 
 	return {
 		...marginalCosts,

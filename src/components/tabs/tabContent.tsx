@@ -9,7 +9,7 @@ import {
 	spacing,
 	Theme
 } from '../../styles';
-import { useBlockNumber } from '@usedapp/core';
+import { useBlockNumber } from 'wagmi';
 import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
 import { Spinner } from '../spinner/spinner';
@@ -31,7 +31,7 @@ const Content = styled.div`
 	background: ${(props: StyleProps) => props.theme.background.secondary};
 	border: 1px solid
 		${(props: StyleProps) =>
-			props.type === 'history' ? 'transparent' : props.theme.border.default};
+		props.type === 'history' ? 'transparent' : props.theme.border.default};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
 	margin-top: -1px;
@@ -125,7 +125,9 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 		url: string | any;
 		withdrawFee: string;
 	} | null>(null);
-	const currentBlockNumber = useBlockNumber();
+	const currentBlockNumber = useBlockNumber({
+		watch: true,
+	});
 	const {
 		state: { theme }
 	} = useStore();
@@ -164,22 +166,21 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber && data?.[toggleIndex]?.depositBlock ? (
+				{currentBlockNumber.data && data?.[toggleIndex]?.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
 							{!data?.[toggleIndex]?.action.length
-								? `Deposit confirmation (${
-										currentBlockNumber - data?.[toggleIndex]?.depositBlock
-								  }/${BLOCKS_AMOUNT})`
+								? `Deposit confirmation (${currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock
+								}/${BLOCKS_AMOUNT})`
 								: 'Deposit confirmed'}
 						</ContentItemTitle>
 						<ContentItemText>
-							{currentBlockNumber - data?.[toggleIndex]?.depositBlock < BLOCKS_AMOUNT
+							{currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock < BLOCKS_AMOUNT
 								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber - data?.[toggleIndex]?.depositBlock >= BLOCKS_AMOUNT &&
-								  !data?.[toggleIndex].action.length
-								? 'Your deposit is received and should be confirmed soon.'
-								: null}
+								: currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock >= BLOCKS_AMOUNT &&
+									!data?.[toggleIndex].action.length
+									? 'Your deposit is received and should be confirmed soon.'
+									: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}

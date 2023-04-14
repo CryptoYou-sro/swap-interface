@@ -1,21 +1,21 @@
-import { useEffect, useState } from 'react';
-import { useEthers } from '@usedapp/core';
-import { utils, BigNumber } from 'ethers';
-import _ from 'lodash';
-import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import { Contract } from '@ethersproject/contracts';
+import { BigNumber, utils } from 'ethers';
+import _ from 'lodash';
+import { useEffect, useState } from 'react';
+import { useNetwork, useProvider } from 'wagmi';
+import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
+import type { LocalStorageHistory } from '../helpers';
 import {
 	BINANCE_FEE,
 	BLOCK_CHUNK_SIZE,
 	BLOCK_CONTRACT_NUMBER,
 	CONTRACT_ADDRESSES,
 	LOCAL_STORAGE_HISTORY,
-	routes,
 	SERVICE_ADDRESS,
 	TransactionData,
+	routes,
 	useStore
 } from '../helpers';
-import type { LocalStorageHistory } from '../helpers';
 import { useAxios } from './useAxios';
 import { useLocalStorage } from './useLocalStorage';
 
@@ -27,8 +27,11 @@ export const useTransactions = () => {
 	const [events, setEvents] = useState<any[]>([]);
 	const [lastBlock, setLastBlock] = useState(null);
 
-	const { chainId, library } = useEthers();
-	const contractAddress = CONTRACT_ADDRESSES?.[chainId as keyof typeof CONTRACT_ADDRESSES] || '';
+	// const { library } = useEthers();
+	const wagmiProvider = useProvider();
+	const { chain: wagmiChain } = useNetwork();
+
+	const contractAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const {
 		state: { account, isUserVerified }
@@ -41,7 +44,7 @@ export const useTransactions = () => {
 			data: [] as TransactionData[]
 		}
 	});
-	const contract = new Contract(contractAddress, contractInterface, library);
+	const contract = new Contract(contractAddress, contractInterface, wagmiProvider);
 
 	const getAllTransactions = async () => {
 		if (account && lastBlock && isUserVerified) {
@@ -200,12 +203,12 @@ export const useTransactions = () => {
 	}, [account]);
 
 	useEffect(() => {
-		library
+		wagmiProvider
 			?.getBlockNumber()
 			// @ts-ignore
 			.then((res: number) => setLastBlock(res))
 			.catch((e) => console.log('e in lastBlock', e));
-	}, [library]);
+	}, [wagmiProvider]);
 
 	useEffect(() => {
 		void getAllTransactions();

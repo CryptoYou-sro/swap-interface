@@ -1,5 +1,7 @@
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
+import { useContractFunction } from '@usedapp/core';
+import { useAccount, useNetwork, useProvider } from 'wagmi';
+import { useBlockNumber } from 'wagmi';
 import styled from 'styled-components';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import { providers, utils } from 'ethers';
@@ -35,12 +37,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	if (localStorage.getItem('swaps')) {
 		localStorage.removeItem('swaps');
 	}
-	const { account } = useEthers();
-	const [ isDestinationAddressValid, setIsDestinationAddressValid ] = useState<any>(false);
-	const [ isDestinationMemoValid, setIsDestinationMemoValid ] = useState<any>(false);
-	const [ swapProductId, setSwapProductId ] = useLocalStorage<string>('productId', '');
-	const [ swapsStorage, setSwapsStorage ] = useLocalStorage<any>('localSwaps', []);
-	const [ isDepositConfirmed, setIsDepositConfirmed ] = useLocalStorage<any>(
+	const { address } = useAccount();
+	const [isDestinationAddressValid, setIsDestinationAddressValid] = useState<any>(false);
+	const [isDestinationMemoValid, setIsDestinationMemoValid] = useState<any>(false);
+	const [swapProductId, setSwapProductId] = useLocalStorage<string>('productId', '');
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
+	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
 		'isDepositConfirmed',
 		true
 	);
@@ -64,9 +66,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		},
 		dispatch
 	} = useStore();
-	const { chainId, library: web3Provider } = useEthers();
+	// const { library: web3Provider } = useEthers();
+	const wagmiProvider = useProvider();
+	const { chain: wagmiChain } = useNetwork();
 	const { maxAmount, minAmount } = useFees();
-	const currentBlockNumber = useBlockNumber();
+	const currentBlockNumber = useBlockNumber({
+		watch: true,
+	});
 
 	const isDisabled =
 		!isDepositConfirmed ||
@@ -81,29 +87,29 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		if (destinationAddress) {
 			const addressRegEx = new RegExp(
 				// @ts-ignore,
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['addressRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['addressRegex']
 			);
 			setIsDestinationAddressValid(() => addressRegEx.test(destinationAddress));
 		} else {
 			setIsDestinationAddressValid(false);
 		}
-	}, [ destinationAddress, destinationAmount ]);
+	}, [destinationAddress, destinationAmount]);
 
 	useEffect(() => {
 		if (destinationMemo) {
 			const memoRegEx = new RegExp(
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['tagRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['tagRegex']
 			);
 			setIsDestinationMemoValid(() => memoRegEx.test(destinationMemo));
 		} else {
 			setIsDestinationMemoValid(true);
 		}
-	}, [ destinationMemo, destinationAmount ]);
+	}, [destinationMemo, destinationAmount]);
 
 	const message = !isDisabled
 		? 'Swap'
@@ -129,14 +135,14 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
+		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
 		: {};
 
-	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
+	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider && !( web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider )) {
-		protocol.connect(web3Provider.getSigner());
+	const protocol = new Contract(protocolAddress, protocolInterface, wagmiProvider);
+	if (wagmiProvider && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		protocol.connect(wagmiProvider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
 		// @ts-ignore
@@ -157,7 +163,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		}
 	);
 
-	useImperativeHandle(ref, () => ( {
+	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
 			setSwapProductId(productId);
@@ -171,9 +177,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 			const hasTag =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'hasTag'
-					];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+				];
 			if (hasTag) {
 				namedValues.tag = destinationMemo;
 			}
@@ -194,17 +200,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 				);
 			}
 		}
-	} ));
+	}));
 
 	useEffect(() => {
 		if (
 			transactionSwapState.status === 'Mining' ||
 			transactionContractSwapState.status === 'Mining'
 		) {
-			if (swapProductId && account) {
+			if (swapProductId && address) {
 				const swap = {
 					swapProductId,
-					account,
+					address,
 					costRequestCounter: 0,
 					depositBlock: 0,
 					action: [],
@@ -212,9 +218,9 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					complete: null,
 					pair,
 					sourceToken,
-					currentBlockNumber
+					currentBlockNumber: currentBlockNumber.data
 				};
-				setSwapsStorage([ ...swapsStorage, swap ]);
+				setSwapsStorage([...swapsStorage, swap]);
 				setSwapProductId('');
 				setIsDepositConfirmed(!isDepositConfirmed);
 			}
@@ -228,12 +234,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		} else {
 			return;
 		}
-	}, [ transactionContractSwapState, transactionSwapState ]);
+	}, [transactionContractSwapState, transactionSwapState]);
 
 	return (
 		<ButtonWrapper>
 			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default"
-							onClick={onClick}>
+				onClick={onClick}>
 				{message}
 			</Button>
 		</ButtonWrapper>

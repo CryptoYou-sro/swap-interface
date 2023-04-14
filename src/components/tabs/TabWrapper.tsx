@@ -1,20 +1,21 @@
-import { ERC20Interface, useContractFunction, useEthers, useSendTransaction } from '@usedapp/core';
+import { Contract } from '@ethersproject/contracts';
+import { ERC20Interface, useContractFunction, useSendTransaction } from '@usedapp/core';
+import { providers, utils } from 'ethers';
+import { useEffect, useMemo, useState } from 'react';
+import { useAccount, useNetwork, useProvider } from 'wagmi';
+import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
 	CONTRACT_ADDRESSES,
 	ContractAdress,
+	NETWORK_TO_ID,
+	SERVICE_ADDRESS,
 	isNetworkSelected,
 	isSwapConfirmed,
 	isSwapFailed,
 	isSwapRejected,
 	isTokenSelected,
-	NETWORK_TO_ID,
-	SERVICE_ADDRESS,
 	useStore
 } from '../../helpers';
-import { providers, utils } from 'ethers';
-import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import { Contract } from '@ethersproject/contracts';
-import { useEffect, useMemo, useState } from 'react';
 import { useLocalStorage } from '../../hooks';
 import { TabContentNew } from './tabContentNew';
 
@@ -43,32 +44,34 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 	);
 	const [swapsStorage, setSwapsStorage] = useLocalStorage<Swap[]>('localSwaps', []);
 	const [isDepositing, setIsDepositing] = useState(false);
-	const { account } = useEthers();
+	const { address } = useAccount();
 	const {
 		state: { sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
 	} = useStore();
-	const { chainId, library: web3Provider } = useEthers();
-	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
+	// const { library: web3Provider } = useEthers();
+	const wagmiProvider = useProvider();
+	const { chain: wagmiChain } = useNetwork();
+	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAdress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
+	const protocol = new Contract(protocolAddress, protocolInterface, wagmiProvider);
 
 	const sourceTokenData = useMemo(
 		() =>
 			// eslint-disable-next-line @typescript-eslint/no-unsafe-return
 			isNetworkSelected(sourceNetwork) && isTokenSelected(sourceToken)
 				? // @ts-ignore
-				  SOURCE_NETWORKS?.[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+				SOURCE_NETWORKS?.[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
 				: null,
 		[sourceToken, sourceNetwork]
 	);
 
 	const tokenContract =
 		sourceTokenData?.contractAddr &&
-		new Contract(sourceTokenData?.contractAddr, ERC20Interface, web3Provider);
-	if (web3Provider && !(web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider)) {
-		protocol.connect(web3Provider.getSigner());
+		new Contract(sourceTokenData?.contractAddr, ERC20Interface, wagmiProvider);
+	if (wagmiProvider && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		protocol.connect(wagmiProvider.getSigner());
 		if (tokenContract) {
-			tokenContract.connect(web3Provider.getSigner());
+			tokenContract.connect(wagmiProvider.getSigner());
 		}
 	}
 
@@ -136,7 +139,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 						swap.swapProductId
 					);
 					const costResponseFilter = protocol.filters.CostResponse(
-						account,
+						address,
 						SERVICE_ADDRESS,
 						swap.swapProductId
 					);
@@ -231,7 +234,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 				const index: number = swapsCopy.indexOf(findSwap);
 
 				if (swap.costRequestCounter < 2) {
-					const filter = protocol.filters.CostRequest(account, SERVICE_ADDRESS, swap.swapProductId);
+					const filter = protocol.filters.CostRequest(address, SERVICE_ADDRESS, swap.swapProductId);
 					const events = await protocol.queryFilter(filter, swap.currentBlockNumber);
 					if (events.length >= 2) {
 						swap.costRequestCounter = events.length;
@@ -254,7 +257,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 				}
 
 				if (!swap.depositBlock) {
-					const filter = protocol.filters.Deposit(account, SERVICE_ADDRESS, swap.swapProductId);
+					const filter = protocol.filters.Deposit(address, SERVICE_ADDRESS, swap.swapProductId);
 					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
 
 					if (events.length > 0) {
@@ -275,7 +278,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 				}
 
 				if (!swap.action.length || !swap.withdraw.length) {
-					const filter = protocol.filters.Action(account, SERVICE_ADDRESS, swap.swapProductId);
+					const filter = protocol.filters.Action(address, SERVICE_ADDRESS, swap.swapProductId);
 					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
 					if (events.length >= 2) {
 						events.map((event: any) => {
@@ -330,7 +333,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 				}
 
 				if (!swap.complete && swap.complete === null) {
-					const filter = protocol.filters.Complete(account, SERVICE_ADDRESS, swap.swapProductId);
+					const filter = protocol.filters.Complete(address, SERVICE_ADDRESS, swap.swapProductId);
 					const events: any = await protocol.queryFilter(filter, swap.currentBlockNumber);
 					if (events.length > 0) {
 						console.log('history complete event', events);

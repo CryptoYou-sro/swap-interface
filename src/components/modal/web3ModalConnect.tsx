@@ -8,11 +8,8 @@ type Props = {
 };
 
 export const Web3ModalConnect = ({ projectId, ethereumClient }: Props) => {
-
     const { state: { theme } } = useStore();
-    console.log(theme);
     const modalThemeMode = theme.name === 'light' ? 'light' : 'dark';
-
 
     return (
         <Web3Modal

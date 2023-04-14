@@ -146,8 +146,6 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [showModal]);
 
 	useEffect(() => {
-		console.log(wagmiChain);
-
 		if (wagmiChain && Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
 			dispatch({
 				type: SourceEnum.NETWORK,
