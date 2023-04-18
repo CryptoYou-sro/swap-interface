@@ -10,7 +10,7 @@ import { Contract } from '@ethersproject/contracts';
 import {
 	beautifyNumbers,
 	CONTRACT_ADDRESSES,
-	ContractAdress,
+	ContractAddress,
 	isSwapRejected,
 	isTokenSelected,
 	KycL2StatusEnum,
@@ -138,10 +138,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
 		: {};
 
-	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAdress] || '';
+	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAddress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, wagmiProvider);
 	if (wagmiProvider && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		// TODO: change contract (ALI)
+		// @ts-ignore
 		protocol.connect(wagmiProvider.getSigner());
 	}
 	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(

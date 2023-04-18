@@ -6,7 +6,7 @@ import { useAccount, useNetwork, useProvider } from 'wagmi';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
 	CONTRACT_ADDRESSES,
-	ContractAdress,
+	ContractAddress,
 	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
 	isNetworkSelected,
@@ -51,7 +51,7 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 	// const { library: web3Provider } = useEthers();
 	const wagmiProvider = useProvider();
 	const { chain: wagmiChain } = useNetwork();
-	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAdress] || '';
+	const protocolAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as ContractAddress] || '';
 	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const protocol = new Contract(protocolAddress, protocolInterface, wagmiProvider);
 
@@ -69,8 +69,11 @@ export const TabWrapper = ({ swap, isVisible }: Props) => {
 		sourceTokenData?.contractAddr &&
 		new Contract(sourceTokenData?.contractAddr, ERC20Interface, wagmiProvider);
 	if (wagmiProvider && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		// TODO: CHANGE cONTRACT (ALI)
+		// @ts-ignore
 		protocol.connect(wagmiProvider.getSigner());
 		if (tokenContract) {
+			// @ts-ignore
 			tokenContract.connect(wagmiProvider.getSigner());
 		}
 	}

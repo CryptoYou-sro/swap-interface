@@ -3,7 +3,7 @@ import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
 import { BigNumber, providers, utils } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccount, useBalance, useFeeData, useNetwork, useProvider } from 'wagmi';
+import { useAccount, useBalance, useFeeData, useNetwork, useProvider, usePrepareContractWrite } from 'wagmi';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
 import {
@@ -37,7 +37,7 @@ export const useFees = () => {
 	const [allFilteredPrices, setAllFilteredPrices] = useState<Price[]>([]);
 	const [allPairs, setAllPairs] = useState<Ticker[]>([]);
 	const [cexGraph, setCexGraph] = useState<Graph>();
-	const [gasAmount, setGasAmount] = useState(null);
+	const [gasAmount, setGasAmount] = useState<any>(null);
 
 	const [allFilteredPairs, setAllFilteredPairs] = useState<Ticker[]>([]);
 	const {
@@ -72,24 +72,75 @@ export const useFees = () => {
 				: {},
 		[SOURCE_NETWORKS, sourceToken]
 	);
-	const gasPrice = feeData.data?.formatted.gasPrice;
-	// TODO: bigNumber type or sting??? ask Daniel
+	const gasPrice = feeData.data?.gasPrice;
 
 
-	const contractAddress = CONTRACT_ADDRESSES?.[wagmiChain?.id as keyof typeof CONTRACT_ADDRESSES] || '';
+	const contractAddress: any = CONTRACT_ADDRESSES?.[wagmiChain?.id as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, wagmiProvider);
 
 	if (wagmiProvider && isNetworkConnected && !(wagmiProvider instanceof providers.FallbackProvider || wagmiProvider instanceof providers.StaticJsonRpcProvider)) {
+		// @ts-ignore
 		contract.connect(wagmiProvider.getSigner());
 	}
-	const { address } = useAccount();
-	const balanceWagmi = useBalance({
+	const { address }: any = useAccount();
+	const balanceWagmiAcc = useBalance({
 		address,
 		watch: true,
 	});
-	const walletBalance = balanceWagmi.data?.formatted;
-	const tokenBalance = balanceWagmi.data?.formatted;
+	const balanceWagmiToken = useBalance({
+		address,
+		token: contractAddress,
+		watch: true,
+	});
+	const walletBalanceBN = balanceWagmiAcc.data?.value;
+	const tokenBalance = balanceWagmiToken.data?.formatted;
+
+	const productId = utils.id(makeId(32));
+	const namedValues = {
+		scoin: sourceToken,
+		samt: utils.parseEther('10').toString(),
+		fcoin: destinationToken,
+		net: destinationNetwork,
+		daddr: destinationAddress
+	};
+	const shortNamedValues = JSON.stringify(namedValues);
+
+	usePrepareContractWrite({
+		address: contractAddress,
+		abi: CONTRACT_DATA.abi,
+		functionName: 'createProcess(address,bytes32,string)',
+		args: [SERVICE_ADDRESS, productId, shortNamedValues],
+		enabled: Boolean(sourceTokenData?.isNative),
+		onSuccess(data) {
+			if (sourceTokenData?.isNative) {
+				console.log('Native', data.request.gasLimit);
+				setGasAmount(data.request.gasLimit);
+			}
+		},
+		onError(error) {
+			throw new Error('Error', error);
+
+		}
+	});
+
+	usePrepareContractWrite({
+		address: contractAddress,
+		abi: CONTRACT_DATA.abi,
+		functionName: 'createProcess(address,address,bytes32,string)',
+		args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
+		enabled: Boolean(!sourceTokenData?.isNative),
+		onSuccess(data) {
+			if (!sourceTokenData?.isNative) {
+				console.log('NOTnative', data.request.gasLimit);
+				setGasAmount(data.request.gasLimit);
+			}
+		},
+		onError(error) {
+			throw new Error('Error', error);
+
+		}
+	});
 
 	const getExchangeInfo = async () => {
 		try {
@@ -233,56 +284,13 @@ export const useFees = () => {
 		}
 	}, [amount]);
 
-	useEffect(() => {
-		if (isTokenSelected(destinationToken) && isTokenSelected(sourceToken)) {
-			const namedValues = {
-				scoin: sourceToken,
-				samt: utils.parseEther('10').toString(),
-				fcoin: destinationToken,
-				net: destinationNetwork,
-				daddr: destinationAddress
-			};
-			const shortNamedValues = JSON.stringify(namedValues);
-			const productId = utils.id(makeId(32));
-
-			if (sourceTokenData?.isNative) {
-				contract.estimateGas['createProcess(address,bytes32,string)'](
-					SERVICE_ADDRESS,
-					productId,
-					shortNamedValues
-				)
-					.then((gas: any) => {
-						setGasAmount(gas);
-					})
-					.catch((err) => {
-						throw new Error(err);
-						// TODO: @Daniel:  add Toast to inform user?
-					});
-			} else {
-				contract.estimateGas['createProcess(address,address,bytes32,string)'](
-					sourceTokenData?.contractAddr,
-					SERVICE_ADDRESS,
-					productId,
-					shortNamedValues
-				)
-					.then((gas: any) => {
-						setGasAmount(gas);
-					})
-					.catch((err) => {
-						throw new Error(err);
-						// TODO: @Daniel:  add Toast to inform user?
-					});
-			}
-		}
-	}, [destinationToken, destinationAddress, sourceNetwork, sourceToken]);
-
 	const networkFee = useMemo((): Fee => {
 		if (isTokenSelected(destinationToken) && gasAmount && gasPrice) {
 			const calculatedProcessFee = BigNumber.from(gasAmount['_hex']).mul(
-				BigNumber.from(gasPrice['_hex'])
+				gasPrice
 			);
 			const calculatedTransactionFee = BigNumber.from(ESTIMATED_NETWORK_TRANSACTION_GAS).mul(
-				BigNumber.from(gasPrice['_hex'])
+				gasPrice
 			);
 			const calculatedFee = BigNumber.from(calculatedProcessFee).add(
 				BigNumber.from(calculatedTransactionFee)
@@ -408,7 +416,7 @@ export const useFees = () => {
 				// const { minQty, maxQty } = lot;
 				// const lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
 				const lotSizeMaxAmount = +maxQty * getPrice(destinationToken, sourceToken);
-				const walletMaxAmount = walletBalance && formatEther(walletBalance);
+				const walletMaxAmount = walletBalanceBN && formatEther(walletBalanceBN);
 				const tokenMaxAmount =
 					tokenBalance && +formatUnits(tokenBalance, sourceTokenData?.decimals);
 				minAmount = (
@@ -428,7 +436,7 @@ export const useFees = () => {
 		}
 
 		return { minAmount, maxAmount };
-	}, [destinationToken, account, networkFee, allFilteredPairs, tokenBalance, walletBalance]);
+	}, [destinationToken, account, networkFee, allFilteredPairs, tokenBalance, walletBalanceBN]);
 
 	return {
 		...marginalCosts,
