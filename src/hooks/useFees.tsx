@@ -164,7 +164,7 @@ export const useFees = () => {
 						symbol: pair.symbol,
 						filters: pair.filters.filter(
 							(filter: any) =>
-								filter.filterType === 'LOT_SIZE' || filter.filterType === 'MIN_NOTIONAL'
+								filter.filterType === 'LOT_SIZE' || filter.filterType === 'NOTIONAL'
 						)
 					};
 				});
