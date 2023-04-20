@@ -180,12 +180,10 @@ export const SwapForm = () => {
 		let totalCurrencyAmount: string | number = 0;
 		try {
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency1}${currency2}&limit=4999`).then(r => res = r.data);
-			console.log('first variant');
 			if (res) {
 				pair = `${currency1}${currency2}`;
 			}
 		} catch (error: any) {
-			console.log('second variant', error);
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency2}${currency1}&limit=4999`).then(r => res = r.data);
 			if (res) {
 				pair = `${currency2}${currency1}`;
