@@ -1,10 +1,10 @@
+import { disconnect } from '@wagmi/core';
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
 import { Button, JazzIcon, Portal } from '../../components';
-import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
-import { button, ButtonEnum, useStore } from '../../helpers';
-import { useEthers } from '@usedapp/core';
+import { ButtonEnum, button, useStore } from '../../helpers';
 import { useMedia } from '../../hooks';
+import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 
 type Props = {
 	showModal: boolean;
@@ -41,13 +41,13 @@ const AccountTitle = styled.div(() => {
 });
 
 const StatusContainer = styled.div(() => {
-	const {
-		state: { theme }
-	} = useStore();
+	const { state: { theme } } = useStore();
 
 	return css`
-		margin-bottom: ${spacing[6]};
-		color: ${theme.font.secondary}
+		font-size: ${fontSize[16]};
+		color: ${theme.font.default};
+		line-height: ${fontSize[22]};
+		margin-bottom: ${spacing[28]};
 	`;
 });
 
@@ -118,9 +118,8 @@ const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
 `;
 
 export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
-	const { deactivate } = useEthers();
 	const { dispatch } = useStore();
-	const [ isCopied, setIsCopied ] = useState(false);
+	const [isCopied, setIsCopied] = useState(false);
 	const { mobileWidth: isMobile } = useMedia('xs');
 
 	const handleCopy = () => {
@@ -131,8 +130,8 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 		}, 2000);
 	};
 
-	const handleDisconnect = () => {
-		deactivate();
+	const handleDisconnect = async () => {
+		await disconnect();
 		setShowModal(false);
 		dispatch({
 			type: ButtonEnum.BUTTON,
@@ -153,10 +152,10 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 						<AccountNumber>
 							{account?.substring(0, 12)}...{account?.substring(37)}
 						</AccountNumber>
-						<JazzIcon/>
+						<JazzIcon />
 					</Account>
 					<CopyContainer>
-						<IconContainer/>
+						<IconContainer />
 						<CopyText onClick={handleCopy} isCopied={isCopied}>
 							{!isCopied ? 'Copy Address' : 'Copied!'}
 						</CopyText>

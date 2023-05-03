@@ -91,10 +91,6 @@ export enum ButtonEnum {
 	BUTTON = 'SET_BUTTON_STATUS'
 }
 
-export enum ProductIdEnum {
-	PRODUCTID = 'PRODUCTID'
-}
-
 export enum PairEnum {
 	PAIR = 'PAIR'
 }
@@ -156,11 +152,6 @@ type AmountAction = {
 	payload: string;
 };
 
-type ProductIdAction = {
-	type: ProductIdEnum;
-	payload: string;
-};
-
 type PairAction = {
 	type: PairEnum;
 	payload: string;
@@ -181,7 +172,6 @@ type Action =
 	| SourceAction
 	| DestinationAction
 	| AmountAction
-	| ProductIdAction
 	| PairAction
 	| AvailableCurrenciesAction;
 
@@ -206,7 +196,6 @@ type State = {
 	destinationAmount: string;
 	destinationMemo: string;
 	amount: string;
-	productId: string;
 	pair: string;
 	availableSourceNetworks: any | null;
 	availableDestinationNetworks: any | null;
@@ -255,7 +244,6 @@ const initialState: State = {
 	destinationAmount: '',
 	destinationMemo: '',
 	amount: '',
-	productId: '',
 	pair: '',
 	availableSourceNetworks: null,
 	availableDestinationNetworks: null
@@ -307,8 +295,6 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, destinationAmount: action.payload };
 		case DestinationEnum.MEMO:
 			return { ...state, destinationMemo: action.payload };
-		case ProductIdEnum.PRODUCTID:
-			return { ...state, productId: action.payload };
 		case PairEnum.PAIR:
 			return { ...state, pair: action.payload };
 		case AvailableCurrenciesEnum.SET:

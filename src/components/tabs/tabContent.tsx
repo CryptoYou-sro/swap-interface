@@ -1,18 +1,10 @@
-import { BLOCKS_AMOUNT, formatDate, makeId, routes, useStore } from '../../helpers';
-import styled, { css } from 'styled-components';
-import {
-	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSITION,
-	fontSize,
-	mediaQuery,
-	pxToRem,
-	spacing,
-	Theme
-} from '../../styles';
-import { useBlockNumber } from 'wagmi';
-import { useAxios } from '../../hooks';
 import { useEffect, useState } from 'react';
-import { Spinner } from '../spinner/spinner';
+import styled, { css } from 'styled-components';
+import { useBlockNumber } from 'wagmi';
+import { BLOCKS_AMOUNT, makeId, routes, useStore } from '../../helpers';
+import { useAxios } from '../../hooks';
+import { DEFAULT_BORDER_RADIUS, DEFAULT_TRANSITION, Theme, fontSize, mediaQuery, pxToRem, spacing } from '../../styles';
+import { Icon } from '../icon/icon';
 
 type Props = {
 	data?: any;
@@ -29,12 +21,12 @@ const Content = styled.div`
 
 	display: block;
 	background: ${(props: StyleProps) => props.theme.background.secondary};
-	border: 1px solid
-		${(props: StyleProps) =>
+	border: 1px solid ${(props: StyleProps) =>
 		props.type === 'history' ? 'transparent' : props.theme.border.default};
 	border-radius: ${DEFAULT_BORDER_RADIUS};
 	border-top-left-radius: 0;
 	margin-top: -1px;
+	z-index: 10;
 `;
 
 export const ContentList = styled.ul`
@@ -100,24 +92,32 @@ export const ContentItemText = styled.div(() => {
 export const ContentItemLink = styled.div`
 	color: ${(props: StyleProps) => props.theme.font.secondary};
 	line-height: ${fontSize[16]};
-	text-decoration: underline;
-	cursor: pointer;
-	transition: ${DEFAULT_TRANSITION};
-
-	&:hover {
-		color: ${(props: StyleProps) => props.theme.button.default};
-	}
 `;
-const SpinnerWrapper = styled.div`
+const IconWrapper = styled.div`
 	display: flex;
 	justify-content: center;
+	margin-top: ${spacing[10]};
 
 	${mediaQuery('s')} {
 		margin-top: ${spacing[16]};
 	}
 `;
 
-export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
+const WithdrawalLink = styled.a(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+	text-decoration: underline;
+	cursor: pointer;
+	transition: ${DEFAULT_TRANSITION};
+
+	&:hover {
+		color: ${theme.button.default};
+	}
+`;
+});
+
+export const TabContent = ({ swap, type = 'swap' }: any) => {
 	const [withdrawLink, setWithdrawLink] = useState<{
 		amount: string;
 		status: number;
@@ -131,8 +131,8 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const orders = data?.[toggleIndex]?.action[0];
-	const withdrawal = data?.[toggleIndex]?.withdraw[0];
+	const orders = swap && swap.action[0];
+	const withdrawal = swap && swap.withdraw[0];
 	const api = useAxios();
 
 	const getWithDrawLink = async () => {
@@ -150,36 +150,44 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 		void getWithDrawLink();
 	}, [withdrawal]);
 
-	return data.length > 0 ? (
+	return swap ? (
 		// @ts-ignore
 		<Content theme={theme} type={type}>
 			<ContentList>
-				{data?.[toggleIndex].costRequestCounter ? (
-					<ContentItem theme={theme} color={data.color} key={makeId(32)}>
+				{swap.costRequestCounter <= 0 ? 'Starting process' : null}
+				{swap.costRequestCounter ? (
+					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							Swap Request Validation ({data?.[toggleIndex]?.costRequestCounter}/2)
+							Request validation
 						</ContentItemTitle>
+						<br />
 						<ContentItemText>
-							{data?.[toggleIndex].costRequestCounter < 2
-								? 'Your Swap request is under validation. Please wait until full confirmation.'
-								: 'Your Swap request successfully validated.'}
+							{swap.costRequestCounter < 2
+								? '...in progress'
+								: 'Done'}
+							<br />
+							<br />
+						</ContentItemText>
+						<ContentItemText>
+							{swap.depositBlock <= 0
+								? 'Wait for Metamask to open (this can take some time), then confirm the transation'
+								: null}
 						</ContentItemText>
 					</ContentItem>
 				) : null}
-				{currentBlockNumber.data && data?.[toggleIndex]?.depositBlock ? (
+				{currentBlockNumber.data && swap.depositBlock ? (
 					<ContentItem theme={theme} key={makeId(32)}>
 						<ContentItemTitle>
-							{!data?.[toggleIndex]?.action.length
-								? `Deposit confirmation (${currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock
-								}/${BLOCKS_AMOUNT})`
-								: 'Deposit confirmed'}
+							{!swap?.action.length
+								? 'Initiating swap'
+								: 'Swap initiated'}
 						</ContentItemTitle>
+						<br />
 						<ContentItemText>
-							{currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock < BLOCKS_AMOUNT
-								? 'Your deposit is waiting for the particular numbers of the blocks to pass. Please wait for 30 blocks to pass.'
-								: currentBlockNumber?.data - data?.[toggleIndex]?.depositBlock >= BLOCKS_AMOUNT &&
-									!data?.[toggleIndex].action.length
-									? 'Your deposit is received and should be confirmed soon.'
+							{currentBlockNumber.data - swap.depositBlock < BLOCKS_AMOUNT
+								? 'Your request is being processed. Please wait'
+								: currentBlockNumber.data - swap.depositBlock >= BLOCKS_AMOUNT && !swap.action.length
+									? 'Your request will be confirmed soon'
 									: null}
 						</ContentItemText>
 					</ContentItem>
@@ -187,47 +195,51 @@ export const TabContent = ({ data, toggleIndex = 0, type = 'swap' }: Props) => {
 				{orders ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemTitle>
-							Conversion {data?.[toggleIndex]?.sourceToken}{' '}
-							{orders.s.replace(data?.[toggleIndex]?.sourceToken, '')}
+							Conversion approved
 						</ContentItemTitle>
-						<ContentItemText>Type: {orders.a === 0 ? 'SELL' : 'BUY'}</ContentItemText>
-						<ContentItemText>Pair: {orders.s}</ContentItemText>
-						<ContentItemText>Quantity: {orders.q}</ContentItemText>
-						<ContentItemText>Price: {orders.p}</ContentItemText>
-						<ContentItemText>Time: {formatDate(orders.ts)}</ContentItemText>
+						<ContentItemText>Market: {swap.sourceToken}-{orders.s.replace(swap.sourceToken, '')}</ContentItemText>
+						<ContentItemText>Exchange rate: {orders.p}</ContentItemText>
+
+						<br />
+						<ContentItemTitle>
+							Finalising the transaction now
+						</ContentItemTitle>
 					</ContentItem>
 				) : null}
 				{withdrawal && !withdrawLink ? (
 					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemLink theme={theme}>Withdrawal in process</ContentItemLink>
-						<ContentItemText>
-							Your funds is almost there, we are waiting for their landing into your wallet.
-						</ContentItemText>
+						<ContentItemLink theme={theme}>Sending {orders.s.replace(swap.sourceToken, '')} to your
+							wallet</ContentItemLink>
 					</ContentItem>
-				) : withdrawal?.t === 1 && withdrawLink ? (
-					<ContentItem key={makeId(32)} theme={theme}>
-						<ContentItemTitle>Withdrawal confirmed</ContentItemTitle>
-					</ContentItem>
-				) : withdrawal?.t === 0 && withdrawLink ? (
+				) : withdrawLink?.type === 0 && withdrawLink.url ? (
 					<ContentItem key={makeId(32)} theme={theme}>
 						<ContentItemLink theme={theme} onClick={() => window.open(withdrawLink.url)}>
-							Withdrawal confirmed
+							Funds may have already arrived or will be received shortly. <WithdrawalLink href={withdrawLink.url}>txid</WithdrawalLink>
 						</ContentItemLink>
 					</ContentItem>
+				) : withdrawal && withdrawLink ? (
+					<ContentItem key={makeId(32)} theme={theme}>
+						<ContentItemTitle>
+							The {orders.s.replace(swap.sourceToken, '')} are on their way to the destination address. Please wait
+						</ContentItemTitle>
+					</ContentItem>
 				) : null}
-				{data?.[toggleIndex]?.complete ? (
+				{swap.complete ? (
 					<ContentItem theme={theme} color={theme.button.default}>
-						<ContentItemText color={theme.button.default}>Successful swap!</ContentItemText>
+						<ContentItemText color={theme.button.default}>Swap successfully executed</ContentItemText>
 					</ContentItem>
-				) : !data?.[toggleIndex]?.complete && data?.[toggleIndex]?.complete !== null ? (
+				) : !swap.complete && swap.complete !== null ? (
 					<ContentItem theme={theme} color={theme.font.default}>
-						<ContentItemText>No valid operations spotted!</ContentItemText>
+						<ContentItemText>Invalid operations spotted. Please write us at info@cryptoyou.io</ContentItemText>
 					</ContentItem>
 				) : null}
-				{data?.[toggleIndex]?.complete === null ? (
-					<SpinnerWrapper>
-						<Spinner size="medium" color="default" />
-					</SpinnerWrapper>
+				{swap.complete === null ? (
+					<IconWrapper>
+						<Icon
+							size="large"
+							icon='moneyAnimated'
+						/>
+					</IconWrapper>
 				) : null}
 			</ContentList>
 		</Content>

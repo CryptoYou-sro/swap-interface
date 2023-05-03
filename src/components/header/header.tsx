@@ -178,7 +178,6 @@ export const Header = () => {
 			setIsLoading(true);
 			try {
 				const msg: any = await getAuthTokensFromNonce(accountAddr);
-				console.log(msg);
 				setSignMessage(msg);
 			} catch (error: any) {
 				addToast('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', 'error');
@@ -215,10 +214,6 @@ export const Header = () => {
 					statusBusiness: kycL2StatusBusiness,
 					representativeType: reprType
 				} = res?.data?.L2;
-				// dispatch({
-				// 	type: KycEnum.STATUS,
-				// 	payload: kyc
-				// });
 				dispatch({
 					type: KycL2Enum.STATUS,
 					payload: kycL2Status
@@ -252,7 +247,6 @@ export const Header = () => {
 					setShowStatusKycL2Modal(true);
 				}
 			} catch (error: any) {
-				console.log('ERROR', error);
 				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
 				}
@@ -345,7 +339,6 @@ export const Header = () => {
 
 	const handleButtonClick = async () => {
 		if (!isConnected) {
-			console.log('handleButtonClick if !isConnected');
 			// @ts-ignore
 			setDefaultChain(NETWORK_TO_WC[sourceNetwork]);
 			await open();
@@ -359,7 +352,6 @@ export const Header = () => {
 			} else if (buttonStatus === button.CHECK_KYC_L2) {
 				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
-				console.log('setTokensInStorageAndContext handleButtonClick');
 				await setTokensInStorageAndContext();
 			}
 		}

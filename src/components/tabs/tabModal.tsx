@@ -1,12 +1,12 @@
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import type { Theme } from '../../styles';
-import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
+import { useAccount } from 'wagmi';
+import PHRASES from '../../data/phrases.json';
 import { useStore } from '../../helpers';
 import { useLocalStorage } from '../../hooks';
+import type { Theme } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { TabWrapper } from './TabWrapper';
-import PHRASES from '../../data/phrases.json';
-import { useAccount } from 'wagmi';
 
 const Wrapper = styled.div`
 	max-width: 100%;
@@ -28,6 +28,7 @@ type Props = {
 	account: string;
 	costRequestCounter: number;
 	depositBlock: number;
+	depositHash: any;
 	action: object[];
 	withdraw: object[];
 	complete: null | boolean;
@@ -77,18 +78,19 @@ export const TabModal = () => {
 		state: { isUserVerified, theme }
 	} = useStore();
 	const [swapsStorage] = useLocalStorage<Props[]>('localSwaps', []);
+	const [number, setNumber] = useState(0);
 	const { address } = useAccount();
 
 	// GET ALL UNFINISHED SWAPS
 	useEffect(() => {
-		const filteredSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
-		setSwaps(filteredSwaps);
+		const allUnFinishedSwaps: Props[] = swapsStorage.filter((swap: Props) => swap.complete === null);
+		setSwaps(allUnFinishedSwaps);
 	}, [swapsStorage.length]);
 
 	const [selectedProductId, setSelectedProductId] = useState('');
 	const [toggleIndex, setToggleIndex] = useState<number>(0);
-
 	const [accountSwaps, setAccountSwaps] = useState<Props[]>([]);
+
 	useEffect(() => {
 		if (address) {
 			const accountSwaps: Props[] = swaps.filter((swap: Props) => swap.account === address);
@@ -99,7 +101,6 @@ export const TabModal = () => {
 		}
 	}, [swaps, address]);
 
-	const [number, setNumber] = useState(0);
 	useEffect(() => {
 		const intervalId = setInterval(() => {
 			const randomNum = Math.floor(Math.random() * PHRASES.length);
@@ -130,7 +131,7 @@ export const TabModal = () => {
 					{accountSwaps.map((swap: Props) => (
 						<TabWrapper
 							key={swap.swapProductId}
-							swap={swap}
+							propSwap={swap}
 							isVisible={swap.swapProductId === selectedProductId}
 						/>
 					))}

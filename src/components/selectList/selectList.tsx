@@ -1,8 +1,7 @@
-import { Mainnet, Moonbeam } from '@usedapp/core';
-import { ethers } from 'ethers';
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useNetwork, useSwitchNetwork } from 'wagmi';
+import { mainnet, moonbeam } from 'wagmi/chains';
 import type { IconType } from '../../components';
 import { Icon, TextField, useToasts } from '../../components';
 import {
@@ -98,8 +97,8 @@ type Props = {
 export const NETWORK_PARAMS = {
 	'1': [
 		{
-			chainId: ethers.utils.hexValue(Mainnet.chainId),
-			chainName: Mainnet.chainName,
+			chainId: mainnet.id,
+			chainName: mainnet.name,
 			rpcUrls: [ETHEREUM_URL],
 			nativeCurrency: {
 				name: 'Ethereum',
@@ -111,8 +110,8 @@ export const NETWORK_PARAMS = {
 	],
 	'1284': [
 		{
-			chainId: ethers.utils.hexValue(Moonbeam.chainId),
-			chainName: Moonbeam.chainName,
+			chainId: moonbeam.id,
+			chainName: moonbeam.name,
 			rpcUrls: [MOONBEAM_URL],
 			nativeCurrency: {
 				name: 'Glimer',
@@ -168,20 +167,16 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						// 		}
 						// 	]
 						// });
-
-
 						if (wagmiChain.id === 1) {
-							console.log('main id', wagmiChain?.id);
-							switchNetwork?.(Moonbeam.chainId);
+							switchNetwork?.(moonbeam.id);
 						} else {
-							console.log('else id', wagmiChain?.id);
-							switchNetwork?.(Mainnet.chainId);
+							switchNetwork?.(mainnet.id);
 						}
 
 					} catch (error: any) {
 						if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
 							try {
-								switchNetwork?.(Moonbeam.chainId);
+								switchNetwork?.(moonbeam.id);
 								dispatch({
 									type: SourceEnum.NETWORK,
 									payload: name

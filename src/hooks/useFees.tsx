@@ -3,7 +3,7 @@ import { formatEther, formatUnits } from '@ethersproject/units';
 import axios from 'axios';
 import { BigNumber, providers, utils } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccount, useBalance, useFeeData, useNetwork, useProvider, usePrepareContractWrite } from 'wagmi';
+import { useAccount, useBalance, useFeeData, useNetwork, usePrepareContractWrite, useProvider } from 'wagmi';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
 import {
@@ -111,10 +111,10 @@ export const useFees = () => {
 		abi: CONTRACT_DATA.abi,
 		functionName: 'createProcess(address,bytes32,string)',
 		args: [SERVICE_ADDRESS, productId, shortNamedValues],
-		enabled: Boolean(sourceTokenData?.isNative),
+		enabled: Boolean(sourceTokenData?.isNative && isTokenSelected(destinationToken)),
+		staleTime: 10_000,
 		onSuccess(data) {
 			if (sourceTokenData?.isNative) {
-				console.log('Native', data.request.gasLimit);
 				setGasAmount(data.request.gasLimit);
 			}
 		},
@@ -129,7 +129,8 @@ export const useFees = () => {
 		abi: CONTRACT_DATA.abi,
 		functionName: 'createProcess(address,address,bytes32,string)',
 		args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
-		enabled: Boolean(!sourceTokenData?.isNative),
+		enabled: Boolean(!sourceTokenData?.isNative && isTokenSelected(destinationToken)),
+		staleTime: 10_000,
 		onSuccess(data) {
 			if (!sourceTokenData?.isNative) {
 				console.log('NOTnative', data.request.gasLimit);
@@ -229,7 +230,7 @@ export const useFees = () => {
 						symbol: pair.symbol,
 						filters: pair.filters.filter(
 							(filter: any) =>
-								filter.filterType === 'LOT_SIZE' || filter.filterType === 'MIN_NOTIONAL'
+								filter.filterType === 'LOT_SIZE' || filter.filterType === 'NOTIONAL'
 						)
 					};
 				});

@@ -1,4 +1,3 @@
-import { Mainnet, Moonbeam } from '@usedapp/core';
 import { mainnet, moonbeam } from 'wagmi/chains';
 
 export const LOCAL_STORAGE_THEME = 'darkMode';
@@ -51,6 +50,8 @@ export const BLOCK_CONTRACT_NUMBER = 2_075_594;
 export const BLOCK_CHUNK_SIZE = 7_500;
 export const WEI_TO_GLMR = 1 / 1_000_000_000_000_000_000;
 export const MIN_START_AMOUNT = 10000;
+export const CONTRACT_GAS_LIMIT_BUFFER = 25;
+export const TRANSACTION_GAS_LIMIT_BUFFER = 10;
 
 export const CONTRACT_ADDRESSES = {
 	1: '0xa9EB7218Fd8153c93aD1b4acf42330E7044E75A1',
@@ -59,8 +60,8 @@ export const CONTRACT_ADDRESSES = {
 
 export const CHAINS = {
 	// TODO: add types
-	'1284': { name: 'GLMR', network: Moonbeam.chainId },
-	'1': { name: 'ETH', network: Mainnet.chainId }
+	'1284': { name: 'GLMR', network: moonbeam.id },
+	'1': { name: 'ETH', network: mainnet.id },
 };
 
 export const NETWORK_TO_ID = {

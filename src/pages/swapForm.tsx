@@ -1,20 +1,20 @@
 import axios from 'axios';
-import styled, { css } from 'styled-components';
 import { useEffect, useRef, useState } from 'react';
-import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
-import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
+import styled, { css } from 'styled-components';
+import { Icon, IconType, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
 import {
 	AmountEnum,
-	beautifyNumbers,
 	BINANCE_FEE,
 	DestinationEnum,
+	NETWORK_TO_ID,
+	beautifyNumbers,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	NETWORK_TO_ID,
 	useStore
 } from '../helpers';
 import { useFees } from '../hooks';
+import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -138,8 +138,8 @@ const WithdrawTips = styled.div(
 type Limit = { message: string; value: string; error: boolean };
 
 interface DepthResponse {
-	bids?: Array<[ string, string ]>;
-	asks?: Array<[ string, string ]>;
+	bids?: Array<[string, string]>;
+	asks?: Array<[string, string]>;
 }
 
 export const SwapForm = () => {
@@ -160,16 +160,16 @@ export const SwapForm = () => {
 		dispatch
 	} = useStore();
 	const swapButtonRef = useRef();
-	const { withdrawFee, cexFee, minAmount, maxAmount, networkFee } = useFees();
-	const [ showDestinationModal, setShowDestinationModal ] = useState(false);
+	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
+	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
-	const [ showSourceModal, setShowSourceModal ] = useState(false);
-	const [ hasMemo, setHasMemo ] = useState(false);
-	const [ withdrawTipsText, setWithdrawTipsText ] = useState('');
-	const [ destinationAddressIsValid, setDestinationAddressIsValid ] = useState(false);
-	const [ destinationMemoIsValid, setDestinationMemoIsValid ] = useState(false);
-	const [ limit, setLimit ] = useState<Limit>({ message: '', value: '', error: false });
-	const [ exchangeRate, setExchangeRate ] = useState<{ price: number; totalAmount: number } | null>(null);
+	const [showSourceModal, setShowSourceModal] = useState(false);
+	const [hasMemo, setHasMemo] = useState(false);
+	const [withdrawTipsText, setWithdrawTipsText] = useState('');
+	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
+	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
+	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+	const [exchangeRate, setExchangeRate] = useState<{ price: number; totalAmount: number } | null>(null);
 
 	// const { mobileWidth } = useMedia('xs');
 
@@ -180,19 +180,17 @@ export const SwapForm = () => {
 		let totalCurrencyAmount: string | number = 0;
 		try {
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency1}${currency2}`).then(r => res = r.data);
-			console.log('first variant');
 			if (res) {
 				pair = `${currency1}${currency2}`;
 			}
 		} catch (error: any) {
-			console.log('second variant', error);
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency2}${currency1}`).then(r => res = r.data);
 			if (res) {
 				pair = `${currency2}${currency1}`;
 			}
 		}
 		if (startAmount > 0) {
-			if (( pair === `${currency1}${currency2}` && startCurrency === currency1 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency2 )) {
+			if ((pair === `${currency1}${currency2}` && startCurrency === currency1) || (pair === `${currency2}${currency1}` && startCurrency === currency2)) {
 				if (res) {
 					// console.log('SELL');
 					const bids: string[] = res.bids;
@@ -218,7 +216,7 @@ export const SwapForm = () => {
 					}
 				}
 			} else if
-			(( pair === `${currency1}${currency2}` && startCurrency === currency2 ) || ( pair === `${currency2}${currency1}` && startCurrency === currency1 )) {
+				((pair === `${currency1}${currency2}` && startCurrency === currency2) || (pair === `${currency2}${currency1}` && startCurrency === currency1)) {
 				if (res) {
 					// console.log('Buy');
 					const asks: string[] = res.asks;
@@ -253,7 +251,7 @@ export const SwapForm = () => {
 		if (isTokenSelected(destinationToken)) {
 			const message =
 				+minAmount >= +maxAmount
-					? 'Insufficent funds'
+					? 'Insufficient funds'
 					: +minAmount < +amount
 						? 'Max Amount'
 						: 'Min Amount';
@@ -266,7 +264,7 @@ export const SwapForm = () => {
 		} else {
 			setLimit({ message: '', value: '', error: false });
 		}
-	}, [ destinationToken, amount, minAmount, maxAmount ]);
+	}, [destinationToken, amount, minAmount, maxAmount]);
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
@@ -282,11 +280,11 @@ export const SwapForm = () => {
 
 			void getDestinationAmount();
 		}
-	}, [ networkFee, withdrawFee, cexFee, amount ]);
+	}, [withdrawFee, cexFee, amount]);
 
 	useEffect(() => {
 		if (exchangeRate?.price) {
-			const calcDestinationAmount = +amount * exchangeRate.price * ( 1 - BINANCE_FEE ) - withdrawFee.amount;
+			const calcDestinationAmount = +amount * exchangeRate.price * (1 - BINANCE_FEE) - withdrawFee.amount;
 
 			dispatch({
 				type: DestinationEnum.AMOUNT,
@@ -296,43 +294,43 @@ export const SwapForm = () => {
 						: calcDestinationAmount.toString(),
 			});
 		}
-	}, [ exchangeRate ]);
+	}, [exchangeRate]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
 			const hasTag =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'hasTag'
-					];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+				];
 			setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
 		}
-	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork ]);
+	}, [DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
 			const specialWithdrawTips =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.tokens[
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.tokens[
 					destinationToken
-					]?.specialWithdrawTips;
+				]?.specialWithdrawTips;
 			setWithdrawTipsText(!isNetworkSelected(destinationNetwork) ? '' : specialWithdrawTips);
 		}
-	}, [ DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork, destinationToken ]);
+	}, [DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork, destinationToken]);
 
 	useEffect(() => {
 		if (DESTINATION_NETWORKS) {
 			const addressRegEx = new RegExp(
 				// @ts-ignore,
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['addressRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['addressRegex']
 			);
 			const memoRegEx = new RegExp(
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['tagRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['tagRegex']
 			);
 
 			setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
@@ -342,7 +340,7 @@ export const SwapForm = () => {
 				setDestinationMemoIsValid(true);
 			}
 		}
-	}, [ DESTINATION_NETWORKS, destinationAddress, destinationMemo, destinationToken ]);
+	}, [DESTINATION_NETWORKS, destinationAddress, destinationMemo, destinationToken]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
@@ -422,7 +420,7 @@ export const SwapForm = () => {
 							size="large"
 							icon={
 								isTokenSelected(destinationToken)
-									? ( destinationToken.toLowerCase() as IconType )
+									? (destinationToken.toLowerCase() as IconType)
 									: 'questionMark'
 							}
 							onClick={() => setShowDestinationModal(!showDestinationModal)}
@@ -475,7 +473,7 @@ export const SwapForm = () => {
 			{isUserVerified &&
 				isNetworkSelected(destinationNetwork) &&
 				isTokenSelected(destinationToken)}
-			<Fees/>
+			<Fees />
 			<WithdrawTips color={theme.button.warning}>{withdrawTipsText}</WithdrawTips>
 			<SwapButton
 				ref={swapButtonRef}
