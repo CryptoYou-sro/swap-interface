@@ -9,10 +9,8 @@ declare global {
 
 type SetValue<T> = Dispatch<SetStateAction<T>>;
 
-const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => {
-	// Get from local storage then
-	// parse stored json or return initialValue
-	const readValue = useCallback((): T => {
+const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>, any] => {
+	const readLocalData = () => {
 		// Prevent build error "window is undefined" but keep keep working
 		if (typeof window === 'undefined') {
 			return initialValue;
@@ -27,7 +25,27 @@ const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => 
 
 			return initialValue;
 		}
+	};
+	// Get from local storage then
+	// parse stored json or return initialValue
+	const readValue = useCallback((): T => {
+		// // Prevent build error "window is undefined" but keep keep working
+		// if (typeof window === 'undefined') {
+		// 	return initialValue;
+		// }
+
+		// try {
+		// 	const item = window.localStorage.getItem(key);
+
+		// 	return item ? (parseJSON(item) as T) : initialValue;
+		// } catch (error) {
+		// 	console.warn(`Error reading localStorage key “${key}”:`, error);
+
+		// 	return initialValue;
+		// }
+		return readLocalData();
 	}, [initialValue, key]);
+
 
 	// State to store our value
 	// Pass initial state function to useState so logic is only executed once
@@ -81,7 +99,7 @@ const useLocalStorage = <T,>(key: string, initialValue: T): [T, SetValue<T>] => 
 	// See: useLocalStorage()
 	useEventListener('local-storage', handleStorageChange);
 
-	return [storedValue, setValue];
+	return [storedValue, setValue, readLocalData];
 };
 
 // A wrapper for "JSON.parse()"" to support "undefined" value

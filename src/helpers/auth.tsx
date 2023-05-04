@@ -1,15 +1,5 @@
-import { Buffer } from 'buffer';
-import type { ApiAuthType } from '../helpers';
-import { BASE_URL, BINANCE_PROD_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY, routes } from '../helpers';
 import axios from 'axios';
-
-const getMetamaskMessage = (nonce: string): string =>
-	`0x${Buffer.from(
-		'By signing this nonce: "' +
-			nonce +
-			'" you accept the terms and conditions available at https://cryptoyou.io/terms-of-use/',
-		'utf8'
-	).toString('hex')}`;
+import { BASE_URL, BINANCE_PROD_URL, BINANCE_SCRIPT, BIZ_ENTRY_KEY, routes } from '../helpers';
 
 export const loadBinanceKycScript = (cb?: any) => {
 	const existingId = document.getElementById('binance-kcy-script');
@@ -28,6 +18,7 @@ export const loadBinanceKycScript = (cb?: any) => {
 };
 
 export const makeBinanceKycCall = (authToken: string) => {
+
 	// @ts-ignore
 	const binanceKyc = new BinanceKyc({
 		authToken,
@@ -41,25 +32,13 @@ export const makeBinanceKycCall = (authToken: string) => {
 	});
 };
 
-export const getAuthTokensFromNonce = async (account: string, library: any) => {
+export const getAuthTokensFromNonce = async (account: string) => {
 	try {
 		const res = await axios.request({
 			url: `${BASE_URL}${routes.getNonce}${account}`
 		});
 		try {
-			const msg = getMetamaskMessage(res.data.nonce);
-			const signature = await library?.send('personal_sign', [account, msg]);
-			try {
-				const tokenRes = await axios.request({
-					url: `${BASE_URL}${routes.auth}`,
-					method: 'POST',
-					data: { address: account, signature }
-				});
-
-				return tokenRes.data as ApiAuthType;
-			} catch (err: any) {
-				throw new Error(err);
-			}
+			return `By signing this nonce: "${res.data.nonce}" you accept the terms and conditions available at https://cryptoyou.io/terms-of-use/`;
 		} catch (err: any) {
 			throw new Error(err);
 		}

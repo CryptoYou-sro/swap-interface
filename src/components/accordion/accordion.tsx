@@ -1,16 +1,13 @@
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import {
-	ContentItem,
-	ContentItemLink,
-	ContentItemText,
-	ContentItemTitle,
-	ContentList,
 	Icon,
 	Spinner
 } from '../../components';
 import type { TransactionData } from '../../helpers';
-import { beautifyNumbers, formatDate, isLightTheme, useStore, WEI_TO_GLMR } from '../../helpers';
+import { WEI_TO_GLMR, beautifyNumbers, formatDate, isLightTheme, useStore } from '../../helpers';
+import { useMedia } from '../../hooks';
+import { Notifications } from '../../pages';
 import type { Theme } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -22,8 +19,6 @@ import {
 	pxToRem,
 	spacing
 } from '../../styles';
-import { Notifications } from '../../pages';
-import { useMedia } from '../../hooks';
 
 type StyleProps = {
 	theme: Theme;
@@ -116,7 +111,7 @@ const Content = styled.div`
 
 	${mediaQuery('s')} {
 		height: ${(props: StyleProps) =>
-			props.open ? (props.height === 'small' ? pxToRem(175) : pxToRem(425)) : pxToRem(30)};
+		props.open ? (props.height === 'small' ? pxToRem(175) : pxToRem(425)) : pxToRem(30)};
 	}
 `;
 
@@ -153,6 +148,78 @@ const ContentText = styled.div(
 		}
 	`
 );
+
+export const ContentList = styled.ul`
+	list-style: none;
+	padding: 0;
+`;
+
+export const ContentItem = styled.li`
+	list-style: none;
+	padding: 0 0 ${spacing[26]} ${spacing[20]};
+	border-left: 1px solid ${(props: StyleProps) => props.theme.font.default};
+	position: relative;
+	margin-left: ${spacing[10]};
+	font-size: ${fontSize[16]};
+
+	&:last-child {
+		border: 0;
+		padding-bottom: 0;
+	}
+
+	&:before {
+		content: '';
+		width: ${pxToRem(16)};
+		height: ${pxToRem(16)};
+		background: ${(props: StyleProps) => props.theme.font.default};
+		border-radius: 50%;
+		position: absolute;
+		left: ${pxToRem(-8)};
+		top: 0;
+
+		${mediaQuery('s')} {
+			width: ${pxToRem(14)};
+			height: ${pxToRem(14)};
+			left: ${pxToRem(-7)};
+		}
+	}
+
+	&:last-child:before {
+		background-color: ${(props: StyleProps) => props.color};
+	}
+
+	&:last-of-type > div {
+		line-height: ${fontSize[16]};
+	}
+`;
+
+export const ContentItemTitle = styled.div`
+	line-height: ${fontSize[16]};
+	margin-bottom: ${spacing[4]};
+`;
+
+export const ContentItemLink = styled.div`
+	color: ${(props: StyleProps) => props.theme.font.secondary};
+	line-height: ${fontSize[16]};
+	text-decoration: underline;
+	cursor: pointer;
+	transition: ${DEFAULT_TRANSITION};
+
+	&:hover {
+		color: ${(props: StyleProps) => props.theme.button.default};
+	}
+`;
+
+export const ContentItemText = styled.div(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		color: ${(props: StyleProps) => (props.color ? props.color : theme.font.select)};
+		line-height: ${fontSize[22]};
+	`;
+});
 
 type DataProps = TransactionData & { open: boolean };
 

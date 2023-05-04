@@ -1,8 +1,8 @@
+import axios from 'axios';
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
-import { BASE_URL } from './constants';
 import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
-import axios from 'axios';
+import { BASE_URL } from './constants';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -91,10 +91,6 @@ export enum ButtonEnum {
 	BUTTON = 'SET_BUTTON_STATUS'
 }
 
-export enum ProductIdEnum {
-	PRODUCTID = 'PRODUCTID'
-}
-
 export enum PairEnum {
 	PAIR = 'PAIR'
 }
@@ -156,11 +152,6 @@ type AmountAction = {
 	payload: string;
 };
 
-type ProductIdAction = {
-	type: ProductIdEnum;
-	payload: string;
-};
-
 type PairAction = {
 	type: PairEnum;
 	payload: string;
@@ -181,7 +172,6 @@ type Action =
 	| SourceAction
 	| DestinationAction
 	| AmountAction
-	| ProductIdAction
 	| PairAction
 	| AvailableCurrenciesAction;
 
@@ -206,7 +196,6 @@ type State = {
 	destinationAmount: string;
 	destinationMemo: string;
 	amount: string;
-	productId: string;
 	pair: string;
 	availableSourceNetworks: any | null;
 	availableDestinationNetworks: any | null;
@@ -247,15 +236,14 @@ const initialState: State = {
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
-	sourceNetwork: DefaultSelectEnum.NETWORK as SourceNetworks,
-	sourceToken: DefaultSelectEnum.TOKEN,
+	sourceNetwork: 'ETH',
+	sourceToken: 'ETH',
 	destinationNetwork: DefaultSelectEnum.NETWORK,
 	destinationToken: DefaultSelectEnum.TOKEN,
 	destinationAddress: '',
 	destinationAmount: '',
 	destinationMemo: '',
 	amount: '',
-	productId: '',
 	pair: '',
 	availableSourceNetworks: null,
 	availableDestinationNetworks: null
@@ -307,8 +295,6 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, destinationAmount: action.payload };
 		case DestinationEnum.MEMO:
 			return { ...state, destinationMemo: action.payload };
-		case ProductIdEnum.PRODUCTID:
-			return { ...state, productId: action.payload };
 		case PairEnum.PAIR:
 			return { ...state, pair: action.payload };
 		case AvailableCurrenciesEnum.SET:
@@ -323,7 +309,7 @@ const authReducer = (state: State, action: Action): State => {
 };
 
 export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [ state, dispatch ] = useReducer(authReducer, initialState);
+	const [state, dispatch] = useReducer(authReducer, initialState);
 	const value = { state, dispatch };
 	const { account, isNetworkConnected, kycL2Status } = state;
 
@@ -364,7 +350,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 		// ) {
 		// 	dispatch({ type: VerificationEnum.USER, payload: true });
 		// }
-	}, [ account, isNetworkConnected, kycL2Status ]);
+	}, [account, isNetworkConnected, kycL2Status]);
 
 	useEffect(() => {
 		axios.request({

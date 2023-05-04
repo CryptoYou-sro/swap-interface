@@ -1,25 +1,23 @@
+import { prepareWriteContract, writeContract } from '@wagmi/core';
+import { BigNumber, utils } from 'ethers';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
-import { useBlockNumber, useContractFunction, useEthers } from '@usedapp/core';
 import styled from 'styled-components';
+import { UserRejectedRequestError, useAccount, useBlockNumber } from 'wagmi';
+import { Button, useToasts } from '..';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
-import { providers, utils } from 'ethers';
-import { Button } from '..';
-import { Contract } from '@ethersproject/contracts';
 import {
-	beautifyNumbers,
-	CONTRACT_ADDRESSES,
-	ContractAdress,
-	isSwapRejected,
-	isTokenSelected,
+	CONTRACT_GAS_LIMIT_BUFFER,
 	KycL2StatusEnum,
-	makeId,
 	NETWORK_TO_ID,
 	PairEnum,
 	SERVICE_ADDRESS,
+	beautifyNumbers,
+	isTokenSelected,
+	makeId,
 	useStore
 } from '../../helpers';
-import { spacing } from '../../styles';
 import { useFees, useLocalStorage } from '../../hooks';
+import { spacing } from '../../styles';
 
 const ButtonWrapper = styled.div`
 	margin-top: ${spacing[28]};
@@ -30,17 +28,14 @@ type Props = {
 	amount: string;
 	onClick: () => void;
 };
-
 export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, ref) => {
 	if (localStorage.getItem('swaps')) {
 		localStorage.removeItem('swaps');
 	}
-	const { account } = useEthers();
-	const [ isDestinationAddressValid, setIsDestinationAddressValid ] = useState<any>(false);
-	const [ isDestinationMemoValid, setIsDestinationMemoValid ] = useState<any>(false);
-	const [ swapProductId, setSwapProductId ] = useLocalStorage<string>('productId', '');
-	const [ swapsStorage, setSwapsStorage ] = useLocalStorage<any>('localSwaps', []);
-	const [ isDepositConfirmed, setIsDepositConfirmed ] = useLocalStorage<any>(
+	const [isDestinationAddressValid, setIsDestinationAddressValid] = useState<any>(false);
+	const [isDestinationMemoValid, setIsDestinationMemoValid] = useState<any>(false);
+	const [swapsStorage, setSwapsStorage] = useLocalStorage<any>('localSwaps', []);
+	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
 		'isDepositConfirmed',
 		true
 	);
@@ -56,7 +51,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			destinationMemo,
 			isUserVerified,
 			destinationAmount,
-			pair,
 			kycL2Status,
 			buttonStatus,
 			availableSourceNetworks: SOURCE_NETWORKS,
@@ -64,9 +58,13 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		},
 		dispatch
 	} = useStore();
-	const { chainId, library: web3Provider } = useEthers();
+	const { address: accountAddr } = useAccount();
 	const { maxAmount, minAmount } = useFees();
-	const currentBlockNumber = useBlockNumber();
+	const currentBlockNumber = useBlockNumber({
+		watch: true,
+	});
+	// @ts-ignore
+	const { addToast } = useToasts();
 
 	const isDisabled =
 		!isDepositConfirmed ||
@@ -81,29 +79,29 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		if (destinationAddress) {
 			const addressRegEx = new RegExp(
 				// @ts-ignore,
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['addressRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['addressRegex']
 			);
 			setIsDestinationAddressValid(() => addressRegEx.test(destinationAddress));
 		} else {
 			setIsDestinationAddressValid(false);
 		}
-	}, [ destinationAddress, destinationAmount ]);
+	}, [destinationAddress, destinationAmount]);
 
 	useEffect(() => {
 		if (destinationMemo) {
 			const memoRegEx = new RegExp(
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'tokens'
-					]?.[destinationToken]?.['tagRegex']
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['tagRegex']
 			);
 			setIsDestinationMemoValid(() => memoRegEx.test(destinationMemo));
 		} else {
 			setIsDestinationMemoValid(true);
 		}
-	}, [ destinationMemo, destinationAmount ]);
+	}, [destinationMemo, destinationAmount]);
 
 	const message = !isDisabled
 		? 'Swap'
@@ -129,38 +127,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	const sourceTokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		SOURCE_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.['tokens'][sourceToken]
+		SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
 		: {};
 
-	const protocolAddress = CONTRACT_ADDRESSES?.[chainId as ContractAdress] || '';
-	const protocolInterface = new utils.Interface(CONTRACT_DATA.abi);
-	const protocol = new Contract(protocolAddress, protocolInterface, web3Provider);
-	if (web3Provider && !( web3Provider instanceof providers.FallbackProvider || web3Provider instanceof providers.StaticJsonRpcProvider )) {
-		protocol.connect(web3Provider.getSigner());
-	}
-	const { send: sendCreateProcess, state: transactionSwapState } = useContractFunction(
-		// @ts-ignore
-		protocol,
-		'createProcess(address,bytes32,string)',
-		{
-			transactionName: 'Request Swap',
-			gasLimitBufferPercentage: 25
-		}
-	);
-	const { send: sendTokenCreateProcess, state: transactionContractSwapState } = useContractFunction(
-		// @ts-ignore
-		protocol,
-		'createProcess(address,address,bytes32,string)',
-		{
-			transactionName: 'Request Swap',
-			gasLimitBufferPercentage: 25
-		}
-	);
-
-	useImperativeHandle(ref, () => ( {
+	useImperativeHandle(ref, () => ({
 		async onSubmit() {
 			const productId = utils.id(makeId(32));
-			setSwapProductId(productId);
 
 			const namedValues: any = {
 				scoin: sourceToken,
@@ -171,69 +143,105 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			};
 			const hasTag =
 				// @ts-ignore
-				DESTINATION_NETWORKS[[ NETWORK_TO_ID[sourceNetwork] ]]?.[sourceToken]?.[destinationNetwork]?.[
-					'hasTag'
-					];
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'hasTag'
+				];
 			if (hasTag) {
 				namedValues.tag = destinationMemo;
 			}
 			const shortNamedValues = JSON.stringify(namedValues);
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
+
 			if (sourceTokenData?.isNative) {
-				await sendCreateProcess(SERVICE_ADDRESS, productId, shortNamedValues);
+				try {
+					const config = await prepareWriteContract({
+						address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+						abi: CONTRACT_DATA.abi,
+						functionName: 'createProcess(address,bytes32,string)',
+						args: [SERVICE_ADDRESS, productId, shortNamedValues],
+					});
+					const customRequest = config.request;
+					customRequest.gasLimit = customRequest.gasLimit.add(customRequest.gasLimit.mul(BigNumber.from((CONTRACT_GAS_LIMIT_BUFFER).toString())).div(BigNumber.from('100')));
+					const { wait } = await writeContract({
+						...config,
+						request: customRequest
+					});
+					const swap = {
+						swapProductId: productId,
+						account: accountAddr,
+						costRequestCounter: 0,
+						depositBlock: 0,
+						depositHash: '',
+						action: [],
+						withdraw: [],
+						complete: null,
+						pair: `${sourceToken} ${destinationToken}`,
+						sourceToken,
+						currentBlockNumber: currentBlockNumber.data
+					};
+					setSwapsStorage([...swapsStorage, swap]);
+					setIsDepositConfirmed(false);
+					await wait();
+
+					return;
+				} catch (error) {
+					if (error instanceof UserRejectedRequestError) {
+						console.log('ERROR', error);
+					} else {
+						addToast('Something went wrong, please try again later.', 'error');
+					}
+
+					return;
+				}
 			} else {
-				console.log(
-					'Calling sendTokenCreateProcess with the contractAddr',
-					sourceTokenData?.contractAddr
-				);
-				await sendTokenCreateProcess(
-					sourceTokenData?.contractAddr,
-					SERVICE_ADDRESS,
-					productId,
-					shortNamedValues
-				);
+				try {
+					const config = await prepareWriteContract({
+						address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+						abi: CONTRACT_DATA.abi,
+						functionName: 'createProcess(address,address,bytes32,string)',
+						args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
+					});
+					const customRequest = config.request;
+					customRequest.gasLimit = customRequest.gasLimit.add(customRequest.gasLimit.mul(BigNumber.from((CONTRACT_GAS_LIMIT_BUFFER).toString())).div(BigNumber.from('100')));
+					const { wait } = await writeContract({
+						...config,
+						request: customRequest
+					});
+					const swap = {
+						swapProductId: productId,
+						account: accountAddr,
+						costRequestCounter: 0,
+						depositBlock: 0,
+						depositHash: '',
+						action: [],
+						withdraw: [],
+						complete: null,
+						pair: `${sourceToken} ${destinationToken}`,
+						sourceToken,
+						currentBlockNumber: currentBlockNumber.data
+					};
+					setSwapsStorage([...swapsStorage, swap]);
+					setIsDepositConfirmed(false);
+					await wait();
+
+					return;
+				} catch (error) {
+					if (error instanceof UserRejectedRequestError) {
+						console.log('ERROR', error);
+					} else {
+						addToast('Something went wrong, please try again later.', 'error');
+					}
+
+					return;
+				}
 			}
 		}
-	} ));
-
-	useEffect(() => {
-		if (
-			transactionSwapState.status === 'Mining' ||
-			transactionContractSwapState.status === 'Mining'
-		) {
-			if (swapProductId && account) {
-				const swap = {
-					swapProductId,
-					account,
-					costRequestCounter: 0,
-					depositBlock: 0,
-					action: [],
-					withdraw: [],
-					complete: null,
-					pair,
-					sourceToken,
-					currentBlockNumber
-				};
-				setSwapsStorage([ ...swapsStorage, swap ]);
-				setSwapProductId('');
-				setIsDepositConfirmed(!isDepositConfirmed);
-			}
-		} else if (
-			isSwapRejected(transactionSwapState.status, transactionSwapState.errorMessage) ||
-			isSwapRejected(transactionContractSwapState.status, transactionContractSwapState.errorMessage)
-		) {
-			setSwapProductId('');
-
-			return;
-		} else {
-			return;
-		}
-	}, [ transactionContractSwapState, transactionSwapState ]);
+	}));
 
 	return (
 		<ButtonWrapper>
 			<Button isLoading={!SOURCE_NETWORKS && !DESTINATION_NETWORKS} disabled={isDisabled} color="default"
-							onClick={onClick}>
+				onClick={onClick}>
 				{message}
 			</Button>
 		</ButtonWrapper>
