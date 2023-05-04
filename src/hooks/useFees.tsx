@@ -396,7 +396,10 @@ export const useFees = () => {
 			);
 			if (pair) {
 				const { filters } = pair;
-				const [lot, notional] = filters;
+
+				const [ lot, notional ] = filters;
+				const { minQty, maxQty } = lot;
+
 				let notionalMinAmount = +notional.minNotional;
 				const price = getPrice(destinationToken, sourceToken);
 				const usdTokens = ['USDT', 'BUSD', 'USDC'];
@@ -408,14 +411,18 @@ export const useFees = () => {
 						break;
 					}
 				}
-				const lotSizeMinAmount = usdPrice ? MIN_START_AMOUNT / usdPrice : 0;
+				let lotSizeMinAmount = 0;
+				// @ts-ignore
+				if (NETWORK_TO_ID[sourceNetwork] == '1') {
+					// use MIN_START_AMOUNT const for ETH network only
+					lotSizeMinAmount = usdPrice ? MIN_START_AMOUNT / usdPrice : 0;
+				} else {
+					lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
+				}
 				if (destinationToken === pair.quoteAsset) {
 					notionalMinAmount *= price;
 				}
 				const tokenMinAmount4Withdrawal = +destTokenMinWithdrawal * price;
-				const { maxQty } = lot;
-				// const { minQty, maxQty } = lot;
-				// const lotSizeMinAmount = +minQty * getPrice(destinationToken, sourceToken);
 				const lotSizeMaxAmount = +maxQty * getPrice(destinationToken, sourceToken);
 				const walletMaxAmount = walletBalanceBN && formatEther(walletBalanceBN);
 				const tokenMaxAmount =

@@ -553,8 +553,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										by the European Union regulations.<br/>
 										To complete this form, please ensure you have the following documents at hand:<br/></p>
 									<ul>
-										<li>A valid government-issued identification document, such as a Passport, National ID card, or
-											Driver's License.
+										<li>A valid government-issued identification document, such as a Passport or National ID card.
 										</li>
 										<li>Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated
 											within the last three months).
@@ -563,7 +562,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											etc.)
 										</li>
 										<li>A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's
-											date and the number of the document you will upload (Passport / ID / Driving License)
+											date and the number of the document you will upload (Passport / ID)
 										</li>
 									</ul>
 									<p>The estimated time required to complete this form is approximately 10 minutes.<br/>
@@ -674,7 +673,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									justifyContent: 'space-between'
 								}}>
 								<ContentTitle>Provide photos of one of the following documents: <br/> Passport /
-									ID / Driving License</ContentTitle>
+									ID</ContentTitle>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Front side / second page for Passport
 								</ContentTitle>
@@ -701,7 +700,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 								</LabelFileInput>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the
-									number of the document you have uploaded (Passport / ID / Driving License).</ContentTitle>
+									number of the document you have uploaded (Passport / ID).</ContentTitle>
 								<LabelFileInput htmlFor="file-natural-selfie">
 									<FileInput
 										id="file-natural-selfie"
