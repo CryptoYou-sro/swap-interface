@@ -1,0 +1,8 @@
+{
+    "stage": 0,
+    "ignore": [
+        "*.svg",
+        "*.png",
+        "*.jpeg"
+    ]
+}
