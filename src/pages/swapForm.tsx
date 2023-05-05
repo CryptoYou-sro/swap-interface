@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { useEffect, useRef, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { Icon, IconType, NetworkTokenModal, SwapButton, TextField, Fees } from '../components';
+import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
 import {
 	AmountEnum,
 	BINANCE_FEE,
@@ -13,7 +13,7 @@ import {
 	isTokenSelected,
 	useStore
 } from '../helpers';
-import { useFees } from '../hooks';
+import { useFees, useMedia } from '../hooks';
 import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
 
 const Wrapper = styled.main`
@@ -170,8 +170,7 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 	const [exchangeRate, setExchangeRate] = useState<{ price: number; totalAmount: number } | null>(null);
-
-	// const { mobileWidth } = useMedia('xs');
+	const { mobileWidth: isMobile } = useMedia('xs');
 
 	async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
 		let pair: string | '' = '';
@@ -412,7 +411,7 @@ export const SwapForm = () => {
 				<Icon
 					size="small"
 					icon={isLightTheme(theme) ? 'swapperLight' : 'swapperDark'}
-					style={{ marginBottom: 18 }}
+					style={{ marginBottom: 18, transform: `${isMobile ? 'rotate(90deg)' : 'rotate(0)'}` }}
 				/>
 				<Swap>
 					<SwapInput>
