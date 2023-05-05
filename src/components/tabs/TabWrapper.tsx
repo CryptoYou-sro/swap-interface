@@ -10,17 +10,18 @@ import {
 import { BigNumber } from 'ethers';
 import {
 	useEffect,
-	// useMemo,
 	useState
 } from 'react';
 import {
 	UserRejectedRequestError,
 	useAccount,
 	useContract,
+	useNetwork,
 	useProvider,
 } from 'wagmi';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
+	CONTRACT_ADDRESSES,
 	CONTRACT_GAS_LIMIT_BUFFER,
 	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
@@ -52,6 +53,7 @@ type Props = {
 };
 
 export const TabWrapper = ({ propSwap, isVisible }: Props) => {
+	const { chain: wagmiChain } = useNetwork();
 	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
 		'isDepositConfirmed',
 		true
@@ -66,7 +68,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 	} = useStore();
 	const provider = useProvider();
 	const protocol = useContract({
-		address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+		// @ts-ignore
+		address: CONTRACT_ADDRESSES[wagmiChain?.id],
 		abi: CONTRACT_DATA.abi,
 		signerOrProvider: provider
 	});
@@ -119,7 +122,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 								try {
 									const config = await prepareSendTransaction({
 										request: {
-											to: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+											// @ts-ignore
+											to: CONTRACT_ADDRESSES[wagmiChain.id],
 											value: event[0]?.args.cost
 										}
 									});
@@ -158,7 +162,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 										address: sourceTokenData?.contractAddr,
 										abi: erc20ABI,
 										functionName: 'approve',
-										args: ['0xa1F9898392666F578fDd2b4B1505775fcC520B06', event[0]?.args.cost]
+										// @ts-ignore
+										args: [CONTRACT_ADDRESSES[wagmiChain.id], event[0]?.args.cost]
 									});
 									const customRequestApprove = configApprove.request;
 									customRequestApprove.gasLimit = customRequestApprove.gasLimit.add(customRequestApprove.gasLimit.mul(BigNumber.from((TRANSACTION_GAS_LIMIT_BUFFER).toString())).div(BigNumber.from('100')));
@@ -183,7 +188,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 								}
 								try {
 									const configDeposit = await prepareWriteContract({
-										address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+										// @ts-ignore
+										address: CONTRACT_ADDRESSES[wagmiChain.id],
 										abi: CONTRACT_DATA.abi,
 										functionName: 'deposit',
 										args: [event[0]?.args.cost]
@@ -222,7 +228,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						} else if (event.length === 0) {
 							watchContractEvent(
 								{
-									address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+									// @ts-ignore
+									address: CONTRACT_ADDRESSES[wagmiChain.id],
 									abi: CONTRACT_DATA.abi,
 									eventName: 'CostResponse',
 									once: true
@@ -233,7 +240,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 										try {
 											const config = await prepareSendTransaction({
 												request: {
-													to: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+													// @ts-ignore
+													to: CONTRACT_ADDRESSES[wagmiChain.id],
 													value: BigNumber.from(cost)
 												}
 											});
@@ -273,7 +281,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 												address: sourceTokenData?.contractAddr,
 												abi: erc20ABI,
 												functionName: 'approve',
-												args: ['0xa1F9898392666F578fDd2b4B1505775fcC520B06', BigNumber.from(cost)]
+												// @ts-ignore
+												args: [CONTRACT_ADDRESSES[wagmiChain.id], BigNumber.from(cost)]
 											});
 											const customRequestApprove = configApprove.request;
 											customRequestApprove.gasLimit = customRequestApprove.gasLimit.add(customRequestApprove.gasLimit.mul(BigNumber.from((TRANSACTION_GAS_LIMIT_BUFFER).toString())).div(BigNumber.from('100')));
@@ -299,7 +308,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 
 										try {
 											const configDeposit = await prepareWriteContract({
-												address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+												// @ts-ignore
+												address: CONTRACT_ADDRESSES[wagmiChain.id],
 												abi: CONTRACT_DATA.abi,
 												functionName: 'deposit',
 												args: [cost]
@@ -383,7 +393,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						// Start listening for Cost Request Event
 						const unwatch = watchContractEvent(
 							{
-								address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+								// @ts-ignore
+								address: CONTRACT_ADDRESSES[wagmiChain.id],
 								abi: CONTRACT_DATA.abi,
 								eventName: 'CostRequest',
 							},
@@ -441,7 +452,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					} else {
 						// Start listening for Deposit Event
 						const unwatch = watchContractEvent({
-							address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+							// @ts-ignore
+							address: CONTRACT_ADDRESSES[wagmiChain.id],
 							abi: CONTRACT_DATA.abi,
 							eventName: 'Deposit'
 						},
@@ -534,7 +546,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 							});
 							// Start listening for Action Event
 							const unwatch = watchContractEvent({
-								address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+								// @ts-ignore
+								address: CONTRACT_ADDRESSES[wagmiChain.id],
 								abi: CONTRACT_DATA.abi,
 								eventName: 'Action'
 							},
@@ -603,7 +616,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						} else {
 							// Start listening for Complete Event
 							const unwatch = watchContractEvent({
-								address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+								// @ts-ignore
+								address: CONTRACT_ADDRESSES[wagmiChain.id],
 								abi: CONTRACT_DATA.abi,
 								eventName: 'Complete'
 							},

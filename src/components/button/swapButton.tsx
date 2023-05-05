@@ -2,10 +2,11 @@ import { prepareWriteContract, writeContract } from '@wagmi/core';
 import { BigNumber, utils } from 'ethers';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
 import styled from 'styled-components';
-import { UserRejectedRequestError, useAccount, useBlockNumber } from 'wagmi';
+import { UserRejectedRequestError, useAccount, useBlockNumber, useNetwork } from 'wagmi';
 import { Button, useToasts } from '..';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
+	CONTRACT_ADDRESSES,
 	CONTRACT_GAS_LIMIT_BUFFER,
 	KycL2StatusEnum,
 	NETWORK_TO_ID,
@@ -40,7 +41,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		true
 	);
 
-
 	const {
 		state: {
 			sourceNetwork,
@@ -63,6 +63,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 	const currentBlockNumber = useBlockNumber({
 		watch: true,
 	});
+	const { chain: wagmiChain } = useNetwork();
 	// @ts-ignore
 	const { addToast } = useToasts();
 
@@ -153,9 +154,12 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			dispatch({ type: PairEnum.PAIR, payload: `${sourceToken} ${destinationToken}` });
 
 			if (sourceTokenData?.isNative) {
+				console.log(wagmiChain?.id);
+
 				try {
 					const config = await prepareWriteContract({
-						address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+						// @ts-ignore
+						address: CONTRACT_ADDRESSES[wagmiChain.id],
 						abi: CONTRACT_DATA.abi,
 						functionName: 'createProcess(address,bytes32,string)',
 						args: [SERVICE_ADDRESS, productId, shortNamedValues],
@@ -196,7 +200,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			} else {
 				try {
 					const config = await prepareWriteContract({
-						address: '0xa1F9898392666F578fDd2b4B1505775fcC520B06',
+						// @ts-ignore
+						address: CONTRACT_ADDRESSES[wagmiChain.id],
 						abi: CONTRACT_DATA.abi,
 						functionName: 'createProcess(address,address,bytes32,string)',
 						args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],

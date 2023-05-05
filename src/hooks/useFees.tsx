@@ -397,7 +397,7 @@ export const useFees = () => {
 			if (pair) {
 				const { filters } = pair;
 
-				const [ lot, notional ] = filters;
+				const [lot, notional] = filters;
 				const { minQty, maxQty } = lot;
 
 				let notionalMinAmount = +notional.minNotional;
