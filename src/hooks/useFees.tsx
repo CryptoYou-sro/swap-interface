@@ -112,7 +112,6 @@ export const useFees = () => {
 		functionName: 'createProcess(address,bytes32,string)',
 		args: [SERVICE_ADDRESS, productId, shortNamedValues],
 		enabled: Boolean(sourceTokenData?.isNative && isTokenSelected(destinationToken)),
-		staleTime: 10_000,
 		onSuccess(data) {
 			if (sourceTokenData?.isNative) {
 				setGasAmount(data.request.gasLimit);
@@ -130,7 +129,6 @@ export const useFees = () => {
 		functionName: 'createProcess(address,address,bytes32,string)',
 		args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
 		enabled: Boolean(!sourceTokenData?.isNative && isTokenSelected(destinationToken)),
-		staleTime: 10_000,
 		onSuccess(data) {
 			if (!sourceTokenData?.isNative) {
 				console.log('NOTnative', data.request.gasLimit);

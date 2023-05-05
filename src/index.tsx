@@ -2,10 +2,11 @@ import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum'
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
-import { bsc, mainnet, moonbeam } from 'wagmi/chains';
+import { bsc, mainnet } from 'wagmi/chains';
 import App from './App';
 import { ToastProvider, Web3ModalConnect } from './components';
 import { AuthProvider } from './helpers';
+import { moonbeam } from './helpers/chains';
 
 const chains = [mainnet, moonbeam, bsc,];
 const projectId = process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID as string;

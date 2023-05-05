@@ -114,7 +114,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					if (costResponseFilter && sourceTokenData) {
 						const event: any = await protocol?.queryFilter(
 							costResponseFilter,
-							propSwap.currentBlockNumber
+							propSwap.currentBlockNumber,
+							propSwap.currentBlockNumber+1000
 						);
 
 						if (event.length > 0) {
@@ -368,7 +369,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 				if (costRequestFilter) {
 					const events: any = await protocol?.queryFilter(
 						costRequestFilter,
-						propSwap.currentBlockNumber
+						propSwap.currentBlockNumber,
+						propSwap.currentBlockNumber+1000
 					);
 
 					if (events?.length >= 2) {
@@ -437,7 +439,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					// Try to find cost request events in blockchain
 					const event: any = await protocol?.queryFilter(
 						depositFilter,
-						propSwap.currentBlockNumber
+						propSwap.currentBlockNumber,
+						propSwap.currentBlockNumber+1000
 					);
 
 					if (event.length > 0) {
@@ -489,7 +492,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					if (actionFilter) {
 						const events: any = await protocol?.queryFilter(
 							actionFilter,
-							propSwap.currentBlockNumber
+							propSwap.currentBlockNumber,
+							propSwap.currentBlockNumber+1000
 						);
 
 						if (events.length >= 2) {
@@ -600,7 +604,8 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						// Try to find cost request events in blockchain
 						const events: any = await protocol?.queryFilter(
 							completeFilter,
-							propSwap.currentBlockNumber
+							propSwap.currentBlockNumber,
+							propSwap.currentBlockNumber+1000
 						);
 
 						if (events.length > 0) {
