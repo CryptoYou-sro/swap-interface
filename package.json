@@ -37,7 +37,7 @@
         "react-select": "^5.7.0",
         "sass": "^1.54.4",
         "styled-components": "^5.3.5",
-        "wagmi": "^0.12.10"
+        "wagmi": "0.12.10"
     },
     "resolutions": {
         "@ethersproject/abi": "5.2.0",
