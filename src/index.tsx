@@ -8,7 +8,7 @@ import { ToastProvider, Web3ModalConnect } from './components';
 import { AuthProvider } from './helpers';
 
 const chains = [mainnet, moonbeam, bsc,];
-const projectId = 'a023072fed8e9b347297fa5ad22a5a9e';
+const projectId = process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID as string;
 const { provider } = configureChains(chains, [w3mProvider({ projectId })]);
 const wagmiClient = createClient({
 	autoConnect: true,
