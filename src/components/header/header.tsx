@@ -2,7 +2,7 @@ import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { useAccount, useBalance, useNetwork, useSignMessage } from 'wagmi';
+import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage } from 'wagmi';
 import { Button, Icon, KycL2Modal, useToasts } from '../../components';
 import {
 	BASE_URL,
@@ -114,6 +114,7 @@ const WalletBalance = styled.div(() => {
 export const Header = () => {
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	const { isConnected, address: accountAddr } = useAccount();
+	const { disconnect } = useDisconnect();
 	const { data } = useBalance({
 		address: accountAddr,
 	});
@@ -134,8 +135,14 @@ export const Header = () => {
 					setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
 				}
 			});
-		}
+		},
+		onError() {
+			disconnect();
+			setSignMessage('');
+			addToast('You have been disconnected due to unsigning on your computer or mobile device. Verify your signature to sign in', 'warning');
+		},
 	});
+
 	const { mobileWidth: isMobile } = useMedia('s');
 	const {
 		state: {
@@ -316,9 +323,7 @@ export const Header = () => {
 
 		if (accountAddr && storage?.account && storage?.account !== accountAddr) {
 			addToast(
-				'Switch to your verified account on Metamask to come back to CryptoYou.',
-				'error'
-			);
+				'Switch to your verified account on Metamask to come back to CryptoYou.', 'warning');
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
 			dispatch({
