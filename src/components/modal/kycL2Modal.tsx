@@ -653,7 +653,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 												<div style={{ marginRight: '10px' }}>
 													<Icon size={55} icon='passport' />
 												</div>
-												<p>A valid government-issued identification document, such as a Passport or National ID card.</p>
+												<p>	&#9679; A valid government-issued identification document, such as a Passport or National ID card.</p>
 											</DisclaimerTextListItemBox>
 										</DisclaimerTestListItem>
 										<DisclaimerTestListItem>
@@ -662,7 +662,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 													<Icon size={55} icon='documents' />
 												</div>
 												<p>
-													Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated
+													&#9679; Proof of address, such as a recent utility bill, bank statement, or rental agreement (dated
 													within the last three months).
 												</p>
 											</DisclaimerTextListItemBox>
@@ -673,7 +673,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 													<Icon size={55} icon='finances' />
 												</div>
 												<p>
-													A document proving information on your source of funds (bank statement, payslip, tax return
+													&#9679; A document proving information on your source of funds (bank statement, payslip, tax return
 													etc.)
 												</p>
 											</DisclaimerTextListItemBox>
@@ -684,7 +684,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 													<Icon size={55} icon='selfie' />
 												</div>
 												<p>
-													A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's
+													&#9679; A photo of yourself (selfie) in which you're holding a piece of paper that clearly shows today's
 													date and the number of the document you will upload (Passport / ID)
 												</p>
 											</DisclaimerTextListItemBox>
