@@ -1,5 +1,5 @@
-import makeAnimated from 'react-select/animated';
 import SelectDropDown from 'react-select';
+import makeAnimated from 'react-select/animated';
 import { useStore } from '../../helpers';
 import { pxToRem } from '../../styles';
 
@@ -14,57 +14,59 @@ type Props = {
 	components?: any;
 	isSearchable?: boolean;
 	styles?: any;
+	themeMode?: string;
 };
 
 export const SelectDropdown = ({
-																 onChange,
-																 defaultValue,
-																 name,
-																 id,
-																 placeholder,
-																 options,
-																 isMulti = true,
-																 isSearchable = true,
-															 }: Props) => {
+	onChange,
+	defaultValue,
+	name,
+	id,
+	placeholder,
+	options,
+	isMulti = true,
+	isSearchable = true,
+	themeMode = 'auto'
+}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	const animatedComponents = makeAnimated();
 	const selectDropDownStyles: any = {
-		multiValueRemove: (styles: any): any => ( {
+		multiValueRemove: (styles: any): any => ({
 			...styles,
 			color: 'red',
 			':hover': {
 				backgroundColor: 'red',
 				color: 'white'
 			}
-		} ),
-		menu: (base: any): any => ( {
+		}),
+		menu: (base: any): any => ({
 			...base,
-			backgroundColor: `${theme.background.secondary}`,
-		} ),
-		option: (base: any, state: any): any => ( {
+			backgroundColor: `${themeMode === 'light' ? '#ffffff' : themeMode === 'dark' ? '#000000' : theme.background.secondary}`,
+		}),
+		option: (base: any, state: any): any => ({
 			...base,
 			border: state.isFocused ? `1px solid ${theme.border.default}` : 'none',
 			height: '100%',
-			color: `${theme.font.default}`,
-			backgroundColor: `${theme.background.secondary}`,
+			color: `${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default}`,
+			backgroundColor: `${themeMode === 'light' ? '#ffffff' : themeMode === 'dark' ? '#000000' : theme.background.secondary}`,
 			cursor: 'pointer',
 
-		} ),
-		control: (baseStyles: any): any => ( {
+		}),
+		control: (baseStyles: any): any => ({
 			...baseStyles,
 			borderColor: 'grey',
 			background: 'none',
 			color: `${theme.font.default}`,
 			minHeight: `${pxToRem(46)}`,
 			padding: 0
-		} ),
-		input: (provided: any): any => ( {
+		}),
+		input: (provided: any): any => ({
 			...provided,
-			color: `${theme.font.default}`,
-		} ),
+			color: `${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default}`,
+		}),
 	};
 
 	return (

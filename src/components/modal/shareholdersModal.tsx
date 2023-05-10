@@ -1,16 +1,16 @@
-import styled, { css } from 'styled-components';
-import { Portal } from './portal';
-import { TextField } from '../textField/textField';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../button/button';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
-import COUNTRIES from '../../data/listOfAllCountries.json';
+import styled, { css } from 'styled-components';
 import countries from '../../data/countries.json';
+import COUNTRIES from '../../data/listOfAllCountries.json';
+import { BASE_URL, useStore } from '../../helpers';
+import { useAxios, useMedia } from '../../hooks';
+import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
+import { Button } from '../button/button';
+import { SelectDropdown } from '../selectDropdown/selectDropdown';
+import { TextField } from '../textField/textField';
 import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { useAxios, useMedia } from '../../hooks';
-import { BASE_URL, useStore } from '../../helpers';
-import { SelectDropdown } from '../selectDropdown/selectDropdown';
+import { Portal } from './portal';
 
 const Select = styled.select(() => {
 	const {
@@ -53,7 +53,7 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-export const DateInput = styled.input(() => {
+export const DateInput = styled.input((props: any) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -62,7 +62,7 @@ export const DateInput = styled.input(() => {
 		padding: 0 6px;
 		cursor: pointer;
 		background: none;
-		color: ${theme.font.default};
+		color: ${props.themeMode === 'light' ? '#000' : theme.font.default};
 		min-height: ${pxToRem(45)};
 		border: 1px solid ${theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -90,14 +90,14 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
 
-	const [ showModal, setShowModal ] = useState<boolean>(false);
-	const [ isValid, setIsValid ] = useState<boolean>(false);
-	const [ isShareHolderLegal, setIsShareHolderLegal ] = useState<string>('empty');
+	const [showModal, setShowModal] = useState<boolean>(false);
+	const [isValid, setIsValid] = useState<boolean>(false);
+	const [isShareHolderLegal, setIsShareHolderLegal] = useState<string>('empty');
 
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const fileIdentification = useRef<HTMLInputElement>();
-	const [ client, setClient ] = useState<any>({
+	const [client, setClient] = useState<any>({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -133,7 +133,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 		},
 		taxResidency: 'Select country'
 	});
-	const [ emptyClient ] = useState({
+	const [emptyClient] = useState({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -176,8 +176,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 			if (client.fullName && client.placeOfBirth && client.idNumber
 				&& client.gender !== 'Select gender' && client.taxResidency !== 'Select country' && client.citizenship.length > 0
 				&& client.fileIdentification && client.politicallPerson.length > 0 && client.appliedSanctions.length > 0
-				&& !Object.values(client.residence).includes('') && ( client.permanentAndMailAddressSame === 'Yes'
-					|| client.permanentAndMailAddressSame === 'No' && !Object.values(client.mailAddress).includes('') )) {
+				&& !Object.values(client.residence).includes('') && (client.permanentAndMailAddressSame === 'Yes'
+					|| client.permanentAndMailAddressSame === 'No' && !Object.values(client.mailAddress).includes(''))) {
 				setIsValid(true);
 			}
 		} else if (isShareHolderLegal === 'legal') {
@@ -185,11 +185,11 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 				setIsValid(true);
 			}
 		}
-	}, [ client ]);
+	}, [client]);
 
 	useEffect(() => {
 		setClient(emptyClient);
-	}, [ isShareHolderLegal ]);
+	}, [isShareHolderLegal]);
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
@@ -298,7 +298,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 
 	useEffect(() => {
 		setShowModal(addShareHolder);
-	}, [ addShareHolder ]);
+	}, [addShareHolder]);
 
 	return (
 		<Portal
@@ -311,7 +311,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 				style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 10px' }}>
 				<div>
 					<ContentTitle>
-						Information on majority shareholders or person in control of client<br/> (more than 25%)
+						Information on majority shareholders or person in control of client<br /> (more than 25%)
 					</ContentTitle>
 					<div
 						style={{
@@ -425,7 +425,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								</div>
 								<div style={{ width: '48%' }}>
 									<label htmlFor="label-select-shareholder-tax-residency"
-												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Tax Residency
 									</label>
 									<Select
@@ -449,7 +449,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 								</div>
 								<div style={{ width: '48%' }}>
 									<label htmlFor="label-citizenship-natural-share"
-												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Citizenship(s)
 									</label>
 									<SelectDropdown
@@ -583,7 +583,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
 								<label htmlFor="label-shareholder-mailing-permanent-address-true"
-											 style={{ display: 'block', marginRight: '10px' }}>
+									style={{ display: 'block', marginRight: '10px' }}>
 									<input
 										id="label-shareholder-mailing-permanent-address-true"
 										type="radio"

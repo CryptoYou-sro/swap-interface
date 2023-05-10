@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import { Icon } from '../../components';
+import { useStore } from '../../helpers';
 import type { ThemeProps } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -10,25 +12,25 @@ import {
 	pxToRem,
 	spacing
 } from '../../styles';
-import { useStore } from '../../helpers';
-import { Icon } from '../../components';
 
 export type AlignProps = 'left' | 'right' | 'center';
 export type TypeProps = 'text' | 'number' | 'search' | 'email' | 'radio' | 'checkbox';
 export type SizeProps = 'regular' | 'small';
+export type ThemeModeProps = 'light' | 'dark' | 'auto';
 
 type StyledProps = {
 	align: AlignProps;
 	error: boolean;
 	type: TypeProps;
 	size: SizeProps;
+	themeMode: ThemeModeProps;
 };
 
 const TextFieldWrapper = styled.div`
 	position: relative;
 `;
 
-const Input = styled.input(({ align, error, type, size }: StyledProps) => {
+const Input = styled.input(({ align, error, type, size, themeMode }: StyledProps) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -45,7 +47,7 @@ const Input = styled.input(({ align, error, type, size }: StyledProps) => {
 		padding: ${isTypeSearch
 			? `${spacing[isSmall ? 8 : 14]} ${spacing[14]} ${spacing[isSmall ? 8 : 14]} ${spacing[42]}`
 			: `${spacing[isSmall ? 12 : 18]} ${spacing[HORIZONTAL_PADDING]}`};
-		color: ${theme.font.default};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
@@ -113,29 +115,31 @@ type Props = {
 	checked?: boolean;
 	maxLength?: any;
 	autocomplete?: string;
+	themeMode?: string;
 };
 
 export const TextField = ({
-														placeholder,
-														disabled = false,
-														type = 'text',
-														value,
-														onChange,
-														description,
-														error,
-														size = 'regular',
-														align = 'center',
-														required = false,
-														name,
-														id,
-														checked = false,
-														maxLength,
-														autocomplete = 'on'
-													}: Props) => {
+	placeholder,
+	disabled = false,
+	type = 'text',
+	value,
+	onChange,
+	description,
+	error,
+	size = 'regular',
+	align = 'center',
+	required = false,
+	name,
+	id,
+	checked = false,
+	maxLength,
+	autocomplete = 'on',
+	themeMode = 'auto'
+}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
-	const [ isActive, setIsActive ] = useState(false);
+	const [isActive, setIsActive] = useState(false);
 	const isTypeSearch = type === 'search';
 
 	const textField = (
@@ -158,6 +162,7 @@ export const TextField = ({
 				checked={checked}
 				maxLength={maxLength}
 				autocomplete={autocomplete}
+				themeMode={themeMode}
 			/>
 			{isTypeSearch && (
 				<Icon
@@ -171,7 +176,7 @@ export const TextField = ({
 					}}
 				/>
 			)}
-			{( error || description ) && type === 'text' && (
+			{(error || description) && type === 'text' && (
 				<Message>
 					{description && <Description theme={theme}>{description}</Description>}
 					{error && isActive && <Error theme={theme}>Invalid input</Error>}
