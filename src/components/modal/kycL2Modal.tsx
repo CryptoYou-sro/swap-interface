@@ -1380,7 +1380,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 15 && (
 						<div>
 							<div style={{ display: 'flex', alignItems: 'baseline' }}>
-								<p style={{ marginBottom: '25px', marginRight: '10px' }}>
+								<p style={{ marginBottom: '25px', marginRight: '20px' }}>
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
 								<Label htmlFor="label-mailing-permanent-address-true" style={{ marginRight: '10px' }}>
