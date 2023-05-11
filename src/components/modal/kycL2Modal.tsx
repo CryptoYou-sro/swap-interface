@@ -93,10 +93,16 @@ export const WrapContainer = styled.div(() => {
 	`;
 });
 
-const Title = styled.h2`
+const Title = styled.h2(() => {
+	const { mobileWidth: isMobile } = useMedia('s');
+
+	return css`
 	text-align: center;
 	font-size: ${fontSize[18]};
+	font-weight: normal;
+	margin-bottom: ${!isMobile ? `${spacing[60]}` : null};
 `;
+});
 
 const LabelFileInput = styled.label(() => {
 	const {
@@ -293,7 +299,8 @@ const FileContainerBox = styled.div(() => {
 	flex-wrap: wrap;
 	justify-content: space-between;
 	text-align: left;
-	margin-top: ${spacing[20]};
+	max-width: ${pxToRem(900)};
+	margin: 0 auto;
 	padding: ${isMobile ? `0 ${spacing[12]}` : `0 ${pxToRem(100)} 0 0`};
 `;
 });
@@ -701,9 +708,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					{page === 1 && (
 						<WrapContainer>
 							<Title>KYC and AML Questionnaire for Individuals</Title>
-							<div style={{ marginRight: '15px' }}>
-								<div style={{ display: 'flex', alignItems: 'baseline' }}>
-									<div style={{ marginRight: '10px', width: '48%', }}>
+							<div style={{ margin: '0 auto', maxWidth: `${!isMobile ? `${pxToRem(900)}` : null}` }}>
+								<div style={{ display: 'flex', alignItems: 'baseline', marginBottom: `${!isMobile ? `${pxToRem(40)}` : null}` }}>
+									<div style={{ marginRight: '10px', width: '50%', }}>
 										<Label htmlFor="label-full-name-natural">
 											Name and Surname
 										</Label>
@@ -721,7 +728,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											themeMode='light'
 										/>
 									</div>
-									<div style={{ marginBottom: '10px', width: '48%', }}>
+									<div style={{ marginBottom: '10px', width: '50%', }}>
 										<Label htmlFor="label-place-of-birth">Place of birth</Label>
 										<TextField
 											id="label-place-of-birth"
@@ -738,8 +745,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										/>
 									</div>
 								</div>
-								<div style={{ display: 'flex', alignItems: 'baseline' }}>
-									<div style={{ width: '48%', marginRight: '10px', display: 'flex', flexDirection: 'column' }}>
+								<div style={{ display: 'flex', alignItems: 'baseline', marginBottom: `${!isMobile ? `${pxToRem(40)}` : null}` }}>
+									<div style={{ width: '50%', marginRight: '10px', display: 'flex', flexDirection: 'column' }}>
 										<Label htmlFor="label-natural-dateOfBirth">Date of birth</Label>
 										<DateInput
 											type="date"
@@ -752,7 +759,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											themeMode='light'
 										/>
 									</div>
-									<div style={{ marginBottom: '10px', width: '48%', }}>
+									<div style={{ marginBottom: '10px', width: '50%', }}>
 										<Label htmlFor="label-email">Email</Label>
 										<TextField
 											id="label-email"
@@ -768,8 +775,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 										/>
 									</div>
 								</div>
-								<div>
-									<div style={{ marginBottom: '10px' }}>
+								<div style={{ paddingRight: `${!isMobile && '10px'}` }}>
+									<div>
 										<Label htmlFor="label-select-gender" style={{ display: 'block' }}>
 											Gender
 										</Label>
@@ -781,8 +788,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											// @ts-ignore
 											themeMode='light'
 											style={{
-												minHeight: '46px',
-												maxWidth: '48%'
+												minHeight: '46px'
 											}}>
 											<option value="Select gender">Select gender</option>
 											<option value="Male">Male</option>
@@ -795,7 +801,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					)}
 					{page === 2 && (
 						<WrapContainer>
-							<Title>KYC and AML Questionnaire for Individuals</Title>
+							<Title style={{ marginBottom: `${!isMobile ? `${spacing[60]}` : null}` }}>KYC and AML Questionnaire for Individuals</Title>
 							<FileContainerBox>
 								<ContentTitle style={{ width: '100%', marginRight: '10px' }}>Provide photos of one of the following documents: Passport /ID</ContentTitle>
 								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
@@ -1280,8 +1286,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					)}
 					{page === 14 && (
 						<div>
-							<ContentTitle>Your Residence</ContentTitle>
-							<div style={{ display: 'flex' }}>
+							<ContentTitle style={{ textAlign: 'center' }}>Your Residence</ContentTitle>
+							<div style={{ display: 'flex', margin: '0 auto', maxWidth: `${!isMobile ? `${pxToRem(900)}` : null}` }}>
 								<div style={{ width: '50%', marginRight: '20px' }}>
 									<Label htmlFor="input.residence.country" style={{ marginTop: '6px' }}>
 										Country
@@ -1378,9 +1384,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 						</div>
 					)}
 					{page === 15 && (
-						<div>
-							<div style={{ display: 'flex', alignItems: 'baseline' }}>
-								<p style={{ marginBottom: '25px', marginRight: '20px' }}>
+						<div style={{ margin: '0 auto', maxWidth: `${!isMobile ? `${pxToRem(900)}` : null}` }}>
+							<div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'center', marginBottom: `${!isMobile ? `${pxToRem(50)}` : null}` }}>
+								<p style={{ marginRight: '20px' }}>
 									Is your permanent (RESIDENCE) address the same as your mailing address?
 								</p>
 								<Label htmlFor="label-mailing-permanent-address-true" style={{ marginRight: '10px' }}>
@@ -1406,8 +1412,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 									No
 								</Label>
 							</div>
-							{input.permanentAndMailAddressSame === 'No' && (
-								<>
+							<div>
+								{input.permanentAndMailAddressSame === 'No' && (
 									<div style={{ display: 'flex' }}>
 										<div style={{ width: '50%', marginRight: '20px' }}>
 											<Label
@@ -1515,8 +1521,8 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 											/>
 										</div>
 									</div>
-								</>
-							)}
+								)}
+							</div>
 						</div>
 					)}
 					{page === 16 && (
@@ -1565,6 +1571,6 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 					)}
 				</ContentContainer>
 			</Wrapper>
-		</Portal>
+		</Portal >
 	);
 };
