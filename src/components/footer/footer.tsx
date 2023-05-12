@@ -10,37 +10,53 @@ const KYCL2Wrapper = styled.div(() => {
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	return css`
-	/* outline: 1px solid red; */
 	margin: 0 auto;
 	margin-top: ${spacing[24]};
 	margin-bottom: ${spacing[10]};
 	width: 100%;
-	text-align: center;
-	/* max-width: ${pxToRem(720)}; */
 	text-align: center;
 	font-size: ${fontSize[14]};
 	padding-top: ${isMobile ? `${spacing[20]}` : `${spacing[80]}`};
 `;
 });
 
-const VerifyContainer = styled.div`
-/* outline: 1px solid blue; */
-`;
+const WrapperSocial = styled.div(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+		display: flex;
+		flex-direction: column;
+		align-items: center;
+		color: ${theme.font.secondary};
+		width: 100%;
+		font-size: ${pxToRem(13)};
+	`;
+});
+
+const SocialContainer = styled.div(() => {
+
+	return css`
+		display: flex;
+		flex-direction: column;
+		align-items: flex-start;
+	`;
+});
 
 const LinkContainer = styled.div(() => {
 
 	return css`
-		/* outline: 1px solid orange; */
 		text-align: center;
 		display: flex;
 		align-items: baseline;
 		justify-content: center;
 		flex-wrap: wrap;
-		margin-bottom: ${spacing[8]};
+		font-size: ${pxToRem(13)};
+		margin-bottom: ${spacing[14]};
 		padding-top: ${spacing[20]};
 		width: 100%;
 	`;
 });
+
 
 const Link = styled.a(() => {
 	const { state: { theme } } = useStore();
@@ -68,24 +84,16 @@ const Span = styled.span(() => {
 	`;
 });
 
-const CopyRightContainer = styled.div(() => {
-	const { state: { theme } } = useStore();
+
+const CopyrightText = styled.p(() => {
+	const { mobileWidth } = useMedia('s');
 
 	return css`
-		text-align: center;
-		color: ${theme.font.secondary};
-		width: 100%;
-		
+		margin: ${!mobileWidth ? `0 0 ${spacing[6]} ${pxToRem(46)}` : null};
 	`;
 });
 
-const CopyrightText = styled.p`
-	margin-top: 0;
-	margin-bottom: 0;
-`;
-
 export const Footer = () => {
-	const { mobileWidth: isMobile } = useMedia('s');
 	const {
 		state: {
 			isUserVerified,
@@ -103,38 +111,36 @@ export const Footer = () => {
 	return (
 		<KYCL2Wrapper>
 			{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
-				<VerifyContainer>
-					<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
-						Verify as a business
-					</Button>
-				</VerifyContainer>
+				<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
+					Verify as a business
+				</Button>
 			) : null}
-			<LinkContainer>
-				<Link href='https://cryptoyou.io/blog/' target='_blank' rel='noopener noreferrer'>Blog</Link>
-				<Span>-</Span>
-				<Link href='https://cryptoyou.io/about-us/' target='_blank' rel='noopener noreferrer'>About Us</Link>
-				<Span>-</Span>
-				<Span>Follow us on</Span>
-				<Link href='https://twitter.com/Cryptoyou_io' target='_blank' rel='noopener noreferrer'>Twitter</Link>
-				<Span>or</Span>
-				<Link href='https://www.linkedin.com/company/cryptoyou-cross-chain-swap/' target='_blank' rel='noopener noreferrer'>LinkedIn</Link>
-				<Span>-</Span>
-				<Link href='https://cryptoyou.io/contact-us/' target='_blank' rel='noopener noreferrer'>Contact Us</Link>
-				<Span>-</Span>
-				<Link href='https://cryptoyou.io/terms-of-use/' target='_blank' rel='noopener noreferrer'>Term of Use</Link>
-				<Span>-</Span>
-				<Link href='https://cryptoyou.io/privacy-policy/' target='_blank' rel='noopener noreferrer'>Privacy Policy</Link>
-			</LinkContainer>
-			<CopyRightContainer>
-				<div>
-					<CopyrightText style={{ marginRight: `${!isMobile && pxToRem(86)}` }}>
+			<WrapperSocial>
+				<SocialContainer>
+					<LinkContainer>
+						<Link href='https://cryptoyou.io/blog/' target='_blank' rel='noopener noreferrer'>Blog</Link>
+						<Span>-</Span>
+						<Link href='https://cryptoyou.io/about-us/' target='_blank' rel='noopener noreferrer'>About Us</Link>
+						<Span>-</Span>
+						<Span>Follow us on</Span>
+						<Link href='https://twitter.com/Cryptoyou_io' target='_blank' rel='noopener noreferrer'>Twitter</Link>
+						<Span>or</Span>
+						<Link href='https://www.linkedin.com/company/cryptoyou-cross-chain-swap/' target='_blank' rel='noopener noreferrer'>LinkedIn</Link>
+						<Span>-</Span>
+						<Link href='https://cryptoyou.io/contact-us/' target='_blank' rel='noopener noreferrer'>Contact Us</Link>
+						<Span>-</Span>
+						<Link href='https://cryptoyou.io/terms-of-use/' target='_blank' rel='noopener noreferrer'>Term of Use</Link>
+						<Span>-</Span>
+						<Link href='https://cryptoyou.io/privacy-policy/' target='_blank' rel='noopener noreferrer'>Privacy Policy</Link>
+					</LinkContainer>
+					<CopyrightText>
 						© Copyright 2022 - CryptoYou s.r.o. - Vinohradská 2030/44 - 12000 Prague - Czechia.
 					</CopyrightText>
-					<CopyrightText style={{ marginLeft: `${!isMobile && pxToRem(56)}` }}>
+					<CopyrightText>
 						Company registered in the Commercial Register of Prague under the Identification Number (IČ): 10746358
 					</CopyrightText>
-				</div>
-			</CopyRightContainer>
+				</SocialContainer>
+			</WrapperSocial>
 
 			<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={setShowKycL2} />
 		</KYCL2Wrapper>
