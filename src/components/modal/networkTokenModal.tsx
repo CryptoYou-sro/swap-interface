@@ -10,7 +10,8 @@ import {
 	SourceEnum,
 	isNetworkSelected,
 	isTokenSelected,
-	useStore
+	useStore,
+	findNativeToken
 } from '../../helpers';
 import { useMedia } from '../../hooks';
 import { mediaQuery, spacing } from '../../styles';
@@ -146,7 +147,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	}, [showModal]);
 
 	useEffect(() => {
-		if (wagmiChain && Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
+		if (SOURCE_NETWORKS && wagmiChain && Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
 			dispatch({
 				type: SourceEnum.NETWORK,
 				// @ts-ignore
@@ -154,8 +155,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			});
 			dispatch({
 				type: SourceEnum.TOKEN,
-				// @ts-ignore
-				payload: CHAINS[wagmiChain?.id.toString()].name
+				payload: findNativeToken(SOURCE_NETWORKS[wagmiChain?.id.toString()]?.['tokens'])
 			});
 			dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 			dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
@@ -163,7 +163,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			disconnect();
 			addToast('Please change the network to one that is supported', 'warning');
 		}
-	}, [wagmiChain]);
+	}, [wagmiChain, SOURCE_NETWORKS]);
 
 	return !isMobile ? (
 		<Portal handleClose={() => setShowModal(false)} isOpen={showModal} size="large">

@@ -13,7 +13,8 @@ import {
 	SourceEnum,
 	useStore,
 	NETWORK_TO_ID,
-	isNetworkSelected
+	isNetworkSelected,
+	findNativeToken
 } from '../../helpers';
 import { DEFAULT_BORDER_RADIUS, fontSize, spacing } from '../../styles';
 
@@ -209,10 +210,13 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						type: SourceEnum.NETWORK,
 						payload: name
 					});
-					dispatch({
-						type: SourceEnum.TOKEN,
-						payload: name
-					});
+					if (SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)) {
+						dispatch({
+							type: SourceEnum.TOKEN,
+							// @ts-ignore
+							payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens'])
+						});
+					}
 				}
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });

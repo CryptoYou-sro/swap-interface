@@ -61,3 +61,16 @@ export const findAndReplace = (array: string[], find: string, replace: string): 
 
 	return result;
 };
+
+export const findNativeToken = (networkTokens: any): string => {
+	let result = '';
+	for (const [key, value] of Object.entries(networkTokens)) {
+		// @ts-ignore
+		if (value.isNative) {
+			result = key;
+			break;
+		}
+	}
+
+	return result;
+};
