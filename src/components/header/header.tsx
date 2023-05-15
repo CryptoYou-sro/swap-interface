@@ -2,11 +2,13 @@ import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage } from 'wagmi';
-import { Button, Icon, KycL2Modal, useToasts } from '../../components';
+import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
+import { mainnet, moonbeam } from 'wagmi/chains';
+import { Button, Icon, IconType, KycL2Modal, useToasts } from '../../components';
 import {
 	BASE_URL,
 	ButtonEnum,
+	CHAINS,
 	DefaultSelectEnum,
 	DestinationEnum,
 	INITIAL_STORAGE,
@@ -16,12 +18,14 @@ import {
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
 	NETWORK_TO_WC,
+	SourceEnum,
 	ThemeEnum,
 	VerificationEnum,
 	button,
 	getAuthTokensFromNonce,
 	hexToRgbA,
 	isLightTheme,
+	isNetworkSelected,
 	loadBinanceKycScript,
 	makeBinanceKycCall,
 	routes,
@@ -31,6 +35,7 @@ import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hook
 import {
 	ColorType,
 	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSITION,
 	Theme,
 	theme as defaultTheme,
 	mediaQuery,
@@ -91,6 +96,28 @@ const Menu = styled.ul`
 	}
 `;
 
+const NetworkWrapper = styled.button`
+	all: unset;
+	display: flex;
+	gap: ${spacing[8]};
+	align-items: center;
+	cursor: pointer;
+`;
+
+const Networks = styled(Menu)`
+	width: calc(100% - ${pxToRem(8)});
+	& li {
+		display: flex;
+		align-items: center;
+		gap: ${spacing[10]};
+		cursor: pointer;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		transition: 0.3s;
+		&:hover {
+			transform: scale(1.05);
+		}
+	}
+`;
 const WalletContainer = styled.div`
 	display: flex;
 	align-items: center;
@@ -144,6 +171,7 @@ export const Header = () => {
 	});
 
 	const { mobileWidth: isMobile } = useMedia('s');
+	const { mobileWidth: isDeskTop } = useMedia('m');
 	const {
 		state: {
 			buttonStatus,
@@ -163,12 +191,14 @@ export const Header = () => {
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
+	const [showNetworksList, setShowNetworksList] = useState(false);
 	const [showModal, setShowModal] = useState(false);
 	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
+	const { switchNetwork } = useSwitchNetwork();
 	// const navigate = useNavigate();
 	// const { pathname } = useLocation();
 
@@ -209,6 +239,69 @@ export const Header = () => {
 		} catch (error: any) {
 			await setTokensInStorageAndContext();
 		}
+	};
+
+	const handleNetworkChange = (name: string) => {
+		setShowNetworksList(!showNetworksList);
+		if (isUserVerified) {
+			try {
+				// @ts-ignore
+				// await ethereum.request({
+				// 	method: 'wallet_switchEthereumChain',
+				// 	params: [
+				// 		{
+				// 			chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
+				// 		}
+				// 	]
+				// });
+				if (wagmiChain.id === 1) {
+					switchNetwork?.(moonbeam.id);
+				} else {
+					switchNetwork?.(mainnet.id);
+				}
+			} catch (error: any) {
+				if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
+					try {
+						// // @ts-ignore
+						// await ethereum.request({
+						// 	method: 'wallet_addEthereumChain',
+						// 	params: NETWORK_PARAMS['1284']
+						// });
+						switchNetwork?.(moonbeam.id);
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name
+						});
+						dispatch({
+							type: SourceEnum.TOKEN,
+							payload: name
+						});
+					} catch (e) {
+						dispatch({
+							type: SourceEnum.NETWORK,
+							payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+						});
+						dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+					}
+				} else if (error.code === 4001) {
+					return;
+				} else {
+					addToast('Something went wrong - please try again');
+				}
+			}
+
+		} else {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				payload: name
+			});
+			dispatch({
+				type: SourceEnum.TOKEN,
+				payload: name
+			});
+		}
+		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
 	};
 
 	const checkStatus = async () => {
@@ -262,8 +355,10 @@ export const Header = () => {
 		}
 	};
 
+
 	const domNode: any = useClickOutside(() => {
 		setShowMenu(false);
+		setShowNetworksList(false);
 	});
 
 	const updateShowKycL2 = (value: boolean) => {
@@ -390,6 +485,62 @@ export const Header = () => {
 						Step-by-step Guide
 					</Button>
 				</a>
+			)}
+			{!isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					{sourceNetwork ? sourceNetwork : null}
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSITION
+						}}
+					/>
+				</NetworkWrapper>
+			)}
+			{isMobile && isNetworkSelected(sourceNetwork) && (
+				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
+					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showNetworksList ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSITION
+						}}
+					/>
+				</NetworkWrapper>
+			)}
+			{showNetworksList && (
+				<MenuWrapper theme={theme}>
+					<Networks
+						theme={theme}
+						ref={domNode}
+						style={{
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(200)}`,
+							right: `${!isDeskTop && '20%'}`
+						}}>
+						{Object.values(CHAINS).map((chain) => (
+							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
+								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
+								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
+								<Icon
+									icon={
+										sourceNetwork !== chain.name
+											? undefined
+											: isLightTheme(theme)
+												? 'checkLight'
+												: 'checkDark'
+									}
+									size={16}
+									style={{ marginLeft: 'auto' }}
+								/>
+							</li>
+						))}
+					</Networks>
+				</MenuWrapper>
 			)}
 			{isConnected && isUserVerified && accountAddr && isNetworkConnected ? (
 				<WalletContainer>
