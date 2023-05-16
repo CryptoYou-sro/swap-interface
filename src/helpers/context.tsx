@@ -105,7 +105,7 @@ export enum AvailableCurrenciesEnum {
 	SET = 'SET'
 }
 
-type SourceNetworks = 'ETH' | 'GLMR' | DefaultSelectEnum.NETWORK;
+type SourceNetworks = 'ETH' | 'BSC' | 'GLMR' | DefaultSelectEnum.NETWORK;
 
 type VerificationAction = {
 	type: VerificationEnum;
