@@ -37,3 +37,39 @@ export const moonbeam = {
     },
     testnet: false
 } as const satisfies Chain;
+
+export const bsc = {
+    id: 56,
+    name: 'Binance Smart Chain',
+    network: 'bsc',
+    nativeCurrency: {
+        decimals: 18,
+        name: 'BNB',
+        symbol: 'BNB',
+    },
+    rpcUrls: {
+        public: {
+            http: ['https://bsc.publicnode.com'],
+        },
+        default: {
+            http: ['https://bsc.publicnode.com'],
+        },
+    },
+    blockExplorers: {
+        default: {
+            name: 'BscScan',
+            url: 'https://bscscan.com',
+        },
+        etherscan: {
+            name: 'BscScan',
+            url: 'https://bscscan.com',
+        },
+    },
+    contracts: {
+        multicall3: {
+            address: '0xca11bde05977b3631167028862be2a173976ca11',
+            blockCreated: 15921452,
+        },
+    },
+    testnet: false
+} as const satisfies Chain;

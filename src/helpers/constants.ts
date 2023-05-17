@@ -1,5 +1,5 @@
-import { mainnet, bsc } from 'wagmi/chains';
-import { moonbeam } from './chains';
+import { mainnet } from 'wagmi/chains';
+import { moonbeam, bsc } from './chains';
 
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
