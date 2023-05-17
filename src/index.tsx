@@ -1,11 +1,11 @@
-import { EthereumClient, w3mConnectors, w3mProvider } from '@web3modal/ethereum';
+import { EthereumClient, w3mConnectors } from '@web3modal/ethereum';
 import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
 import App from './App';
 import { ToastProvider, Web3ModalConnect } from './components';
-import { AuthProvider } from './helpers';
+import { AuthProvider, customW3mProvider } from './helpers';
 import { moonbeam, bsc } from './helpers/chains';
 import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
 
@@ -19,7 +19,7 @@ const { provider } = configureChains(
 					http: ['https://bsc.publicnode.com'],
 				} : null,
 		}),
-		w3mProvider({ projectId }),
+		customW3mProvider({ projectId }),
 	]);
 const wagmiClient = createClient({
 	autoConnect: true,
