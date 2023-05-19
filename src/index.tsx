@@ -3,24 +3,21 @@ import { StrictMode } from 'react';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { mainnet } from 'wagmi/chains';
+import { publicProvider } from '@wagmi/core/providers/public';
 import App from './App';
 import { ToastProvider, Web3ModalConnect } from './components';
-import { AuthProvider, customW3mProvider } from './helpers';
-import { moonbeam, bsc } from './helpers/chains';
-import { jsonRpcProvider } from 'wagmi/providers/jsonRpc';
+import {
+	AuthProvider,
+} from './helpers';
+import { bsc, moonbeam } from './helpers/chains';
 
-const chains = [mainnet, moonbeam, bsc,];
+const chains = [mainnet, moonbeam, bsc];
 const projectId = process.env.REACT_APP_WALLET_CONNECT_PROJECT_ID as string;
 const { provider } = configureChains(
-	chains, 
-	[
-		jsonRpcProvider({
-			rpc: (chain): any => chain.id === 56 ? {
-					http: ['https://bsc.publicnode.com'],
-				} : null,
-		}),
-		customW3mProvider({ projectId }),
-	]);
+	chains,
+	[publicProvider()],
+	{ pollingInterval: 10_000 },
+);
 const wagmiClient = createClient({
 	autoConnect: true,
 	connectors: w3mConnectors({
