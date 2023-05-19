@@ -7,12 +7,12 @@ import {
 	AmountEnum,
 	DefaultSelectEnum,
 	DestinationEnum,
-	SourceEnum,
-	useStore,
 	NETWORK_TO_ID,
 	NETWORK_TO_WC,
+	SourceEnum,
+	findNativeToken,
 	isNetworkSelected,
-	findNativeToken
+	useStore
 } from '../../helpers';
 import { DEFAULT_BORDER_RADIUS, fontSize, spacing } from '../../styles';
 
@@ -105,7 +105,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { 
+		state: {
 			destinationToken, destinationNetwork, sourceNetwork, sourceToken, isUserVerified,
 			availableSourceNetworks: SOURCE_NETWORKS,
 			availableDestinationNetworks: DESTINATION_NETWORKS
@@ -168,11 +168,11 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						type: SourceEnum.NETWORK,
 						payload: name
 					});
-					if (SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)) {
+					if (SOURCE_NETWORKS && isNetworkSelected(name)) {
 						dispatch({
 							type: SourceEnum.TOKEN,
 							// @ts-ignore
-							payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens'])
+							payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[name]]?.['tokens'])
 						});
 					}
 				}
@@ -213,13 +213,13 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 	const wrappedTokens: any = useMemo(() => {
 		const result: unknown = {};
 
-		if(value === 'SOURCE_TOKEN' && SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)) {
+		if (value === 'SOURCE_TOKEN' && SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)) {
 			// @ts-ignore
 			for (const [key, value] of Object.entries(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens'])) {
 				// @ts-ignore
 				result[key] = value['wrappedToken'] ? value['wrappedToken'] : '';
 			}
-		} else if(value === 'TOKEN' && DESTINATION_NETWORKS && isNetworkSelected(destinationNetwork)) {
+		} else if (value === 'TOKEN' && DESTINATION_NETWORKS && isNetworkSelected(destinationNetwork)) {
 			// @ts-ignore
 			for (const [key, value] of Object.entries(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[destinationNetwork]?.['tokens'])) {
 				// @ts-ignore
@@ -253,8 +253,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							key={el}>
 							<Icon icon={el.toLowerCase() as IconType} size="small" />
 							<Name>{el}</Name>
-							{wrappedTokens[el] && 
-								<span style={{marginLeft: '5px'}}>({wrappedTokens[el]})</span>
+							{wrappedTokens[el] &&
+								<span style={{ marginLeft: '5px' }}>({wrappedTokens[el]})</span>
 							}
 						</Item>
 					))}

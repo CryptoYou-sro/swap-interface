@@ -89,9 +89,9 @@ export const useFees = () => {
 	});
 	const balanceWagmiToken = useBalance({
 		address,
-		token: sourceTokenData.contractAddr,
+		token: sourceTokenData?.contractAddr,
 		watch: true,
-		enabled: sourceTokenData.contractAddr
+		enabled: sourceTokenData && sourceTokenData.contractAddr
 	});
 	const walletBalanceBN = balanceWagmiAcc.data?.value;
 	const tokenBalance = balanceWagmiToken.data?.value;
