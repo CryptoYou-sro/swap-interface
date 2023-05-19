@@ -115,7 +115,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const event: any = await protocol?.queryFilter(
 							costResponseFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
 
 						console.log('CostResponse event', event);
@@ -373,7 +373,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					const events: any = await protocol?.queryFilter(
 						costRequestFilter,
 						propSwap.currentBlockNumber,
-						propSwap.currentBlockNumber+1000
+						propSwap.currentBlockNumber + 1000
 					);
 
 					console.log('CostRequest events', events);
@@ -445,7 +445,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					const event: any = await protocol?.queryFilter(
 						depositFilter,
 						propSwap.currentBlockNumber,
-						propSwap.currentBlockNumber+1000
+						propSwap.currentBlockNumber + 1000
 					);
 
 					if (event.length > 0) {
@@ -498,7 +498,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const events: any = await protocol?.queryFilter(
 							actionFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
 
 						if (events.length >= 2) {
@@ -610,7 +610,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const events: any = await protocol?.queryFilter(
 							completeFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
 
 						if (events.length > 0) {
