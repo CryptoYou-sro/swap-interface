@@ -115,8 +115,10 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const event: any = await protocol?.queryFilter(
 							costResponseFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
+
+						console.log('CostResponse event', event);
 
 						if (event.length > 0) {
 							if (sourceTokenData?.isNative) {
@@ -367,11 +369,14 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 				);
 				// Try to find cost request events in blockchain
 				if (costRequestFilter) {
+					console.log('before queryFilter');
 					const events: any = await protocol?.queryFilter(
 						costRequestFilter,
 						propSwap.currentBlockNumber,
-						propSwap.currentBlockNumber+1000
+						propSwap.currentBlockNumber + 1000
 					);
+
+					console.log('CostRequest events', events);
 
 					if (events?.length >= 2) {
 						const swapsCopy = readLocalData();
@@ -440,7 +445,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 					const event: any = await protocol?.queryFilter(
 						depositFilter,
 						propSwap.currentBlockNumber,
-						propSwap.currentBlockNumber+1000
+						propSwap.currentBlockNumber + 1000
 					);
 
 					if (event.length > 0) {
@@ -493,7 +498,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const events: any = await protocol?.queryFilter(
 							actionFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
 
 						if (events.length >= 2) {
@@ -605,7 +610,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 						const events: any = await protocol?.queryFilter(
 							completeFilter,
 							propSwap.currentBlockNumber,
-							propSwap.currentBlockNumber+1000
+							propSwap.currentBlockNumber + 1000
 						);
 
 						if (events.length > 0) {
@@ -663,7 +668,7 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 	// Trigger function event listener
 	useEffect(() => {
 		void eventListener(propSwap);
-	}, [propSwap]);
+	}, [propSwap, sourceToken]);
 
 	return isVisible ? <TabContent swap={propSwap} /> : null;
 };

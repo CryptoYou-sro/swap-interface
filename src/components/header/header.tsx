@@ -1,9 +1,8 @@
 import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
-import { mainnet, moonbeam } from 'wagmi/chains';
 import { Button, Icon, IconType, KycL2Modal, useToasts } from '../../components';
 import {
 	BASE_URL,
@@ -17,6 +16,7 @@ import {
 	KycL2StatusEnum,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
+	NETWORK_TO_ID,
 	NETWORK_TO_WC,
 	SourceEnum,
 	ThemeEnum,
@@ -29,7 +29,7 @@ import {
 	loadBinanceKycScript,
 	makeBinanceKycCall,
 	routes,
-	useStore
+	useStore,
 } from '../../helpers';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import {
@@ -139,12 +139,44 @@ const WalletBalance = styled.div(() => {
 });
 
 export const Header = () => {
+	const {
+		state: {
+			sourceToken,
+			buttonStatus,
+			isUserVerified,
+			accessToken,
+			sourceNetwork,
+			account: userAccount,
+			isNetworkConnected,
+			theme,
+			kycL2Status,
+			availableSourceNetworks: SOURCE_NETWORKS,
+		},
+		dispatch
+	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	const { isConnected, address: accountAddr } = useAccount();
 	const { disconnect } = useDisconnect();
-	const { data } = useBalance({
+	const sourceTokenData = useMemo(
+		() =>
+			// eslint-disable-next-line
+			SOURCE_NETWORKS ?
+				// @ts-ignore
+				// eslint-disable-next-line
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+				: {},
+		[SOURCE_NETWORKS, sourceToken]
+	);
+	const { data: nativeBalance } = useBalance({
 		address: accountAddr,
 	});
+	const { data: tokenBalance } = useBalance({
+		address: accountAddr,
+		token: sourceTokenData.contractAddr,
+		watch: true,
+		enabled: sourceTokenData.contractAddr
+	});
+	const balanceAccount = sourceTokenData?.isNative ? nativeBalance : tokenBalance;
 	const { chain: wagmiChain } = useNetwork();
 	const { open, setDefaultChain } = useWeb3Modal();
 	const [signMessage, setSignMessage] = useState('');
@@ -172,20 +204,6 @@ export const Header = () => {
 
 	const { mobileWidth: isMobile } = useMedia('s');
 	const { mobileWidth: isDeskTop } = useMedia('m');
-	const {
-		state: {
-			buttonStatus,
-			isUserVerified,
-			accessToken,
-			sourceNetwork,
-			account: userAccount,
-			isNetworkConnected,
-			theme,
-			kycL2Status
-		},
-		dispatch
-	} = useStore();
-
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();
@@ -246,48 +264,39 @@ export const Header = () => {
 		if (isUserVerified) {
 			try {
 				// @ts-ignore
-				// await ethereum.request({
-				// 	method: 'wallet_switchEthereumChain',
-				// 	params: [
-				// 		{
-				// 			chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
-				// 		}
-				// 	]
-				// });
-				if (wagmiChain.id === 1) {
-					switchNetwork?.(moonbeam.id);
-				} else {
-					switchNetwork?.(mainnet.id);
-				}
+				switchNetwork?.(NETWORK_TO_WC[name]?.id);
 			} catch (error: any) {
-				if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-					try {
-						// // @ts-ignore
-						// await ethereum.request({
-						// 	method: 'wallet_addEthereumChain',
-						// 	params: NETWORK_PARAMS['1284']
-						// });
-						switchNetwork?.(moonbeam.id);
-						dispatch({
-							type: SourceEnum.NETWORK,
-							payload: name
-						});
-						dispatch({
-							type: SourceEnum.TOKEN,
-							payload: name
-						});
-					} catch (e) {
-						dispatch({
-							type: SourceEnum.NETWORK,
-							payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-						});
-						dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-					}
-				} else if (error.code === 4001) {
-					return;
-				} else {
-					addToast('Something went wrong - please try again');
-				}
+				// if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
+				// 	try {
+				// 		// // @ts-ignore
+				// 		// await ethereum.request({
+				// 		// 	method: 'wallet_addEthereumChain',
+				// 		// 	params: NETWORK_PARAMS['1284']
+				// 		// });
+				// 		switchNetwork?.(moonbeam.id);
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name
+				// 		});
+				// 		dispatch({
+				// 			type: SourceEnum.TOKEN,
+				// 			payload: name
+				// 		});
+				// 	} catch (e) {
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+				// 		});
+				// 		dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				// 	}
+				// } else if (error.code === 4001) {
+				// 	return;
+				// } else {
+				// 	addToast('Something went wrong - please try again');
+				// }
+				addToast('Something went wrong - please try again');
+
+				return;
 			}
 
 		} else {
@@ -524,19 +533,15 @@ export const Header = () => {
 						}}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
-								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
-								<Icon
-									icon={
-										sourceNetwork !== chain.name
-											? undefined
-											: isLightTheme(theme)
-												? 'checkLight'
-												: 'checkDark'
-									}
-									size={16}
-									style={{ marginLeft: 'auto' }}
-								/>
+								<Icon icon={chain.name.toLowerCase() as IconType} size="small" />
+								{chain.name}
+								{sourceNetwork === chain.name && (
+									<Icon
+										icon={isLightTheme(theme) ? 'checkLight' : 'checkDark'}
+										size={16}
+										style={{ marginLeft: 'auto' }}
+									/>
+								)}
 							</li>
 						))}
 					</Networks>
@@ -546,7 +551,7 @@ export const Header = () => {
 				<WalletContainer>
 					{!isMobile && (
 						<WalletBalance>
-							{data?.formatted.slice(0, 15)} {data?.symbol}
+							{balanceAccount?.formatted.slice(0, 15)} {balanceAccount?.symbol}
 						</WalletBalance>
 					)}
 					<Web3Button balance={'hide'} icon="show" />

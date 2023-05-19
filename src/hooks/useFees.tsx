@@ -1,9 +1,10 @@
 import { Contract } from '@ethersproject/contracts';
 import { formatEther, formatUnits } from '@ethersproject/units';
+import { prepareWriteContract } from '@wagmi/core';
 import axios from 'axios';
 import { BigNumber, providers, utils } from 'ethers';
 import { useCallback, useEffect, useMemo, useState } from 'react';
-import { useAccount, useBalance, useFeeData, useNetwork, usePrepareContractWrite, useProvider } from 'wagmi';
+import { useAccount, useBalance, useFeeData, useNetwork, useProvider } from 'wagmi';
 import CONTRACT_DATA from '../data/YandaMultitokenProtocolV1.json';
 import type { DestinationNetworks, Fee, GraphType, Price } from '../helpers';
 import {
@@ -73,8 +74,6 @@ export const useFees = () => {
 		[SOURCE_NETWORKS, sourceToken]
 	);
 	const gasPrice = feeData.data?.gasPrice;
-
-
 	const contractAddress: any = CONTRACT_ADDRESSES?.[wagmiChain?.id as keyof typeof CONTRACT_ADDRESSES] || '';
 	const contractInterface = new utils.Interface(CONTRACT_DATA.abi);
 	const contract = new Contract(contractAddress, contractInterface, wagmiProvider);
@@ -90,11 +89,12 @@ export const useFees = () => {
 	});
 	const balanceWagmiToken = useBalance({
 		address,
-		token: contractAddress,
+		token: sourceTokenData.contractAddr,
 		watch: true,
+		enabled: sourceTokenData.contractAddr
 	});
 	const walletBalanceBN = balanceWagmiAcc.data?.value;
-	const tokenBalance = balanceWagmiToken.data?.formatted;
+	const tokenBalance = balanceWagmiToken.data?.value;
 
 	const productId = utils.id(makeId(32));
 	const namedValues = {
@@ -106,40 +106,34 @@ export const useFees = () => {
 	};
 	const shortNamedValues = JSON.stringify(namedValues);
 
-	usePrepareContractWrite({
-		address: contractAddress,
-		abi: CONTRACT_DATA.abi,
-		functionName: 'createProcess(address,bytes32,string)',
-		args: [SERVICE_ADDRESS, productId, shortNamedValues],
-		enabled: Boolean(sourceTokenData?.isNative && isTokenSelected(destinationToken)),
-		onSuccess(data) {
+	useEffect(() => {
+		async function getGasAmount() {
 			if (sourceTokenData?.isNative) {
-				setGasAmount(data.request.gasLimit);
+				const config = await prepareWriteContract({
+					address: contractAddress,
+					abi: CONTRACT_DATA.abi,
+					functionName: 'createProcess(address,bytes32,string)',
+					args: [SERVICE_ADDRESS, productId, shortNamedValues],
+					chainId: wagmiChain?.id
+				});
+				config.abi = CONTRACT_DATA.abi;
+				setGasAmount(config.request.gasLimit);
+			} else if (!sourceTokenData?.isNative) {
+				const config = await prepareWriteContract({
+					address: contractAddress,
+					abi: CONTRACT_DATA.abi,
+					functionName: 'createProcess(address,address,bytes32,string)',
+					args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
+					chainId: wagmiChain?.id
+				});
+				config.abi = CONTRACT_DATA.abi;
+				setGasAmount(config.request.gasLimit);
 			}
-		},
-		onError(error) {
-			throw new Error('Error', error);
-
 		}
-	});
-
-	usePrepareContractWrite({
-		address: contractAddress,
-		abi: CONTRACT_DATA.abi,
-		functionName: 'createProcess(address,address,bytes32,string)',
-		args: [sourceTokenData?.contractAddr, SERVICE_ADDRESS, productId, shortNamedValues],
-		enabled: Boolean(!sourceTokenData?.isNative && isTokenSelected(destinationToken)),
-		onSuccess(data) {
-			if (!sourceTokenData?.isNative) {
-				console.log('NOTnative', data.request.gasLimit);
-				setGasAmount(data.request.gasLimit);
-			}
-		},
-		onError(error) {
-			throw new Error('Error', error);
-
+		if (isTokenSelected(destinationToken) && +amount > 0 && CONTRACT_DATA) {
+			void getGasAmount();
 		}
-	});
+	}, [sourceTokenData, destinationToken, amount, CONTRACT_DATA]);
 
 	const getExchangeInfo = async () => {
 		try {

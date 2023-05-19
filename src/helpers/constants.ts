@@ -1,4 +1,5 @@
-import { mainnet, moonbeam } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
+import { moonbeam, bsc } from './chains';
 
 export const LOCAL_STORAGE_THEME = 'darkMode';
 export const LOCAL_STORAGE_AUTH = 'auth';
@@ -24,7 +25,7 @@ export const BINANCE_SCRIPT =
 export const BINANCE_PRICE_TICKER = 'https://www.binance.com/api/v3/ticker/price';
 export const BINANCE_EXCHANGE_INFO = 'https://api.binance.com/api/v3/exchangeInfo';
 
-export const BASE_URL = 'https://auth-app-ijjt6.ondigitalocean.app/';
+export const BASE_URL = process.env.REACT_APP_BACKEND_URL || 'https://auth-app-ijjt6.ondigitalocean.app/';
 export const MOONBEAM_URL = 'https://rpc.api.moonbeam.network';
 export const ETHEREUM_URL = 'https://mainnet.infura.io/v3';
 
@@ -55,22 +56,26 @@ export const TRANSACTION_GAS_LIMIT_BUFFER = 10;
 
 export const CONTRACT_ADDRESSES = {
 	1: '0xa9EB7218Fd8153c93aD1b4acf42330E7044E75A1',
+	56: '0x1fcC225E5F4AA6FeD5640CaBc065eE39534025d4',
 	1284: '0xb8F18F75D5513F2fAA6477f0b54cC676eaedcAC4'
 };
 
 export const CHAINS = {
 	// TODO: add types
 	'1284': { name: 'GLMR', network: moonbeam.id },
+	'56': { name: 'BSC', network: bsc.id },
 	'1': { name: 'ETH', network: mainnet.id },
 };
 
 export const NETWORK_TO_ID = {
 	GLMR: '1284',
+	BSC: '56',
 	ETH: '1'
 };
 
 export const NETWORK_TO_WC = {
 	GLMR: moonbeam,
+	BSC: bsc,
 	ETH: mainnet
 };
 
