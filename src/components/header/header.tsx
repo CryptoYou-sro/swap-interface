@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
-import { mainnet, moonbeam } from 'wagmi/chains';
 import { Button, Icon, IconType, KycL2Modal, useToasts } from '../../components';
 import {
 	BASE_URL,
@@ -204,7 +203,7 @@ export const Header = () => {
 	});
 
 	const { mobileWidth: isMobile } = useMedia('s');
-  const { mobileWidth: isDeskTop } = useMedia('m');
+	const { mobileWidth: isDeskTop } = useMedia('m');
 	// @ts-ignore
 	const { addToast } = useToasts();
 	const api = useAxios();
@@ -265,48 +264,39 @@ export const Header = () => {
 		if (isUserVerified) {
 			try {
 				// @ts-ignore
-				// await ethereum.request({
-				// 	method: 'wallet_switchEthereumChain',
-				// 	params: [
-				// 		{
-				// 			chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
-				// 		}
-				// 	]
-				// });
-				if (wagmiChain.id === 1) {
-					switchNetwork?.(moonbeam.id);
-				} else {
-					switchNetwork?.(mainnet.id);
-				}
+				switchNetwork?.(NETWORK_TO_WC[name]?.id);
 			} catch (error: any) {
-				if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-					try {
-						// // @ts-ignore
-						// await ethereum.request({
-						// 	method: 'wallet_addEthereumChain',
-						// 	params: NETWORK_PARAMS['1284']
-						// });
-						switchNetwork?.(moonbeam.id);
-						dispatch({
-							type: SourceEnum.NETWORK,
-							payload: name
-						});
-						dispatch({
-							type: SourceEnum.TOKEN,
-							payload: name
-						});
-					} catch (e) {
-						dispatch({
-							type: SourceEnum.NETWORK,
-							payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-						});
-						dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-					}
-				} else if (error.code === 4001) {
-					return;
-				} else {
-					addToast('Something went wrong - please try again');
-				}
+				// if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
+				// 	try {
+				// 		// // @ts-ignore
+				// 		// await ethereum.request({
+				// 		// 	method: 'wallet_addEthereumChain',
+				// 		// 	params: NETWORK_PARAMS['1284']
+				// 		// });
+				// 		switchNetwork?.(moonbeam.id);
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name
+				// 		});
+				// 		dispatch({
+				// 			type: SourceEnum.TOKEN,
+				// 			payload: name
+				// 		});
+				// 	} catch (e) {
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+				// 		});
+				// 		dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				// 	}
+				// } else if (error.code === 4001) {
+				// 	return;
+				// } else {
+				// 	addToast('Something went wrong - please try again');
+				// }
+				addToast('Something went wrong - please try again');
+
+				return;
 			}
 
 		} else {
@@ -543,19 +533,15 @@ export const Header = () => {
 						}}>
 						{Object.values(CHAINS).map((chain) => (
 							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
-								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
-								<Icon
-									icon={
-										sourceNetwork !== chain.name
-											? undefined
-											: isLightTheme(theme)
-												? 'checkLight'
-												: 'checkDark'
-									}
-									size={16}
-									style={{ marginLeft: 'auto' }}
-								/>
+								<Icon icon={chain.name.toLowerCase() as IconType} size="small" />
+								{chain.name}
+								{sourceNetwork === chain.name && (
+									<Icon
+										icon={isLightTheme(theme) ? 'checkLight' : 'checkDark'}
+										size={16}
+										style={{ marginLeft: 'auto' }}
+									/>
+								)}
 							</li>
 						))}
 					</Networks>
