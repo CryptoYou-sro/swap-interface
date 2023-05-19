@@ -1,6 +1,6 @@
 import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage } from 'wagmi';
 import { Button, Icon, KycL2Modal, useToasts } from '../../components';
@@ -15,6 +15,7 @@ import {
 	KycL2StatusEnum,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
+	NETWORK_TO_ID,
 	NETWORK_TO_WC,
 	ThemeEnum,
 	VerificationEnum,
@@ -25,7 +26,7 @@ import {
 	loadBinanceKycScript,
 	makeBinanceKycCall,
 	routes,
-	useStore
+	useStore,
 } from '../../helpers';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
 import {
@@ -112,12 +113,44 @@ const WalletBalance = styled.div(() => {
 });
 
 export const Header = () => {
+	const {
+		state: {
+			sourceToken,
+			buttonStatus,
+			isUserVerified,
+			accessToken,
+			sourceNetwork,
+			account: userAccount,
+			isNetworkConnected,
+			theme,
+			kycL2Status,
+			availableSourceNetworks: SOURCE_NETWORKS,
+		},
+		dispatch
+	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	const { isConnected, address: accountAddr } = useAccount();
 	const { disconnect } = useDisconnect();
-	const { data } = useBalance({
+	const sourceTokenData = useMemo(
+		() =>
+			// eslint-disable-next-line
+			SOURCE_NETWORKS ?
+				// @ts-ignore
+				// eslint-disable-next-line
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+				: {},
+		[SOURCE_NETWORKS, sourceToken]
+	);
+	const { data: nativeBalance } = useBalance({
 		address: accountAddr,
 	});
+	const { data: tokenBalance } = useBalance({
+		address: accountAddr,
+		token: sourceTokenData.contractAddr,
+		watch: true,
+		enabled: sourceTokenData.contractAddr
+	});
+	const balanceAccount = sourceTokenData?.isNative ? nativeBalance : tokenBalance;
 	const { chain: wagmiChain } = useNetwork();
 	const { open, setDefaultChain } = useWeb3Modal();
 	const [signMessage, setSignMessage] = useState('');
@@ -144,19 +177,6 @@ export const Header = () => {
 	});
 
 	const { mobileWidth: isMobile } = useMedia('s');
-	const {
-		state: {
-			buttonStatus,
-			isUserVerified,
-			accessToken,
-			sourceNetwork,
-			account: userAccount,
-			isNetworkConnected,
-			theme,
-			kycL2Status
-		},
-		dispatch
-	} = useStore();
 
 	// @ts-ignore
 	const { addToast } = useToasts();
@@ -395,7 +415,7 @@ export const Header = () => {
 				<WalletContainer>
 					{!isMobile && (
 						<WalletBalance>
-							{data?.formatted.slice(0, 15)} {data?.symbol}
+							{balanceAccount?.formatted.slice(0, 15)} {balanceAccount?.symbol}
 						</WalletBalance>
 					)}
 					<Web3Button balance={'hide'} icon="show" />
