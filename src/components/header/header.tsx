@@ -5,6 +5,7 @@ import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
 import { Button, Icon, IconType, KycL2Modal, useToasts } from '../../components';
 import {
+	AmountEnum,
 	BASE_URL,
 	ButtonEnum,
 	CHAINS,
@@ -22,6 +23,7 @@ import {
 	ThemeEnum,
 	VerificationEnum,
 	button,
+	findNativeToken,
 	getAuthTokensFromNonce,
 	hexToRgbA,
 	isLightTheme,
@@ -172,9 +174,9 @@ export const Header = () => {
 	});
 	const { data: tokenBalance } = useBalance({
 		address: accountAddr,
-		token: sourceTokenData.contractAddr,
+		token: sourceTokenData?.contractAddr,
 		watch: true,
-		enabled: sourceTokenData.contractAddr
+		enabled: sourceTokenData && sourceTokenData.contractAddr
 	});
 	const balanceAccount = sourceTokenData?.isNative ? nativeBalance : tokenBalance;
 	const { chain: wagmiChain } = useNetwork();
@@ -304,13 +306,19 @@ export const Header = () => {
 				type: SourceEnum.NETWORK,
 				payload: name
 			});
-			dispatch({
-				type: SourceEnum.TOKEN,
-				payload: name
-			});
+
+			if (SOURCE_NETWORKS && isNetworkSelected(name)) {
+				dispatch({
+					type: SourceEnum.TOKEN,
+					// @ts-ignore
+					payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[name]]?.['tokens'])
+				});
+			}
 		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+		dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 	};
 
 	const checkStatus = async () => {
