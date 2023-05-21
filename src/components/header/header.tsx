@@ -1,4 +1,5 @@
 import { Web3Button, useWeb3Modal } from '@web3modal/react';
+import { useLocation } from 'react-router-dom';
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
@@ -178,6 +179,7 @@ export const Header = () => {
 		watch: true,
 		enabled: sourceTokenData && sourceTokenData.contractAddr
 	});
+	const location = useLocation();
 	const balanceAccount = sourceTokenData?.isNative ? nativeBalance : tokenBalance;
 	const { chain: wagmiChain } = useNetwork();
 	const { open, setDefaultChain } = useWeb3Modal();
@@ -185,10 +187,15 @@ export const Header = () => {
 	const { signMessage: requestSignMsg } = useSignMessage({
 		message: signMessage,
 		onSuccess(data) {
+			const payload: any = { address: accountAddr, signature: data };
+			// Add promo into payload if it is present in the URL
+			if(location.search.length > 1) {
+				payload.promo = location.search.slice(1);
+			}
 			void axios.request({
 				url: `${BASE_URL}${routes.auth}`,
 				method: 'POST',
-				data: { address: accountAddr, signature: data }
+				data: payload
 			}).then((r) => {
 				if (accountAddr) {
 					dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
