@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import countries from '../../data/countries.json';
 import COUNTRIES from '../../data/listOfAllCountries.json';
@@ -20,7 +21,6 @@ import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles'
 import { Button } from '../button/button';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 import { TextField } from '../textField/textField';
-import { useToasts } from '../toast/toast';
 import { Portal } from './portal';
 import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryMembers } from './supervisoryMembers';
@@ -107,7 +107,7 @@ const Container = styled.div(() => {
 		padding: ${spacing[10]};
 		border: 1px solid ${theme.border.default};
 		-webkit-box-shadow: 7px -7px 15px 0px rgba(0, 0, 0, 0.75);
-	}`;
+	`;
 });
 
 const ContainerText = styled.p`
@@ -182,10 +182,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	useEffect(() => {
 		setShowModal(showKycL2);
 	}, [showKycL2]);
-	const { addToast }: any | null = useToasts();
 	const api = useAxios();
 	const {
-		state: { kycL2Business },
+		state: { kycL2Business, theme },
 		dispatch
 	} = useStore();
 
@@ -302,10 +301,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				});
 				updateShowKycL2(false);
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 	const handleChangeInput = (event: any) => {
@@ -419,10 +417,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				// handle success
 				setUbos([...ubos.filter((item: any) => item.id !== id)]);
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 	const handleDeleteShareHolder = (id: any) => {
@@ -435,10 +432,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				// handle success
 				setShareHolders([...shareHolders.filter((item: any) => item.id !== id)]);
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 	const handleDeleteSupervisorHolder = (id: any) => {
@@ -451,10 +447,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 				// handle success
 				setSupervisors([...supervisors.filter((item: any) => item.id !== id)]);
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 
@@ -482,10 +477,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					});
 					setUbos(newRecords);
 				})
-				.catch(function (response) {
+				.catch(function () {
 					// handle error
-					console.log(response);
-					addToast('Something went wrong, please try to refresh the page', 'error');
+					toast.error('Something went wrong, please try to refresh the page', { theme: theme.name });
 				});
 			api
 				.request({
@@ -504,10 +498,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					});
 					setShareHolders(newRecords);
 				})
-				.catch(function (response) {
+				.catch(function () {
 					// handle error
-					console.log(response);
-					addToast('Something went wrong, please try to refresh the page', 'error');
+					toast.error('Something went wrong, please try to refresh the page', { theme: theme.name });
 				});
 			api
 				.request({
@@ -529,10 +522,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 					});
 					setSupervisors(newRecords);
 				})
-				.catch(function (response) {
+				.catch(function () {
 					// handle error
-					console.log(response);
-					addToast('Something went wrong, please try to refresh the page', 'error');
+					toast.error('Something went wrong, please try to refresh the page', { theme: theme.name });
 				});
 		}
 	}, [kycL2Business]);
@@ -589,15 +581,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						type: KycL2BusinessEnum.STATUS,
 						payload: KycL2BusinessStatusEnum.BASIC
 					});
-					addToast(
-						'Your documents are under review, please wait for the results of the verification!',
-						'info'
-					);
+					toast.info('Your documents are under review, please wait for the results of the verification!', { theme: theme.name });
 				})
-				.catch(function (response) {
+				.catch(function () {
 					// handle error
-					console.log(response);
-					addToast('Something went wrong, please fill the form and try again!', 'error');
+					toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 				});
 		}
 	}, [page]);

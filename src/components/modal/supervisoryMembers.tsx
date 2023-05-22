@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 import { Button } from '../button/button';
 import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import { useToasts } from '../toast/toast';
+import { toast } from 'react-toastify';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { useAxios, useMedia } from '../../hooks';
 import { BASE_URL, useStore } from '../../helpers';
@@ -43,19 +43,17 @@ type Props = {
 	updateSupervisorModalShow?: any;
 };
 export const SupervisoryMembers = ({
-																		 addSupervisor = false,
-																		 updateSupervisorModalShow
-																	 }: Props) => {
+	addSupervisor = false,
+	updateSupervisorModalShow
+}: Props) => {
 	const {
 		state: { theme }
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
 
-	const [ showModal, setShowModal ] = useState<boolean>(false);
-	const [ isValid, setIsValid ] = useState<boolean>(false);
-	// @ts-ignore
-	const { addToast } = useToasts();
-	const [ client, setClient ] = useState<any>({
+	const [showModal, setShowModal] = useState<boolean>(false);
+	const [isValid, setIsValid] = useState<boolean>(false);
+	const [client, setClient] = useState<any>({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
@@ -71,7 +69,7 @@ export const SupervisoryMembers = ({
 		appliedSanctions: ''
 	});
 
-	const [ emptyClient ] = useState({
+	const [emptyClient] = useState({
 		fullName: '',
 		dateOfBirth: '',
 		placeOfBirth: '',
@@ -113,7 +111,7 @@ export const SupervisoryMembers = ({
 		) {
 			setIsValid(true);
 		}
-	}, [ client ]);
+	}, [client]);
 
 	const handleChangeClientInput = (event: any) => {
 		setClient({
@@ -170,13 +168,13 @@ export const SupervisoryMembers = ({
 				client.id = response.data.id;
 				updateSupervisorModalShow(false, client);
 				setClient(emptyClient);
-				addToast('Board member was added', 'info');
+				toast.success('The supervisory board member was added', { theme: theme.name });
 			})
 			.catch(function (response) {
 				// handle error
 				console.log(response);
 				updateSupervisorModalShow(false);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 	const handleBack = () => {
@@ -185,7 +183,7 @@ export const SupervisoryMembers = ({
 
 	useEffect(() => {
 		setShowModal(addSupervisor);
-	}, [ addSupervisor ]);
+	}, [addSupervisor]);
 
 	return (
 		<Portal
@@ -313,7 +311,7 @@ export const SupervisoryMembers = ({
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 						<div style={{ width: '48%' }}>
 							<label htmlFor="label-shareholder-address-permanent-state-Or-Country"
-										 style={{ margin: '8px 0', display: 'inline-block' }}>
+								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Country
 							</label>
 							<Select

@@ -1,17 +1,18 @@
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { useDisconnect, useNetwork } from 'wagmi';
-import { Button, Portal, SelectList, useToasts } from '../../components';
+import { Button, Portal, SelectList } from '../../components';
 import {
 	AmountEnum, CHAINS,
 	DefaultSelectEnum,
 	DestinationEnum, DestinationNetworks, NETWORK_TO_ID,
 	SourceEnum,
+	findNativeToken,
 	isNetworkSelected,
 	isTokenSelected,
-	useStore,
-	findNativeToken
+	useStore
 } from '../../helpers';
 import { useMedia } from '../../hooks';
 import { mediaQuery, spacing } from '../../styles';
@@ -48,8 +49,6 @@ type Props = {
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { chain: wagmiChain } = useNetwork();
 	const { disconnect } = useDisconnect();
-	// @ts-ignore
-	const { addToast } = useToasts();
 	const [showsNetworkList, setShowsNetworkList] = useState(true);
 	const { mobileWidth: isMobile } = useMedia('xs');
 	const {
@@ -60,7 +59,8 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			sourceNetwork,
 			sourceToken,
 			availableSourceNetworks: SOURCE_NETWORKS,
-			availableDestinationNetworks: DESTINATION_NETWORKS
+			availableDestinationNetworks: DESTINATION_NETWORKS,
+			theme
 		}
 	} = useStore();
 
@@ -161,8 +161,16 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 		} else if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
 			disconnect();
-			addToast('Please change the network to one that is supported', 'warning');
+			toast.error('Please change the network to one that is supported', { theme: theme.name });
+
+			return;
 		}
+	}, [wagmiChain, SOURCE_NETWORKS]);
+
+	useEffect(() => {
+		console.log(wagmiChain);
+		console.log(SOURCE_NETWORKS);
+
 	}, [wagmiChain, SOURCE_NETWORKS]);
 
 	return !isMobile ? (

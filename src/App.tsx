@@ -1,4 +1,6 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styled, { createGlobalStyle, css } from 'styled-components';
 import { Footer, Header } from './components';
 import { TabModal } from './components/tabs/tabModal';
@@ -112,6 +114,7 @@ const App = () => {
 				</Routes>
 				<Footer />
 			</MainWrapper>
+			<ToastContainer style={{ zIndex: 1000000000000000 }} position='bottom-right' />
 		</Router>
 	);
 };

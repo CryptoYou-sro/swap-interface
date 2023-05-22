@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { useSwitchNetwork } from 'wagmi';
 import type { IconType } from '../../components';
-import { Icon, TextField, useToasts } from '../../components';
+import { Icon, TextField } from '../../components';
 import {
 	AmountEnum,
 	DefaultSelectEnum,
@@ -14,6 +14,7 @@ import {
 	isNetworkSelected,
 	useStore
 } from '../../helpers';
+import { toast } from 'react-toastify';
 import { DEFAULT_BORDER_RADIUS, fontSize, spacing } from '../../styles';
 
 const Wrapper = styled.div(() => {
@@ -96,8 +97,6 @@ type Props = {
 };
 
 export const SelectList = ({ data, placeholder, value }: Props) => {
-	// @ts-ignore
-	const { addToast } = useToasts();
 	const { switchNetwork } = useSwitchNetwork();
 	const [search, setSearch] = useState('');
 	const dataList =
@@ -108,7 +107,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 		state: {
 			destinationToken, destinationNetwork, sourceNetwork, sourceToken, isUserVerified,
 			availableSourceNetworks: SOURCE_NETWORKS,
-			availableDestinationNetworks: DESTINATION_NETWORKS
+			availableDestinationNetworks: DESTINATION_NETWORKS, theme
 		}
 	} = useStore();
 
@@ -159,7 +158,7 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 						// } else {
 						// 	addToast('Something went wrong - please try again');
 						// }
-						addToast('Something went wrong - please try again');
+						toast.error('Something went wrong - please try again', { theme: theme.name });
 
 						return;
 					}
