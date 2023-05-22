@@ -167,11 +167,6 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 		}
 	}, [wagmiChain, SOURCE_NETWORKS]);
 
-	useEffect(() => {
-		console.log(wagmiChain);
-		console.log(SOURCE_NETWORKS);
-
-	}, [wagmiChain, SOURCE_NETWORKS]);
 
 	return !isMobile ? (
 		<Portal handleClose={() => setShowModal(false)} isOpen={showModal} size="large">

@@ -1,5 +1,5 @@
 import { EthereumClient, w3mConnectors } from '@web3modal/ethereum';
-// import { StrictMode } from 'react';
+import { StrictMode } from 'react';
 import { publicProvider } from '@wagmi/core/providers/public';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
@@ -31,14 +31,14 @@ const ethereumClient = new EthereumClient(wagmiClient, chains);
 const root = ReactDOM.createRoot(document.getElementById('root') as HTMLElement);
 
 root.render(
-	// <StrictMode>
-	<WagmiConfig client={wagmiClient}>
-		<AuthProvider>
-			<ToastProvider>
-				<App />
-			</ToastProvider>
-			<Web3ModalConnect projectId={projectId} ethereumClient={ethereumClient} />
-		</AuthProvider>
-	</WagmiConfig>
-	// </StrictMode> 
+	<StrictMode>
+		<WagmiConfig client={wagmiClient}>
+			<AuthProvider>
+				<ToastProvider>
+					<App />
+				</ToastProvider>
+				<Web3ModalConnect projectId={projectId} ethereumClient={ethereumClient} />
+			</AuthProvider>
+		</WagmiConfig>
+	</StrictMode>
 );
