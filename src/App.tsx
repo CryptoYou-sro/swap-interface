@@ -1,5 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import styled, { createGlobalStyle, css } from 'styled-components';
+import styled, {
+	createGlobalStyle,
+} from 'styled-components';
 import { Footer, Header } from './components';
 import { TabModal } from './components/tabs/tabModal';
 import { useStore } from './helpers';
@@ -14,7 +16,7 @@ import {
 	fontWeight,
 	mediaQuery,
 	pxToRem,
-	spacing,
+	// spacing,
 	viewport
 } from './styles';
 import './styles/fonts/font.css';
@@ -74,15 +76,15 @@ const ContentWrapper = styled.main`
 	flex: 1;
 `;
 
-const Title = styled.p(() => {
-	const { state: { theme } } = useStore();
+// const Title = styled.p(() => {
+// 	const { state: { theme } } = useStore();
 
-	return css`
-		text-align: center;
-		margin: 0 0 ${spacing[48]};
-		color: ${theme.font.default};
-	`;
-});
+// 	return css`
+// 		text-align: center;
+// 		margin: 0 0 ${spacing[48]};
+// 		color: ${theme.font.default};
+// 	`;
+// });
 
 const App = () => {
 	const {
@@ -99,10 +101,10 @@ const App = () => {
 						path="/"
 						element={
 							<ContentWrapper>
-								<Title>
+								{/* <Title>
 									Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+
 									different networks directly from your wallet.
-								</Title>
+								</Title> */}
 								<SwapForm />
 								<TabModal />
 							</ContentWrapper>
