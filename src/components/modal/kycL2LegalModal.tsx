@@ -295,6 +295,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			.then(function (response) {
 				// handle success
 				console.log(response);
+				toast.info('Your information has been successfully submitted for verification.', { theme: theme.name });
 				dispatch({
 					type: KycL2BusinessEnum.STATUS,
 					payload: KycL2BusinessStatusEnum.PENDING
@@ -581,6 +582,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 						type: KycL2BusinessEnum.STATUS,
 						payload: KycL2BusinessStatusEnum.BASIC
 					});
+					// maybe we need to change text of toast because it is nit the end of the form ?
 					toast.info('Your documents are under review, please wait for the results of the verification!', { theme: theme.name });
 				})
 				.catch(function () {
