@@ -1,8 +1,9 @@
 import _ from 'lodash';
 import { useEffect, useMemo, useState } from 'react';
-import { toast } from 'react-toastify';
 import styled from 'styled-components';
-import { useDisconnect, useNetwork } from 'wagmi';
+import {
+	useNetwork
+} from 'wagmi';
 import { Button, Portal, SelectList } from '../../components';
 import {
 	AmountEnum, CHAINS,
@@ -48,7 +49,6 @@ type Props = {
 
 export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 	const { chain: wagmiChain } = useNetwork();
-	const { disconnect } = useDisconnect();
 	const [showsNetworkList, setShowsNetworkList] = useState(true);
 	const { mobileWidth: isMobile } = useMedia('xs');
 	const {
@@ -60,7 +60,6 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			sourceToken,
 			availableSourceNetworks: SOURCE_NETWORKS,
 			availableDestinationNetworks: DESTINATION_NETWORKS,
-			theme
 		}
 	} = useStore();
 
@@ -159,10 +158,7 @@ export const NetworkTokenModal = ({ showModal, setShowModal, type }: Props) => {
 			});
 			dispatch({ type: AmountEnum.AMOUNT, payload: '' });
 			dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
-		} else if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
-			disconnect();
-			toast.error('Please change the network to one that is supported', { theme: theme.name });
-
+		} else {
 			return;
 		}
 	}, [wagmiChain, SOURCE_NETWORKS]);
