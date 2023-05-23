@@ -363,7 +363,7 @@ export const Header = () => {
 				// }
 				if (kycL2Status === KycL2StatusEnum.REJECTED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-					toast.warning('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', { theme: theme.name });
+					toast.warning('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', { theme: theme.name, position: 'top-center' });
 				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
@@ -484,8 +484,14 @@ export const Header = () => {
 	useEffect(() => {
 		// @ts-ignore
 		// const startNetworkId = Number(Object.keys(CHAINS).find((key) => CHAINS[key].name === sourceNetwork));
+		if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
+			disconnect();
+			toast.error('Please change the network to one that is supported', { theme: theme.name });
 
-	}, [wagmiChain]);
+			return;
+		}
+
+	}, [wagmiChain,]);
 
 	useEffect(() => {
 		void checkStatus();
