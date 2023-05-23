@@ -190,7 +190,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
-						toast.error('Swap was rejected by client', { theme: theme.name });
+						toast.info('Swap was rejected by client', { theme: theme.name });
 					} else {
 						toast.error('Something went wrong, please try again later.', { theme: theme.name });
 					}
@@ -232,7 +232,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
-						toast.error('Swap was rejected by client', { theme: theme.name });
+						toast.info('Swap was rejected by client', { theme: theme.name });
 					} else {
 						toast.error('Something went wrong, please try again later.', { theme: theme.name });
 					}
