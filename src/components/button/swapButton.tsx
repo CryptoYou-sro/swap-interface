@@ -133,6 +133,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
+			setIsDepositConfirmed(false);
 			const productId = utils.id(makeId(32));
 
 			const namedValues: any = {
@@ -184,15 +185,18 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						currentBlockNumber: currentBlockNumber.data
 					};
 					setSwapsStorage([...swapsStorage, swap]);
-					setIsDepositConfirmed(false);
+
 					await wait();
 
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
 						toast.info('Swap was rejected by client', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					} else {
 						toast.error('Something went wrong, please try again later.', { theme: theme.name });
+						setIsDepositConfirmed(true);
+
 					}
 
 					return;
@@ -226,15 +230,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						currentBlockNumber: currentBlockNumber.data
 					};
 					setSwapsStorage([...swapsStorage, swap]);
-					setIsDepositConfirmed(false);
+
 					await wait();
 
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
 						toast.info('Swap was rejected by client', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					} else {
 						toast.error('Something went wrong, please try again later.', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					}
 
 					return;
