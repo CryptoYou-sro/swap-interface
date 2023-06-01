@@ -10,7 +10,7 @@ import { BASE_URL, useStore } from '../../helpers';
 import { DateInput } from './shareholdersModal';
 import countries from '../../data/countries.json';
 import { useAxios, useMedia } from '../../hooks';
-import { useToasts } from '../toast/toast';
+import { toast } from 'react-toastify';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 
 const Select = styled.select(() => {
@@ -68,12 +68,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
 	const fileIdentification = useRef<HTMLInputElement>();
-	const [ isUBOLegalEntity, setIsUBOLegalEntity ] = useState<string>('empty');
-	const [ showModal, setShowModal ] = useState<boolean>(false);
-	const [ isValid, setIsValid ] = useState<boolean>(false);
-	// @ts-ignore
-	const { addToast } = useToasts();
-	const [ client, setClient ] = useState<any>({
+	const [isUBOLegalEntity, setIsUBOLegalEntity] = useState<string>('empty');
+	const [showModal, setShowModal] = useState<boolean>(false);
+	const [isValid, setIsValid] = useState<boolean>(false);
+
+	const [client, setClient] = useState<any>({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -110,7 +109,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		}
 	});
 
-	const [ emptyClient ] = useState({
+	const [emptyClient] = useState({
 		appliedSanctions: '',
 		citizenship: [],
 		companyName: '',
@@ -153,9 +152,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			if (client.fullName && client.idNumber && client.placeOfBirth && client.gender !== 'Select gender'
 				&& client.citizenship.length > 0 && client.taxResidency !== 'Select country' && !Object.values(client.residence).includes('')
 				&& client.fileIdentification && client.politicallPerson.length > 0 && client.appliedSanctions.length > 0
-				&& ( client.permanentAndMailAddressSame === 'Yes'
+				&& (client.permanentAndMailAddressSame === 'Yes'
 					|| client.permanentAndMailAddressSame === 'No'
-					&& !Object.values(client.mailAddress).includes('') )) {
+					&& !Object.values(client.mailAddress).includes(''))) {
 				setIsValid(true);
 			}
 		} else if (isUBOLegalEntity === 'legal') {
@@ -163,11 +162,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 				setIsValid(true);
 			}
 		}
-	}, [ client ]);
+	}, [client]);
 
 	useEffect(() => {
 		setClient(emptyClient);
-	}, [ isUBOLegalEntity ]);
+	}, [isUBOLegalEntity]);
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
@@ -268,13 +267,13 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 				client.id = response.data.id;
 				updateUboModalShow(false, client);
 				setClient(emptyClient);
-				addToast('UBO was added', 'info');
+				toast.success('The UBO was added', { theme: theme.name });
 			})
 			.catch(function (response) {
 				// handle error
 				console.log(response);
 				updateUboModalShow(false);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 
@@ -284,7 +283,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 
 	useEffect(() => {
 		setShowModal(addUbo);
-	}, [ addUbo ]);
+	}, [addUbo]);
 
 	return (
 		<Portal
@@ -406,7 +405,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</div>
 								<div style={{ width: '48%' }}>
 									<label htmlFor="label-select-tax-residency"
-												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Tax Residency
 									</label>
 									<Select
@@ -430,7 +429,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 								</div>
 								<div style={{ width: '48%' }}>
 									<label htmlFor="label-citizenship-natural-ubo"
-												 style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
 										Citizenship(s)
 									</label>
 									<SelectDropdown

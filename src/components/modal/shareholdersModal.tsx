@@ -8,9 +8,9 @@ import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
 import { Button } from '../button/button';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 import { TextField } from '../textField/textField';
-import { useToasts } from '../toast/toast';
 import { ContentTitle, WrapContainer } from './kycL2LegalModal';
 import { Portal } from './portal';
+import { toast } from 'react-toastify';
 
 const Select = styled.select(() => {
 	const {
@@ -94,8 +94,6 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 	const [isValid, setIsValid] = useState<boolean>(false);
 	const [isShareHolderLegal, setIsShareHolderLegal] = useState<string>('empty');
 
-	// @ts-ignore
-	const { addToast } = useToasts();
 	const fileIdentification = useRef<HTMLInputElement>();
 	const [client, setClient] = useState<any>({
 		appliedSanctions: '',
@@ -282,13 +280,12 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 				client.id = response.data.id;
 				updateShareHoldersModalShow(false, client);
 				setClient(emptyClient);
-				addToast('Shareholder was added', 'info');
+				toast.success('The shareholder was added', { theme: theme.name });
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
 				updateShareHoldersModalShow(false);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 	};
 
