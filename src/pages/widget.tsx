@@ -594,7 +594,7 @@ export const Widget = () => {
                     </TableRow>
                 </TableBox>
                 <SubmitContainer>
-                    <Button onClick={() => window.open(`http://localhost:3000/?sellAssetNet=${swapPair.sourceToken.network}&sellAssetToken=${swapPair.sourceToken.token}&sellAssetAmount=${sourceAmount}&buyAssetNet=${swapPair.destinationToken.network}&buyAssetToken=${swapPair.destinationToken.token}`)} disabled={isDisabled} >
+                    <Button onClick={() => window.open(`https://app.cryptoyou.io/?sellAssetNet=${swapPair.sourceToken.network}&sellAssetToken=${swapPair.sourceToken.token}&sellAssetAmount=${sourceAmount}&buyAssetNet=${swapPair.destinationToken.network}&buyAssetToken=${swapPair.destinationToken.token}`)} disabled={isDisabled} >
                         {message}
                     </Button>
                 </SubmitContainer>
