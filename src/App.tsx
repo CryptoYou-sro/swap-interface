@@ -5,7 +5,7 @@ import styled, { createGlobalStyle } from 'styled-components';
 import { Footer, Header } from './components';
 import { TabModal } from './components/tabs/tabModal';
 import { useStore } from './helpers';
-import { SwapForm, TransactionHistory } from './pages';
+import { SwapForm, TransactionHistory, Widget } from './pages';
 import type { Theme } from './styles';
 import {
 	DEFAULT_TRANSITION,
@@ -31,7 +31,7 @@ export const GlobalStyles = createGlobalStyle`
 	}
 
 	body {
-		font-family: ${fontFamily};
+	font-family: ${fontFamily};
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.regular};
 		font-size: ${fontSize[14]};
@@ -93,13 +93,13 @@ const App = () => {
 
 	return (
 		<Router>
-			<MainWrapper>
-				<GlobalStyles theme={theme} />
-				<Header />
-				<Routes>
-					<Route
-						path="/"
-						element={
+			<Routes>
+				<Route
+					path="/"
+					element={
+						<MainWrapper>
+							<GlobalStyles theme={theme} />
+							<Header />
 							<ContentWrapper>
 								{/* <Title>
 									Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+
@@ -108,13 +108,14 @@ const App = () => {
 								<SwapForm />
 								<TabModal />
 							</ContentWrapper>
-						}
-					/>
-					<Route path="/transaction-history" element={<TransactionHistory />} />
-				</Routes>
-				<Footer />
-			</MainWrapper>
-			<ToastContainer style={{ zIndex: 1000000000000000 }} position='bottom-right' />
+							<Footer />
+						</MainWrapper>
+					}
+				/>
+				<Route path="/transaction-history" element={<TransactionHistory />} />
+				<Route path="/embed" element={<Widget />} />
+			</Routes>
+      <ToastContainer style={{ zIndex: 1000000000000000 }} position='bottom-right' />
 		</Router>
 	);
 };

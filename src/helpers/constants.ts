@@ -36,7 +36,8 @@ export const routes = {
 	kycStatus: 'kyc/status',
 	refresh: 'auth/refresh',
 	transactionDetails: 'account/withdraw/details?id=',
-	kycL2NaturalForm: 'kyc/l2-natural'
+	kycL2NaturalForm: 'kyc/l2-natural',
+	thorSwap: 'https://api.thorswap.net/aggregator/tokens/quote?'
 };
 
 export const PROTOCOL_FEE = 0.002;

@@ -394,15 +394,28 @@ export const Header = () => {
 	};
 
 	useEffect(() => {
+		const script = document.createElement('script');
+
+		script.src = 'https://www.socialintents.com/api/socialintents.1.3.js#2c9faa35871f751e0187282239990717';
+		script.async = true;
+
+		document.body.appendChild(script);
+
+		return () => {
+			document.body.removeChild(script);
+		};
+	}, []);
+
+	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
 			makeBinanceKycCall(binanceToken);
 		}
 	}, [binanceToken, binanceScriptLoaded]);
 
-	useEffect(() => {
-		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
-		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	}, [sourceNetwork]);
+	// useEffect(() => {
+	// 	dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+	// 	dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+	// }, [sourceNetwork]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
