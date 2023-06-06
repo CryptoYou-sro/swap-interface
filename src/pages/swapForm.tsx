@@ -1,12 +1,17 @@
 import axios from 'axios';
+import queryString from 'query-string';
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
+import { useAccount, useDisconnect, useNetwork, useSwitchNetwork, } from 'wagmi';
 import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
 import {
 	AmountEnum,
 	BINANCE_FEE,
 	DestinationEnum,
 	NETWORK_TO_ID,
+	NETWORK_TO_WC,
+	SourceEnum,
 	beautifyNumbers,
 	isLightTheme,
 	isNetworkSelected,
@@ -142,6 +147,10 @@ interface DepthResponse {
 	asks?: Array<[string, string]>;
 }
 
+type ParsedProps = {
+	[key: string]: string;
+};
+
 export const SwapForm = () => {
 	const {
 		state: {
@@ -159,7 +168,12 @@ export const SwapForm = () => {
 		},
 		dispatch
 	} = useStore();
-	const swapButtonRef = useRef();
+
+	const { mobileWidth: isMobile } = useMedia('xs');
+	const { chain: wagmiChain } = useNetwork();
+	const { disconnect } = useDisconnect();
+	const { isConnected } = useAccount();
+	const { switchNetworkAsync } = useSwitchNetwork();
 	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
@@ -170,7 +184,68 @@ export const SwapForm = () => {
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
 	const [exchangeRate, setExchangeRate] = useState<{ price: number; totalAmount: number } | null>(null);
-	const { mobileWidth: isMobile } = useMedia('xs');
+	const [parsedUrl, setParsedUrl] = useState<ParsedProps>({});
+
+	const swapButtonRef = useRef();
+	const location: any = useLocation();
+	const isParsedEmpty = Object.keys(parsedUrl).length <= 0;
+	const sameUrlAndSiteNetworkId = wagmiChain?.id === parseFloat(NETWORK_TO_ID[parsedUrl?.sellAssetNet as keyof typeof NETWORK_TO_ID]);
+
+	useEffect(() => {
+		if (isParsedEmpty) {
+			const parsed: ParsedProps | any = queryString.parse(location.search);
+			setParsedUrl(parsed);
+		}
+	}, [location.search]);
+
+	useEffect(() => {
+		if (!isParsedEmpty && DESTINATION_NETWORKS) {
+			if (!isConnected) {
+				dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+				dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+				dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+				dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+				dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+				window.history.replaceState({}, document.title, '/');
+			}
+
+			if (isConnected && sameUrlAndSiteNetworkId) {
+				dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+				dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+				dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+				dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+				dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+				window.history.replaceState({}, document.title, '/');
+			}
+		}
+	}, [isParsedEmpty, DESTINATION_NETWORKS]);
+
+	useEffect(() => {
+		async function switchToNetwork() {
+			if (!isParsedEmpty && isConnected && switchNetworkAsync && DESTINATION_NETWORKS && !sameUrlAndSiteNetworkId) {
+				try {
+					// @ts-ignore
+					await switchNetworkAsync(NETWORK_TO_WC[parsedUrl?.sellAssetNet]?.id);
+					dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+					dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+					dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+					dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+					dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+					window.history.replaceState({}, document.title, '/');
+
+				} catch (error) {
+					disconnect();
+					dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+					dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+					dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+					dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+					dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+					window.history.replaceState({}, document.title, '/');
+				}
+			}
+		}
+		void switchToNetwork();
+	}, [isParsedEmpty, isConnected, switchNetworkAsync, DESTINATION_NETWORKS]);
 
 	async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
 		let pair: string | '' = '';
