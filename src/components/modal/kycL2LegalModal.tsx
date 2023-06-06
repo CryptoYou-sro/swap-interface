@@ -107,7 +107,7 @@ const Container = styled.div(() => {
 		padding: ${spacing[10]};
 		border: 1px solid ${theme.border.default};
 		-webkit-box-shadow: 7px -7px 15px 0px rgba(0, 0, 0, 0.75);
-	}`;
+	`;
 });
 
 const ContainerText = styled.p`
