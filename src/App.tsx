@@ -1,7 +1,7 @@
 import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
-import styled, {
-	createGlobalStyle,
-} from 'styled-components';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import styled, { createGlobalStyle } from 'styled-components';
 import { Footer, Header } from './components';
 import { TabModal } from './components/tabs/tabModal';
 import { useStore } from './helpers';
@@ -115,6 +115,7 @@ const App = () => {
 				<Route path="/transaction-history" element={<TransactionHistory />} />
 				<Route path="/embed" element={<Widget />} />
 			</Routes>
+      <ToastContainer style={{ zIndex: 1000000000000000 }} position='bottom-right' />
 		</Router>
 	);
 };

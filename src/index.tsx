@@ -1,6 +1,7 @@
 import { publicProvider } from '@wagmi/core/providers/public';
 import { EthereumClient, w3mConnectors } from '@web3modal/ethereum';
 import { StrictMode } from 'react';
+import { publicProvider } from '@wagmi/core/providers/public';
 import ReactDOM from 'react-dom/client';
 import { WagmiConfig, configureChains, createClient } from 'wagmi';
 import { mainnet } from 'wagmi/chains';

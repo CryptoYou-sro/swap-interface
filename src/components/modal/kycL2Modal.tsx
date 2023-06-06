@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import { Icon } from '../../components';
 import countries from '../../data/countries.json';
@@ -12,9 +13,9 @@ import { useAxios, useMedia } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 import { TextField } from '../textField/textField';
-import { useToasts } from '../toast/toast';
 import { ContentTitle } from './kycL2LegalModal';
 import { Portal } from './portal';
+
 
 type WrapperProps = {
 	themeMode?: string;
@@ -399,9 +400,9 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	const fileIdentificationDoc2 = useRef<HTMLInputElement>();
 	const fileIdentificationDocSelfie = useRef<HTMLInputElement>();
 
-	const { addToast }: any | null = useToasts();
 	const {
-		dispatch
+		dispatch,
+		state: { theme }
 	} = useStore();
 
 	const api = useAxios();
@@ -464,16 +465,12 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 				console.log(response);
 				if (response.status === 201) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
-					addToast(
-						'Your documents are under review, please wait for the results of the verification!',
-						'info'
-					);
+					toast.info('Your documents are under review, please wait for the results of the verification!', { theme: theme.name });
 				}
 			})
-			.catch(function (response) {
+			.catch(function () {
 				// handle error
-				console.log(response);
-				addToast('Something went wrong, please fill the form and try again!', 'error');
+				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
 		updateShowKycL2(false);
 	};

@@ -1,9 +1,10 @@
 import { prepareWriteContract, writeContract } from '@wagmi/core';
 import { BigNumber, utils } from 'ethers';
 import { forwardRef, useEffect, useImperativeHandle, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled from 'styled-components';
 import { UserRejectedRequestError, useAccount, useBlockNumber, useNetwork } from 'wagmi';
-import { Button, useToasts } from '..';
+import { Button } from '..';
 import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
 	CONTRACT_ADDRESSES,
@@ -54,7 +55,8 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			kycL2Status,
 			buttonStatus,
 			availableSourceNetworks: SOURCE_NETWORKS,
-			availableDestinationNetworks: DESTINATION_NETWORKS
+			availableDestinationNetworks: DESTINATION_NETWORKS,
+			theme
 		},
 		dispatch
 	} = useStore();
@@ -64,8 +66,6 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		watch: true,
 	});
 	const { chain: wagmiChain } = useNetwork();
-	// @ts-ignore
-	const { addToast } = useToasts();
 
 	const isDisabled =
 		!isDepositConfirmed ||
@@ -133,6 +133,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 
 	useImperativeHandle(ref, () => ({
 		async onSubmit() {
+			setIsDepositConfirmed(false);
 			const productId = utils.id(makeId(32));
 
 			const namedValues: any = {
@@ -184,15 +185,18 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						currentBlockNumber: currentBlockNumber.data
 					};
 					setSwapsStorage([...swapsStorage, swap]);
-					setIsDepositConfirmed(false);
+
 					await wait();
 
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
-						console.log('ERROR', error);
+						toast.info('Swap was rejected by client', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					} else {
-						addToast('Something went wrong, please try again later.', 'error');
+						toast.error('Something went wrong, please try again later.', { theme: theme.name });
+						setIsDepositConfirmed(true);
+
 					}
 
 					return;
@@ -226,15 +230,17 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 						currentBlockNumber: currentBlockNumber.data
 					};
 					setSwapsStorage([...swapsStorage, swap]);
-					setIsDepositConfirmed(false);
+
 					await wait();
 
 					return;
 				} catch (error) {
 					if (error instanceof UserRejectedRequestError) {
-						console.log('ERROR', error);
+						toast.info('Swap was rejected by client', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					} else {
-						addToast('Something went wrong, please try again later.', 'error');
+						toast.error('Something went wrong, please try again later.', { theme: theme.name });
+						setIsDepositConfirmed(true);
 					}
 
 					return;

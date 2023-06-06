@@ -2,9 +2,10 @@ import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
-import { Button, Icon, IconType, KycL2Modal, useToasts } from '../../components';
+import { Button, Icon, IconType, KycL2Modal } from '../../components';
 import {
 	AmountEnum,
 	BASE_URL,
@@ -207,14 +208,12 @@ export const Header = () => {
 		onError() {
 			disconnect();
 			setSignMessage('');
-			addToast('You have been disconnected due to unsigning on your computer or mobile device. Verify your signature to sign in', 'warning');
+			toast.warning('You have been disconnected due to unsigning on a computer or mobile device. Confirm the signature to sign in.', { theme: theme.name });
 		},
 	});
 
 	const { mobileWidth: isMobile } = useMedia('s');
 	const { mobileWidth: isDeskTop } = useMedia('m');
-	// @ts-ignore
-	const { addToast } = useToasts();
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
@@ -244,7 +243,8 @@ export const Header = () => {
 				const msg: any = await getAuthTokensFromNonce(accountAddr);
 				setSignMessage(msg);
 			} catch (error: any) {
-				addToast('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', 'error');
+				// FIXME: ask Denial about Metamask
+				toast.error('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', { theme: theme.name });
 			}
 			setIsLoading(false);
 		}
@@ -303,7 +303,7 @@ export const Header = () => {
 				// } else {
 				// 	addToast('Something went wrong - please try again');
 				// }
-				addToast('Something went wrong - please try again');
+				toast.error('Something went wrong - please try again or later', { theme: theme.name });
 
 				return;
 			}
@@ -363,7 +363,7 @@ export const Header = () => {
 				// }
 				if (kycL2Status === KycL2StatusEnum.REJECTED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
+					toast.warning('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', { theme: theme.name, position: 'top-center' });
 				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
@@ -454,8 +454,8 @@ export const Header = () => {
 		}
 
 		if (accountAddr && storage?.account && storage?.account !== accountAddr) {
-			addToast(
-				'Switch to your verified account on Metamask to come back to CryptoYou.', 'warning');
+			// FIXME: ask Daniel about MetaMask
+			toast.warning('Switch to your verified account on Metamask to come back to CryptoYou.', { theme: theme.name });
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
 			dispatch({
@@ -497,8 +497,14 @@ export const Header = () => {
 	useEffect(() => {
 		// @ts-ignore
 		// const startNetworkId = Number(Object.keys(CHAINS).find((key) => CHAINS[key].name === sourceNetwork));
+		if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
+			disconnect();
+			toast.error('Please change the network to one that is supported', { theme: theme.name });
 
-	}, [wagmiChain]);
+			return;
+		}
+
+	}, [wagmiChain,]);
 
 	useEffect(() => {
 		void checkStatus();
