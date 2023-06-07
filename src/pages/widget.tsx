@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { useEffect, useMemo, useState } from 'react';
+import _ from 'lodash';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import SelectDropDown from 'react-select';
 import styled, { css } from 'styled-components';
 import { Button, Icon } from '../components';
@@ -291,6 +292,8 @@ export const Widget = () => {
     const [percentage, setPercentage] = useState<number>(0);
     const isTokensSelected = swapPair.destinationToken.token !== '' && swapPair.sourceToken.token !== '';
     const [isThorSupports, setIsThorSupports] = useState(true);
+    const CancelToken = axios.CancelToken;
+    const source = useRef(CancelToken.source());
 
     async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
         let pair: string | '' = '';
@@ -423,41 +426,55 @@ export const Widget = () => {
     }, [swapPair.destinationToken.token, swapPair.sourceToken.token]);
 
 
-    useEffect(() => {
-        const getThorSwapData = async () => {
-            if (isTokensSelected && +sourceAmount > 0 && thorList.length > 0) {
-                // @ts-ignore
-                const sourceId = thorList.find(obj => (obj.chain === swapPair.sourceToken.network && obj.ticker === swapPair.sourceToken.token));
-                // @ts-ignore
-                const destId = thorList.find(obj => (obj.chain === swapPair.destinationToken.network && obj.ticker === swapPair.destinationToken.token));
-                try {
-                    await axios.get(
-                        // @ts-ignore
-                        `${routes.thorSwap}sellAsset=${sourceId.address ? `${swapPair.sourceToken.network}.${swapPair.sourceToken.token}-${sourceId.address.toUpperCase()}` : sourceId.identifier}&buyAsset=${destId.address ? `${swapPair.destinationToken.network}.${swapPair.destinationToken.token}-${destId.address.toUpperCase()}` : destId.identifier}&slippage=3&sellAmount=${sourceAmount}&senderAddress=&recipientAddress=&affiliateBasisPoints=30&affiliateAddress=t&isAffiliateFeeFlat=true`)
-                        .then(res => {
-                            const uniswapV3 = res.data.routes.find((obj: any) => obj.providers[0] === 'UNISWAPV3');
-
-                            if (uniswapV3) {
-                                setThorAmount(uniswapV3.expectedOutput);
-                                setIsThorSupports(true);
-
-                            } else {
-                                const outPutVariants: number[] = Object.values(res.data.routes).map((item: any): any => parseFloat(item.expectedOutput));
-                                const bestExpectedOutput: string = Math.max(...outPutVariants).toString();
-                                setThorAmount(bestExpectedOutput);
-                                setIsThorSupports(true);
-                            }
-                        });
-                } catch (error) {
-                    console.log('error', error);
+    const getThorSwapData = _.debounce(async () => {
+        if (isTokensSelected && +sourceAmount > 0 && thorList.length > 0) {
+            // @ts-ignore
+            const sourceId = thorList.find(obj => (obj.chain === swapPair.sourceToken.network && obj.ticker === swapPair.sourceToken.token));
+            // @ts-ignore
+            const destId = thorList.find(obj => (obj.chain === swapPair.destinationToken.network && obj.ticker === swapPair.destinationToken.token));
+            try {
+                source.current.cancel(); // Cancel previous request
+                source.current = CancelToken.source(); // Create new source
+                await axios.get(
+                    // @ts-ignore
+                    `${routes.thorSwap}sellAsset=${sourceId.address ? `${swapPair.sourceToken.network}.${swapPair.sourceToken.token}-${sourceId.address.toUpperCase()}` : sourceId.identifier}&buyAsset=${destId.address ? `${swapPair.destinationToken.network}.${swapPair.destinationToken.token}-${destId.address.toUpperCase()}` : destId.identifier}&slippage=3&sellAmount=${sourceAmount}&senderAddress=&recipientAddress=&affiliateBasisPoints=30&affiliateAddress=t&isAffiliateFeeFlat=true`, {
+                    cancelToken: source.current.token
+                })
+                    .then(res => {
+                        const uniswapV3 = res.data.routes.find((obj: any) => obj.providers[0] === 'UNISWAPV3');
+                        if (uniswapV3) {
+                            setThorAmount(uniswapV3.expectedOutput);
+                            setIsThorSupports(true);
+                        } else {
+                            const outPutVariants: number[] = Object.values(res.data.routes).map((item: any): any => parseFloat(item.expectedOutput));
+                            const bestExpectedOutput: string = Math.max(...outPutVariants).toString();
+                            setThorAmount(bestExpectedOutput);
+                            setIsThorSupports(true);
+                        }
+                    });
+            } catch (error) {
+                if (axios.isCancel(error)) {
+                    console.log('Request canceled');
+                } else {
+                    console.log('error catch', error);
                     setThorAmount('0');
                     setPercentage(100);
                     setIsThorSupports(false);
                 }
             }
-        };
+        }
+    }, 500);
+
+    useEffect(() => {
         void getThorSwapData();
     }, [sourceAmount, swapPair.sourceToken.token, swapPair.destinationToken.token]);
+
+    // Cleanup on unmount
+    useEffect(() => {
+        return () => {
+            source.current.cancel();
+        };
+    }, []);
 
     useEffect(() => {
         const fetchThorSwapLists = async () => {

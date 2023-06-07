@@ -192,9 +192,17 @@ export const SwapForm = () => {
 	const sameUrlAndSiteNetworkId = wagmiChain?.id === parseFloat(NETWORK_TO_ID[parsedUrl?.sellAssetNet as keyof typeof NETWORK_TO_ID]);
 
 	useEffect(() => {
-		if (isParsedEmpty) {
-			const parsed: ParsedProps | any = queryString.parse(location.search);
-			setParsedUrl(parsed);
+		if (isParsedEmpty && location.search) {
+			try {
+				const parsed: ParsedProps | any = queryString.parse(location.search);
+
+				if(parsed && Object.keys(parsed).length > 1) {
+					// Set parsed data if it has more than one key, else it is promo code
+					setParsedUrl(parsed);
+				}
+			} catch (error) {
+				console.log('error in URL parsing', error);
+			}
 		}
 	}, [location.search]);
 

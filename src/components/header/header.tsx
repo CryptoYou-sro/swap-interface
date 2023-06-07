@@ -1,5 +1,6 @@
 import { Web3Button, useWeb3Modal } from '@web3modal/react';
 import axios from 'axios';
+import queryString from 'query-string';
 import { useEffect, useMemo, useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
@@ -142,6 +143,10 @@ const WalletBalance = styled.div(() => {
 
 });
 
+type ParsedProps = {
+	[key: string]: string;
+};
+
 export const Header = () => {
 	const {
 		state: {
@@ -189,9 +194,18 @@ export const Header = () => {
 		message: signMessage,
 		onSuccess(data) {
 			const payload: any = { address: accountAddr, signature: data };
+			let parsed: ParsedProps | any = {};
+			let parsedKeys: string[] = [];
+			// Parse URL
+			try {
+				parsed = queryString.parse(location.search);
+				parsedKeys = Object.keys(parsed);
+			} catch (error) {
+				console.log('error in URL parsing', error);
+			}
 			// Add promo into payload if it is present in the URL
-			if (location.search.length > 1) {
-				payload.promo = location.search.slice(1);
+			if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
+				payload.promo = parsedKeys[0];
 			}
 			void axios.request({
 				url: `${BASE_URL}${routes.auth}`,
@@ -202,6 +216,10 @@ export const Header = () => {
 					dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
 					dispatch({ type: VerificationEnum.REFRESH, payload: r.data.refresh });
 					setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
+					if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
+						// Remove promo from the page URL
+						window.history.replaceState({}, document.title, '/');
+					}
 				}
 			});
 		},
