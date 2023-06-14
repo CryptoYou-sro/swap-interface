@@ -1,10 +1,9 @@
 import axios from 'axios';
-import _ from 'lodash';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import SelectDropDown from 'react-select';
 import styled, { css } from 'styled-components';
 import { Button, Icon } from '../components';
-import { BINANCE_FEE, NETWORK_TO_ID, beautifyNumbers, routes, useStore } from '../helpers';
+import { BINANCE_FEE, NETWORK_TO_ID, beautifyNumbers, useStore } from '../helpers';
 import { DEFAULT_BORDER_RADIUS, fontSize, fontWeight, pxToRem, spacing } from '../styles';
 
 const Wrapper = styled.div(() => {
@@ -101,28 +100,28 @@ const TableContainer = styled.div(() => {
     `;
 });
 
-const TableBox = styled.div(() => {
-    return css`
-        display: flex;
-        width: 100%;
-        /* max-width: ${pxToRem(410)}; */
-        flex-wrap: wrap;
-        margin-bottom: ${spacing[18]};
-    `;
-});
+// const TableBox = styled.div(() => {
+//     return css`
+//         display: flex;
+//         width: 100%;
+//         /* max-width: ${pxToRem(410)}; */
+//         flex-wrap: wrap;
+//         margin-bottom: ${spacing[18]};
+//     `;
+// });
 
-const TableRow = styled.div(() => {
-    return css`
-    display: flex;
-    width: 100%;
-    border-bottom: 1px solid #CECECE;
-    padding-bottom: ${spacing[6]};
-    padding-top: ${pxToRem(4)};
-    color: black;
-    font-weight: 600;
-    font-size: 12px;
-    `;
-});
+// const TableRow = styled.div(() => {
+//     return css`
+//     display: flex;
+//     width: 100%;
+//     border-bottom: 1px solid #CECECE;
+//     padding-bottom: ${spacing[6]};
+//     padding-top: ${pxToRem(4)};
+//     color: black;
+//     font-weight: 600;
+//     font-size: 12px;
+//     `;
+// });
 
 const ShortName = styled.div(() => {
     return css`
@@ -131,14 +130,14 @@ const ShortName = styled.div(() => {
     `;
 });
 
-const TableCol = styled.div`
-    flex: 2;
+// const TableCol = styled.div`
+//     flex: 2;
 
-    &:nth-child(3) {
-        flex-grow: 3;
-        text-align: start;
-    }
-`;
+//     &:nth-child(3) {
+//         flex-grow: 3;
+//         text-align: start;
+//     }
+// `;
 
 const Hr = styled.hr`
     color: #CECECE;
@@ -148,6 +147,7 @@ const Hr = styled.hr`
 const SubmitContainer = styled.div`
 width: 100%;
 text-align: center;
+margin-top: ${spacing[30]};
 `;
 
 interface DepthResponse {
@@ -166,18 +166,25 @@ export const Widget = () => {
     } = useStore();
     const [swapPair, setSwapPair] = useState({
         sourceToken: {
-            network: '',
-            token: ''
+            network: 'ETH',
+            token: 'USDT'
         },
         destinationToken: {
-            network: '',
-            token: ''
+            network: 'BTC',
+            token: 'BTC'
         },
     });
+    const [selectedSourceOption, setSelectedSourceOption] = useState(
+        {
+            label: 'ETH',
+            value: 'USDT',
+        }
+    );
+
     const [selectedDestOption, setSelectedDestOption] = useState(
         {
-            label: '',
-            value: '',
+            label: 'BTC',
+            value: 'BTC',
         }
     );
     const themeMode = 'light';
@@ -282,16 +289,17 @@ export const Widget = () => {
     });
 
     const sourceTokensList = [...ethOptions, ...bscOptions, ...glmrOptions];
-    const [thorList, setThorList] = useState([]);
+    // const [thorList, setThorList] = useState([]);
     const [sourceTokenOptions, setSourceTokenOptions] = useState<any>([]);
     const [destinationTokenOptions, setDestinationTokenOptions] = useState<any>([]);
     const [exchangeRate, setExchangeRate] = useState<{ price: number; totalAmount: number } | null>(null);
     const [sourceAmount, setSourceAmount] = useState<string>('');
     const [destinationAmount, setDestinationAmount] = useState<string>('');
-    const [thorAmount, setThorAmount] = useState('');
-    const [percentage, setPercentage] = useState<number>(0);
+    // const [thorAmount, setThorAmount] = useState('');
+    // const [percentage, setPercentage] = useState<number>(0);
     const isTokensSelected = swapPair.destinationToken.token !== '' && swapPair.sourceToken.token !== '';
-    const [isThorSupports, setIsThorSupports] = useState(true);
+    // const [isThorSupports, setIsThorSupports] = useState(true);
+
     const CancelToken = axios.CancelToken;
     const source = useRef(CancelToken.source());
 
@@ -412,7 +420,7 @@ export const Widget = () => {
     }, [exchangeRate]);
 
     const withdrawFee = useMemo((): any => {
-        if (isTokensSelected) {
+        if (isTokensSelected && DESTINATION_NETWORKS) {
             const withdrawFee =
                 // @ts-ignore
                 DESTINATION_NETWORKS[[NETWORK_TO_ID[swapPair.sourceToken.network]]]?.[swapPair.sourceToken.token]?.[swapPair.destinationToken.network]?.[
@@ -423,51 +431,50 @@ export const Widget = () => {
         } else {
             return { amount: 0, currency: swapPair.destinationToken.token, name: 'Withdrawal' };
         }
-    }, [swapPair.destinationToken.token, swapPair.sourceToken.token]);
+    }, [swapPair.destinationToken.token, swapPair.sourceToken.token, DESTINATION_NETWORKS]);
 
+    // const getThorSwapData = _.debounce(async () => {
+    //     if (isTokensSelected && +sourceAmount > 0 && thorList.length > 0) {
+    //         // @ts-ignore
+    //         const sourceId = thorList.find(obj => (obj.chain === swapPair.sourceToken.network && obj.ticker === swapPair.sourceToken.token));
+    //         // @ts-ignore
+    //         const destId = thorList.find(obj => (obj.chain === swapPair.destinationToken.network && obj.ticker === swapPair.destinationToken.token));
+    //         try {
+    //             source.current.cancel(); // Cancel previous request
+    //             source.current = CancelToken.source(); // Create new source
+    //             await axios.get(
+    //                 // @ts-ignore
+    //                 `${routes.thorSwap}sellAsset=${sourceId.address ? `${swapPair.sourceToken.network}.${swapPair.sourceToken.token}-${sourceId.address.toUpperCase()}` : sourceId.identifier}&buyAsset=${destId.address ? `${swapPair.destinationToken.network}.${swapPair.destinationToken.token}-${destId.address.toUpperCase()}` : destId.identifier}&slippage=3&sellAmount=${sourceAmount}&senderAddress=&recipientAddress=&affiliateBasisPoints=30&affiliateAddress=t&isAffiliateFeeFlat=true`, {
+    //                 cancelToken: source.current.token
+    //             })
+    //                 .then(res => {
+    //                     const uniswapV3 = res.data.routes.find((obj: any) => obj.providers[0] === 'UNISWAPV3');
+    //                     if (uniswapV3) {
+    //                         setThorAmount(uniswapV3.expectedOutput);
+    //                         setIsThorSupports(true);
+    //                     } else {
+    //                         const outPutVariants: number[] = Object.values(res.data.routes).map((item: any): any => parseFloat(item.expectedOutput));
+    //                         const bestExpectedOutput: string = Math.max(...outPutVariants).toString();
+    //                         setThorAmount(bestExpectedOutput);
+    //                         setIsThorSupports(true);
+    //                     }
+    //                 });
+    //         } catch (error) {
+    //             if (axios.isCancel(error)) {
+    //                 console.log('Request canceled');
+    //             } else {
+    //                 console.log('error catch', error);
+    //                 setThorAmount('0');
+    //                 // setPercentage(100);
+    //                 setIsThorSupports(false);
+    //             }
+    //         }
+    //     }
+    // }, 500);
 
-    const getThorSwapData = _.debounce(async () => {
-        if (isTokensSelected && +sourceAmount > 0 && thorList.length > 0) {
-            // @ts-ignore
-            const sourceId = thorList.find(obj => (obj.chain === swapPair.sourceToken.network && obj.ticker === swapPair.sourceToken.token));
-            // @ts-ignore
-            const destId = thorList.find(obj => (obj.chain === swapPair.destinationToken.network && obj.ticker === swapPair.destinationToken.token));
-            try {
-                source.current.cancel(); // Cancel previous request
-                source.current = CancelToken.source(); // Create new source
-                await axios.get(
-                    // @ts-ignore
-                    `${routes.thorSwap}sellAsset=${sourceId.address ? `${swapPair.sourceToken.network}.${swapPair.sourceToken.token}-${sourceId.address.toUpperCase()}` : sourceId.identifier}&buyAsset=${destId.address ? `${swapPair.destinationToken.network}.${swapPair.destinationToken.token}-${destId.address.toUpperCase()}` : destId.identifier}&slippage=3&sellAmount=${sourceAmount}&senderAddress=&recipientAddress=&affiliateBasisPoints=30&affiliateAddress=t&isAffiliateFeeFlat=true`, {
-                    cancelToken: source.current.token
-                })
-                    .then(res => {
-                        const uniswapV3 = res.data.routes.find((obj: any) => obj.providers[0] === 'UNISWAPV3');
-                        if (uniswapV3) {
-                            setThorAmount(uniswapV3.expectedOutput);
-                            setIsThorSupports(true);
-                        } else {
-                            const outPutVariants: number[] = Object.values(res.data.routes).map((item: any): any => parseFloat(item.expectedOutput));
-                            const bestExpectedOutput: string = Math.max(...outPutVariants).toString();
-                            setThorAmount(bestExpectedOutput);
-                            setIsThorSupports(true);
-                        }
-                    });
-            } catch (error) {
-                if (axios.isCancel(error)) {
-                    console.log('Request canceled');
-                } else {
-                    console.log('error catch', error);
-                    setThorAmount('0');
-                    setPercentage(100);
-                    setIsThorSupports(false);
-                }
-            }
-        }
-    }, 500);
-
-    useEffect(() => {
-        void getThorSwapData();
-    }, [sourceAmount, swapPair.sourceToken.token, swapPair.destinationToken.token]);
+    // useEffect(() => {
+    //     void getThorSwapData();
+    // }, [sourceAmount, swapPair.sourceToken.token, swapPair.destinationToken.token]);
 
     // Cleanup on unmount
     useEffect(() => {
@@ -476,37 +483,38 @@ export const Widget = () => {
         };
     }, []);
 
-    useEffect(() => {
-        const fetchThorSwapLists = async () => {
-            try {
-                const urls = [
-                    'https://static.thorswap.net/token-list/Thorchain-supported-ERC20.json',
-                    'https://static.thorswap.net/token-list/Thorchain-supported-ARC20.json',
-                    'https://static.thorswap.net/token-list/Woofi.json',
-                    'https://static.thorswap.net/token-list/Traderjoe.json',
-                    'https://static.thorswap.net/token-list/Pangolin.json',
-                    'https://static.thorswap.net/token-list/1inch.json',
-                    'https://static.thorswap.net/token-list/Coingecko.json',
-                    'https://static.thorswap.net/token-list/Sushiswap.json',
-                    'https://static.thorswap.net/token-list/Thorchain.json',
-                    'https://static.thorswap.net/token-list/Pancakeswap-supported-erc20.json',
-                    'https://static.thorswap.net/token-list/Pancakeswap-supported-bsc20.json',
-                ];
-                const requests = urls.map((url) => axios.get(url));
-                const responses = await Promise.all(requests);
-                const combinedTokens: any = responses.flatMap((response): any => response.data.tokens);
+    // useEffect(() => {
+    //     const fetchThorSwapLists = async () => {
+    //         try {
+    //             const urls = [
+    //                 'https://static.thorswap.net/token-list/Thorchain-supported-ERC20.json',
+    //                 'https://static.thorswap.net/token-list/Thorchain-supported-ARC20.json',
+    //                 'https://static.thorswap.net/token-list/Woofi.json',
+    //                 'https://static.thorswap.net/token-list/Traderjoe.json',
+    //                 'https://static.thorswap.net/token-list/Pangolin.json',
+    //                 'https://static.thorswap.net/token-list/1inch.json',
+    //                 'https://static.thorswap.net/token-list/Coingecko.json',
+    //                 'https://static.thorswap.net/token-list/Sushiswap.json',
+    //                 'https://static.thorswap.net/token-list/Thorchain.json',
+    //                 'https://static.thorswap.net/token-list/Pancakeswap-supported-erc20.json',
+    //                 'https://static.thorswap.net/token-list/Pancakeswap-supported-bsc20.json',
+    //             ];
+    //             const requests = urls.map((url) => axios.get(url));
+    //             const responses = await Promise.all(requests);
+    //             const combinedTokens: any = responses.flatMap((response): any => response.data.tokens);
 
-                setThorList(combinedTokens);
+    //             setThorList(combinedTokens);
 
-            } catch (error) {
-                console.log('error', error);
-            }
-        };
-        void fetchThorSwapLists();
-    }, []);
+    //         } catch (error) {
+    //             console.log('error', error);
+    //         }
+    //     };
+    //     void fetchThorSwapLists();
+    // }, []);
 
     const handleSelectSourceToken = (event: any) => {
         setSwapPair({ ...swapPair, sourceToken: { ...swapPair.sourceToken, token: event.value, network: event.label }, destinationToken: { ...swapPair.destinationToken, token: '', network: '' } });
+        setSelectedSourceOption({ ...selectedSourceOption, value: event.value, label: event.label });
         setSelectedDestOption({ ...selectedDestOption, value: '', label: '' });
         setDestinationAmount('');
         setSourceAmount('');
@@ -533,18 +541,18 @@ export const Widget = () => {
         );
     };
 
-    useEffect(() => {
-        const calcPercentage = (cryptoYouAmount: any, thorAmount: any) => {
-            if (parseFloat(cryptoYouAmount) > 0 && parseFloat(thorAmount) > 0) {
-                const percentage = (((parseFloat(cryptoYouAmount) / parseFloat(thorAmount)) * 100) - 100);
+    // useEffect(() => {
+    //     const calcPercentage = (cryptoYouAmount: any, thorAmount: any) => {
+    //         if (parseFloat(cryptoYouAmount) > 0 && parseFloat(thorAmount) > 0) {
+    //             const percentage = (((parseFloat(cryptoYouAmount) / parseFloat(thorAmount)) * 100) - 100);
 
-                setPercentage(+beautifyNumbers({ n: percentage, digits: 1 }));
-            } else {
-                return '0';
-            }
-        };
-        void calcPercentage(destinationAmount, thorAmount);
-    }, [destinationAmount, thorAmount, swapPair.destinationToken.token]);
+    //             setPercentage(+beautifyNumbers({ n: percentage, digits: 1 }));
+    //         } else {
+    //             return '0';
+    //         }
+    //     };
+    //     void calcPercentage(destinationAmount, thorAmount);
+    // }, [destinationAmount, thorAmount, swapPair.destinationToken.token]);
 
     const isDisabled = +sourceAmount <= 0 || !isTokensSelected;
     const message = !isDisabled ? 'Swap Now' : !isTokensSelected ? 'Select Token and Amount' : 'Amount must be greater than 0';
@@ -564,12 +572,13 @@ export const Widget = () => {
                         formatOptionLabel={formatOptionLabel}
                         placeholder='Select token'
                         onChange={(e: any) => handleSelectSourceToken(e)}
+                        value={selectedSourceOption}
                     />
                 </InputBox>
-                {isTokensSelected ? (
-                    <Price>1{swapPair.sourceToken.token} - {beautifyNumbers({ n: destinationAmount })} {swapPair.destinationToken.token}</Price>
+                {isTokensSelected && exchangeRate && +sourceAmount > 0 ? (
+                    <Price>1{swapPair.sourceToken.token} - {beautifyNumbers({ n: exchangeRate?.price })} {swapPair.destinationToken.token}</Price>
                 ) : (
-                    <Price>Please select tokens</Price>
+                    <Price>Please select tokens and amount</Price>
                 )}
                 <InputBox>
                     <Label>You get</Label>
@@ -590,7 +599,7 @@ export const Widget = () => {
                 </InputBox>
             </InputContainer>
             <TableContainer>
-                <TableBox>
+                {/* <TableBox>
                     <TableRow>
                         <TableCol>CryptoYou</TableCol>
                         <TableCol>
@@ -609,7 +618,7 @@ export const Widget = () => {
                             {!isThorSupports && ''}
                         </TableCol>
                     </TableRow>
-                </TableBox>
+                </TableBox> */}
                 <SubmitContainer>
                     <Button onClick={() => window.open(`https://app.cryptoyou.io/?sellAssetNet=${swapPair.sourceToken.network}&sellAssetToken=${swapPair.sourceToken.token}&sellAssetAmount=${sourceAmount}&buyAssetNet=${swapPair.destinationToken.network}&buyAssetToken=${swapPair.destinationToken.token}`)} disabled={isDisabled} >
                         {message}
