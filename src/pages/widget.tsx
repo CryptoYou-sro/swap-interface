@@ -18,6 +18,7 @@ const Wrapper = styled.div(() => {
         background-color: #fff;
         font-family: 'Open Sans';
         font-weight: 600;
+        overflow: hidden;
     `;
 });
 
