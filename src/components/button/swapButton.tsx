@@ -74,7 +74,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 		!isTokenSelected(destinationToken) ||
 		!isUserVerified ||
 		+destinationAmount < 0 ||
-		kycL2Status !== 2;
+		kycL2Status !== KycL2StatusEnum.PASSED && kycL2Status !== KycL2StatusEnum.INITIAL;
 
 	useEffect(() => {
 		if (destinationAddress) {
@@ -110,7 +110,7 @@ export const SwapButton = forwardRef(({ validInputs, amount, onClick }: Props, r
 			? 'Connect wallet to swap'
 			: !isUserVerified && buttonStatus.text === 'Login'
 				? 'Log in to swap'
-				: !isUserVerified && kycL2Status !== KycL2StatusEnum.PASSED
+				: !isUserVerified && kycL2Status !== KycL2StatusEnum.PASSED && kycL2Status !== KycL2StatusEnum.INITIAL
 					? 'Verify account to swap'
 					: !isTokenSelected(destinationToken)
 						? 'Select Network and Token'
