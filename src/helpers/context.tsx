@@ -57,7 +57,8 @@ export enum KycL2StatusEnum {
 	INITIAL = 0,
 	PENDING = 1,
 	PASSED = 2,
-	REJECTED = 9
+	REQUIRED = 3,
+	REJECTED = 9,
 }
 
 export enum KycL2BusinessEnum {
@@ -105,6 +106,10 @@ export enum AvailableCurrenciesEnum {
 	SET = 'SET'
 }
 
+export enum KycL2ModalShowEnum {
+	isKycL2ModalShow = 'SET_KYCL2_MODAL_SHOW'
+}
+
 type SourceNetworks = 'ETH' | 'BSC' | 'GLMR' | DefaultSelectEnum.NETWORK;
 
 type VerificationAction = {
@@ -119,7 +124,7 @@ type KycAction = {
 
 type KycL2Action = {
 	type: KycL2Enum;
-	payload: KycL2StatusEnum;
+	payload: KycL2StatusEnum | null;
 };
 
 type KycL2BusinessAction = {
@@ -162,6 +167,11 @@ type AvailableCurrenciesAction = {
 	payload: { sourceNetworks: any; destinationNetworks: any };
 };
 
+type KycL2ModalShowAction = {
+	type: KycL2ModalShowEnum;
+	payload: boolean;
+};
+
 type Action =
 	| VerificationAction
 	| ButtonAction
@@ -173,16 +183,18 @@ type Action =
 	| DestinationAction
 	| AmountAction
 	| PairAction
-	| AvailableCurrenciesAction;
+	| AvailableCurrenciesAction
+	| KycL2ModalShowAction;
 
 type State = {
 	isUserVerified: boolean;
 	account: string;
 	isNetworkConnected: boolean;
 	kycStatus: KycStatusEnum;
-	kycL2Status: KycL2StatusEnum;
+	kycL2Status: KycL2StatusEnum | null;
 	kycL2Business: KycL2BusinessStatusEnum | null;
 	kycL2BusinessRepr: KycL2BusinessReprEnum | null;
+	kycL2ModalShow: boolean;
 	accessToken: string;
 	refreshToken: string;
 	buttonStatus: { color: string; text: string };
@@ -230,9 +242,10 @@ const initialState: State = {
 	accessToken: '',
 	refreshToken: '',
 	kycStatus: KycStatusEnum.PROCESS,
-	kycL2Status: KycL2StatusEnum.INITIAL,
+	kycL2Status: null,
 	kycL2Business: null,
 	kycL2BusinessRepr: null,
+	kycL2ModalShow: false,
 	buttonStatus: button.CONNECT_WALLET,
 	theme: darkTheme,
 	destinationWallet: DefaultSelectEnum.WALlET,
@@ -273,6 +286,8 @@ const authReducer = (state: State, action: Action): State => {
 			return { ...state, kycL2Business: action.payload };
 		case KycL2BusinessEnum.REPR:
 			return { ...state, kycL2BusinessRepr: action.payload };
+		case KycL2ModalShowEnum.isKycL2ModalShow:
+			return { ...state, kycL2ModalShow: action.payload };
 		case ButtonEnum.BUTTON:
 			return { ...state, buttonStatus: action.payload };
 		case ThemeEnum.THEME:
@@ -328,28 +343,15 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			});
 		}
 
-		if (account && isNetworkConnected) {
+		if (account && isNetworkConnected && kycL2Status === null) {
 			dispatch({ type: ButtonEnum.BUTTON, payload: button.LOGIN });
 		}
 
-		if (kycL2Status === KycL2StatusEnum.PASSED && account && isNetworkConnected) {
+		if ((kycL2Status === KycL2StatusEnum.PASSED || kycL2Status === KycL2StatusEnum.INITIAL) && account && isNetworkConnected) {
 			dispatch({ type: VerificationEnum.USER, payload: true });
 		} else {
 			dispatch({ type: VerificationEnum.USER, payload: false });
-
 		}
-
-		// TODO: please do not delete comment section below ;)
-		// if (( kycStatus !== KycStatusEnum.PASS && kycL2Status !== KycL2StatusEnum.PASSED ) || !account || !isNetworkConnected) {
-		// 	dispatch({ type: VerificationEnum.USER, payload: false });
-		// } else if (
-		// 	kycStatus === KycStatusEnum.PASS &&
-		// 	isNetworkConnected &&
-		// 	account &&
-		// 	kycL2Status === KycL2StatusEnum.PASSED
-		// ) {
-		// 	dispatch({ type: VerificationEnum.USER, payload: true });
-		// }
 	}, [account, isNetworkConnected, kycL2Status]);
 
 	useEffect(() => {
