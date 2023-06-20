@@ -8,7 +8,7 @@ import COUNTRIES from '../../data/listOfAllCountries.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
-import { BASE_URL, ButtonEnum, button, findAndReplace, routes, useStore } from '../../helpers';
+import { BASE_URL, ButtonEnum, KycL2ModalShowEnum, button, findAndReplace, routes, useStore } from '../../helpers';
 import { useAxios, useMedia } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
@@ -306,16 +306,30 @@ const FileContainerBox = styled.div(() => {
 `;
 });
 
-type Props = {
-	showKycL2: boolean;
-	updateShowKycL2?: any;
-};
-export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
-	const [showModal, setShowModal] = useState<boolean>(showKycL2);
+export const KycL2Modal = () => {
+	const {
+		dispatch,
+		state: { theme, kycL2ModalShow },
+	} = useStore();
+	const [showModal, setShowModal] = useState<boolean>(kycL2ModalShow);
+	const [page, setPage] = useState<number>(0);
+	const [selectWorkCountry, setSelectWorkCountry] = useState<any[]>([]);
+	const [selectCitizenShip, setSelectCitizenShip] = useState<any[]>([]);
+
+	const fileInputAddress = useRef<HTMLInputElement>();
+	const fileInputDocs = useRef<HTMLInputElement>();
+	const fileIdentificationDoc1 = useRef<HTMLInputElement>();
+	const fileIdentificationDoc2 = useRef<HTMLInputElement>();
+	const fileIdentificationDocSelfie = useRef<HTMLInputElement>();
+
+	const api = useAxios();
+	const myRef = useRef<HTMLDivElement | null>(null);
 	const { mobileWidth: isMobile } = useMedia('s');
+
 	useEffect(() => {
-		setShowModal(showKycL2);
-	}, [showKycL2]);
+		setShowModal(kycL2ModalShow);
+	}, [kycL2ModalShow]);
+
 	const [input, setInput] = useState<{
 		fullName: string;
 		dateOfBirth: string;
@@ -390,25 +404,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 		workArea: [],
 		yearlyIncome: null,
 	});
-	const [page, setPage] = useState<number>(0);
-	const [selectWorkCountry, setSelectWorkCountry] = useState<any[]>([]);
-	const [selectCitizenShip, setSelectCitizenShip] = useState<any[]>([]);
 
-	const fileInputAddress = useRef<HTMLInputElement>();
-	const fileInputDocs = useRef<HTMLInputElement>();
-	const fileIdentificationDoc1 = useRef<HTMLInputElement>();
-	const fileIdentificationDoc2 = useRef<HTMLInputElement>();
-	const fileIdentificationDocSelfie = useRef<HTMLInputElement>();
-
-	const {
-		dispatch,
-		state: { theme }
-	} = useStore();
-
-	const api = useAxios();
-
-
-	const myRef = useRef<HTMLDivElement | null>(null);
 	const handleNext = () => {
 		myRef?.current?.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
@@ -472,7 +468,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 				// handle error
 				toast.error('Something went wrong, please fill the form and try again!', { theme: theme.name });
 			});
-		updateShowKycL2(false);
+		dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: false });
 	};
 	const handleChangeInput = (event: any) => {
 		setInput({ ...input, [event.target.name]: event.target.value });
@@ -565,8 +561,7 @@ export const KycL2Modal = ({ showKycL2 = false, updateShowKycL2 }: Props) => {
 	};
 
 	const handleOnClose = () => {
-		setShowModal(false);
-		updateShowKycL2(false);
+		dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: false });
 	};
 
 	const handleOnBack = () => {
