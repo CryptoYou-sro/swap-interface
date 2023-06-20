@@ -642,9 +642,7 @@ export const KycL2Modal = () => {
 							<Title style={{ fontWeight: 'normal' }}>Disclaimer</Title>
 							<DisclaimerContainer>
 								<DisclaimerText>
-									<p>This is the Know Your Customer (KYC) and Anti-Money Laundering (AML) form for individuals, as
-										mandated
-										by the European Union regulations.
+									<p>In order to complete your transaction and in accordance with the Czech Anti-Money Laundering Act No. 253/2008, you are required to create an account with CryptoYou. This will only take a few minutes.
 										To complete this form, please ensure you have the following documents at hand:</p>
 									<DisclaimerTextList>
 										<DisclaimerTestListItem>
