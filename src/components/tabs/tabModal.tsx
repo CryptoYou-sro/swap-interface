@@ -75,7 +75,7 @@ const TextContainer = styled.div`
 export const TabModal = () => {
 	const [swaps, setSwaps] = useState<Props[]>([]);
 	const {
-		state: { isUserVerified, theme }
+		state: { theme, account, isNetworkConnected }
 	} = useStore();
 	const [swapsStorage] = useLocalStorage<Props[]>('localSwaps', []);
 	const [number, setNumber] = useState(0);
@@ -110,7 +110,7 @@ export const TabModal = () => {
 		return () => clearInterval(intervalId);
 	}, []);
 
-	return isUserVerified ? (
+	return account && isNetworkConnected ? (
 		<Wrapper>
 			{swaps.length > 0 && (
 				<>
