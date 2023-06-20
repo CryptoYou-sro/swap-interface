@@ -17,6 +17,7 @@ import {
 	INITIAL_STORAGE,
 	KycL2BusinessEnum,
 	KycL2Enum,
+	KycL2ModalShowEnum,
 	KycL2StatusEnum,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
@@ -236,7 +237,6 @@ export const Header = () => {
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [showModal, setShowModal] = useState(false);
 	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
@@ -372,7 +372,7 @@ export const Header = () => {
 				}
 				setStorage({
 					...storage,
-					isKyced: kycL2Status === KycL2StatusEnum.PASSED
+					isKyced: kycL2Status === KycL2StatusEnum.PASSED || kycL2Status === KycL2StatusEnum.INITIAL
 				});
 				// TODO: move this part to context?
 				// if (kyc === KycStatusEnum.REJECT) {
@@ -382,7 +382,7 @@ export const Header = () => {
 				if (kycL2Status === KycL2StatusEnum.REJECTED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 					toast.warning('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', { theme: theme.name, position: 'top-center' });
-				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
+				} else if (kycL2Status === KycL2StatusEnum.REQUIRED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
 				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
@@ -403,9 +403,6 @@ export const Header = () => {
 		setShowNetworksList(false);
 	});
 
-	const updateShowKycL2 = (value: boolean) => {
-		setShowModal(value);
-	};
 
 	const updateStatusKycL2Modal = (value: boolean) => {
 		setShowStatusKycL2Modal(value);
@@ -453,7 +450,7 @@ export const Header = () => {
 				type: KycL2Enum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced
 					? KycL2StatusEnum.PASSED
-					: KycL2StatusEnum.INITIAL
+					: KycL2StatusEnum.REQUIRED
 			});
 		}
 	}, []);
@@ -472,13 +469,12 @@ export const Header = () => {
 		}
 
 		if (accountAddr && storage?.account && storage?.account !== accountAddr) {
-			// FIXME: ask Daniel about MetaMask
-			toast.warning('Switch to your verified account on Metamask to come back to CryptoYou.', { theme: theme.name });
+			toast.warning('Switch to your verified account in the wallet to come back to CryptoYou.', { theme: theme.name });
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
 			dispatch({
 				type: KycL2Enum.STATUS,
-				payload: KycL2StatusEnum.INITIAL
+				payload: null
 			});
 			setStorage({ account: accountAddr, access: '', isKyced: false, refresh: '' });
 		}
@@ -503,7 +499,7 @@ export const Header = () => {
 				await getBinanceToken();
 			} else if (buttonStatus === button.PASS_KYC_L2) {
 				// add  request to base to get status of KYC review show modal window
-				setShowModal(!showModal);
+				dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: true });
 			} else if (buttonStatus === button.CHECK_KYC_L2) {
 				void checkStatus();
 			} else if (buttonStatus === button.LOGIN) {
@@ -522,11 +518,11 @@ export const Header = () => {
 			return;
 		}
 
-	}, [wagmiChain,]);
+	}, [wagmiChain]);
 
 	useEffect(() => {
 		void checkStatus();
-	}, [accountAddr, userAccount, kycL2Status, accessToken]);
+	}, [accountAddr, userAccount, kycL2Status, accessToken, isUserVerified]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -653,7 +649,7 @@ export const Header = () => {
 					</Menu>
 				</MenuWrapper>
 			)}
-			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />
+			<KycL2Modal />
 			<StatusKycL2Modal
 				showStatusKycL2Modal={showStatusKycL2Modal}
 				updateStatusKycL2Modal={updateStatusKycL2Modal}

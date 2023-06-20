@@ -23,14 +23,20 @@ import CONTRACT_DATA from '../../data/YandaMultitokenProtocolV1.json';
 import {
 	CONTRACT_ADDRESSES,
 	CONTRACT_GAS_LIMIT_BUFFER,
+	INITIAL_STORAGE,
+	KycL2Enum,
+	KycL2ModalShowEnum,
+	KycL2StatusEnum,
+	LOCAL_STORAGE_AUTH,
 	NETWORK_TO_ID,
 	SERVICE_ADDRESS,
 	TRANSACTION_GAS_LIMIT_BUFFER,
 	isNetworkSelected,
 	isTokenSelected,
+	routes,
 	useStore
 } from '../../helpers';
-import { useLocalStorage } from '../../hooks';
+import { useAxios, useLocalStorage } from '../../hooks';
 import { TabContent } from './tabContent';
 
 type Swap = {
@@ -53,6 +59,7 @@ type Props = {
 };
 
 export const TabWrapper = ({ propSwap, isVisible }: Props) => {
+	const api = useAxios();
 	const { chain: wagmiChain } = useNetwork();
 	const [isDepositConfirmed, setIsDepositConfirmed] = useLocalStorage<any>(
 		'isDepositConfirmed',
@@ -60,11 +67,12 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 	);
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const [_swapsStorage, setSwapsStorage, readLocalData] = useLocalStorage<Swap[]>('localSwaps', []);
+	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
 	const [isDepositing, setIsDepositing] = useState(false);
 	const [sourceTokenData, setSourceTokenData] = useState<any>(null);
 	const { address: accountAddr } = useAccount();
 	const {
-		state: { sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
+		state: { sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }, dispatch
 	} = useStore();
 	const provider = useProvider();
 	const protocol = useContract({
@@ -357,6 +365,13 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 		}
 	}, [propSwap, sourceTokenData]);
 
+	const getKycL2Status = async () => {
+		const res = await api.get(routes.kycStatus);
+		const { status: kycL2Status } = res?.data?.L2;
+
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+		return kycL2Status;
+	};
 	// Function event listener
 	const eventListener = async (propSwap: Swap) => {
 		if (propSwap && propSwap.sourceToken === sourceToken) {
@@ -506,15 +521,30 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 								const parsedData: any = JSON.parse(event.args.data);
 
 								if (parsedData.t === 0) {
-									const swapsCopy = readLocalData();
-									const findSwap: any = swapsCopy.find(
-										(item: Swap) => item.swapProductId === propSwap.swapProductId
-									);
-									const index: number = swapsCopy.indexOf(findSwap);
-									propSwap.action = [parsedData];
-									swapsCopy[index].action = [parsedData];
+									const checkKycStatusAndSetData = async () => {
+										const swapsCopy = readLocalData();
+										const findSwap: any = swapsCopy.find(
+											(item: Swap) => item.swapProductId === propSwap.swapProductId
+										);
+										const index: number = swapsCopy.indexOf(findSwap);
+										propSwap.action = [parsedData];
+										swapsCopy[index].action = [parsedData];
 
-									setSwapsStorage(swapsCopy);
+										setSwapsStorage(swapsCopy);
+
+										const status = await getKycL2Status();
+										dispatch({
+											type: KycL2Enum.STATUS,
+											payload: status
+										});
+										setStorage({
+											...storage,
+											isKyced: status === KycL2StatusEnum.PASSED || status === KycL2StatusEnum.INITIAL
+										});
+										dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: true });
+									};
+									void checkKycStatusAndSetData();
+
 								} else if (parsedData.t === 1) {
 									const swapsCopy = readLocalData();
 									const findSwap: any = swapsCopy.find(
@@ -532,15 +562,29 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 
 								const parsedData: any = JSON.parse(event.args.data);
 								if (parsedData.t === 0) {
-									const swapsCopy = readLocalData();
-									const findSwap: any = swapsCopy.find(
-										(item: Swap) => item.swapProductId === propSwap.swapProductId
-									);
-									const index: number = swapsCopy.indexOf(findSwap);
-									propSwap.action = [parsedData];
-									swapsCopy[index].action = [parsedData];
+									const checkKycStatusAndSetData = async () => {
+										const swapsCopy = readLocalData();
+										const findSwap: any = swapsCopy.find(
+											(item: Swap) => item.swapProductId === propSwap.swapProductId
+										);
+										const index: number = swapsCopy.indexOf(findSwap);
+										propSwap.action = [parsedData];
+										swapsCopy[index].action = [parsedData];
 
-									setSwapsStorage(swapsCopy);
+										setSwapsStorage(swapsCopy);
+
+										const status = await getKycL2Status();
+										dispatch({
+											type: KycL2Enum.STATUS,
+											payload: status
+										});
+										setStorage({
+											...storage,
+											isKyced: status === KycL2StatusEnum.PASSED || status === KycL2StatusEnum.INITIAL
+										});
+										dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: true });
+									};
+									void checkKycStatusAndSetData();
 								} else if (parsedData.t === 1) {
 									const swapsCopy = readLocalData();
 									const findSwap: any = swapsCopy.find(
@@ -566,15 +610,29 @@ export const TabWrapper = ({ propSwap, isVisible }: Props) => {
 										const parsedData = JSON.parse(event.args?.data);
 
 										if (parsedData.t === 0) {
-											const swapsCopy = readLocalData();
-											const findSwap: any = swapsCopy.find(
-												(item: Swap) => item.swapProductId === propSwap.swapProductId
-											);
-											const index: number = swapsCopy.indexOf(findSwap);
-											propSwap.action = [parsedData];
-											swapsCopy[index].action = [parsedData];
+											const checkKycStatusAndSetData = async () => {
+												const swapsCopy = readLocalData();
+												const findSwap: any = swapsCopy.find(
+													(item: Swap) => item.swapProductId === propSwap.swapProductId
+												);
+												const index: number = swapsCopy.indexOf(findSwap);
+												propSwap.action = [parsedData];
+												swapsCopy[index].action = [parsedData];
 
-											setSwapsStorage(swapsCopy);
+												setSwapsStorage(swapsCopy);
+
+												const status = await getKycL2Status();
+												dispatch({
+													type: KycL2Enum.STATUS,
+													payload: status
+												});
+												setStorage({
+													...storage,
+													isKyced: status === KycL2StatusEnum.PASSED || status === KycL2StatusEnum.INITIAL
+												});
+												dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: true });
+											};
+											void checkKycStatusAndSetData();
 										} else if (parsedData.t === 1) {
 											const swapsCopy = readLocalData();
 											const findSwap: any = swapsCopy.find(
