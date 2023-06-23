@@ -1,30 +1,70 @@
-import styled, { css } from 'styled-components';
-import { Portal } from './portal';
-import { TextField } from '../textField/textField';
 import { useEffect, useRef, useState } from 'react';
-import { Button } from '../button/button';
-import COUNTRIES from '../../data/listOfAllCountries.json';
-import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
-import { BASE_URL, useStore } from '../../helpers';
-import { DateInput } from './shareholdersModal';
-import countries from '../../data/countries.json';
-import { useAxios, useMedia } from '../../hooks';
 import { toast } from 'react-toastify';
+import styled, { css } from 'styled-components';
+import countries from '../../data/countries.json';
+import COUNTRIES from '../../data/listOfAllCountries.json';
+import { BASE_URL, getTodaysDate, useStore } from '../../helpers';
+import { useAxios, useMedia } from '../../hooks';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
+import { Icon } from '../icon/icon';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
+import { TextField } from '../textField/textField';
+import { ContentTitle } from './kycL2LegalModal';
+import { Portal } from './portal';
 
-const Select = styled.select(() => {
+const WrapContainer = styled.div(({ themeMode }: any) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
-		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
-		border-radius: ${DEFAULT_BORDER_RADIUS};
+		display: flex;
+		flex-direction: column;
+		justify-content: space-between;
+		width: 100%;
+		overflow-y: auto;
+		margin-bottom: ${spacing[10]};
+		color: ${themeMode === 'dark' ? '#000000' : themeMode === 'light' ? '#ffffff' : theme.font.default};
+
+
+		::-webkit-scrollbar {
+			display: block;
+			width: 1px;
+			background-color: ${theme.background.tertiary};
+		}
+
+		::-webkit-scrollbar-thumb {
+			display: block;
+			background-color: ${theme.button.default};
+			border-radius: ${pxToRem(4)};
+			border-right: none;
+			border-left: none;
+		}
+
+		::-webkit-scrollbar-track-piece {
+			display: block;
+			background: ${theme.button.disabled};
+		}
+	`;
+});
+
+const Select = styled.select(({ themeMode }: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
 		width: 100%;
 		height: 100%;
 		max-height: ${pxToRem(46)};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
+		background-color: transparent;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		option {
+			color: ${theme.font.default};
+			background: ${theme.background.default};
+		}
 	`;
 });
 
@@ -43,13 +83,14 @@ const LabelInput = styled.label(() => {
 		text-align: center;
 		cursor: pointer;
 		min-width: ${pxToRem(120)};
-		margin-bottom: ${pxToRem(20)};
+		/* margin-bottom: ${pxToRem(20)}; */
 		padding: ${spacing[4]};
 		border: 1px solid ${theme.button.wallet};
-		border-radius: ${pxToRem(4)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 
 		&:hover {
-			border: 1px solid ${theme.border.secondary};
+			border: 1px solid ${theme.button.default};
+			color: ${theme.button.default};
 		}
 	`;
 });
@@ -57,6 +98,63 @@ const LabelInput = styled.label(() => {
 const UboLegalContainer = styled.div`
 	padding: 0 ${spacing[6]};
 `;
+
+const SubmitBtn = styled.button((props: any) => {
+
+	return css`
+		background-color: ${!props.disabled ? '#20A100' : 'grey'};
+		width: 100%;
+		max-width: ${pxToRem(430)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		border: none;
+		padding: ${pxToRem(16)} 0;
+		text-align: center;
+		color: white;
+		font-size: ${fontSize[18]};
+		line-height: ${pxToRem(25)};
+		max-height: ${pxToRem(55)};
+		cursor: ${props.disabled ? 'not-allowed' : 'pointer'};
+	`;
+});
+
+const DateInput = styled.input((props: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		padding: 0 6px;
+		cursor: pointer;
+		background: none;
+		color: ${props.themeMode === 'light' ? '#000' : theme.font.default};
+		min-height: ${pxToRem(45)};
+		border: 1px solid ${theme.border.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		::-webkit-calendar-picker-indicator {
+			color: transparent;
+			opacity: 1;
+			background: url(https://cdn-icons-png.flaticon.com/512/591/591576.png) no-repeat center;
+			background-size: contain;
+		}
+	`;
+});
+
+const IconContainer = styled.div(() => {
+
+	return css`
+	cursor: pointer;
+	margin-left: ${spacing[10]};
+
+	&:hover {
+		fill: red;
+	}
+
+	&:focus {
+		outline: 6px solid red;
+	}
+	`;
+});
 
 type Props = {
 	addUbo?: any;
@@ -71,7 +169,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	const [isUBOLegalEntity, setIsUBOLegalEntity] = useState<string>('empty');
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
-
+	const today = getTodaysDate();
 	const [client, setClient] = useState<any>({
 		appliedSanctions: '',
 		citizenship: [],
@@ -158,7 +256,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 				setIsValid(true);
 			}
 		} else if (isUBOLegalEntity === 'legal') {
-			if (client.companyName && client.fileIdentification && !Object.values(client.uboInfo).includes('')) {
+			if (client.companyName && client.fileIdentification
+				&& !Object.values(client.uboInfo).includes('')
+				&& client.uboInfo.countryOfIncorporate.length > 0
+				&& new Date(client.uboInfo.dateOfBirth) <= new Date()
+				&& new Date(client.uboInfo.dateOfBirth) >= new Date('01-01-1900')) {
 				setIsValid(true);
 			}
 		}
@@ -167,6 +269,11 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 	useEffect(() => {
 		setClient(emptyClient);
 	}, [isUBOLegalEntity]);
+
+	useEffect(() => {
+		setShowModal(addUbo);
+	}, [addUbo]);
+
 	const handleChangeClientInput = (event: any) => {
 		setClient({
 			...client,
@@ -202,12 +309,27 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		});
 	};
 
-
 	const handleChangeUboInfoInput = (event: any) => {
-		setClient({
-			...client,
-			uboInfo: { ...client.uboInfo, [event.target.name]: event.target.value }
-		});
+		if (event.target.name === 'dateOfBirth') {
+			const inputDate = new Date(event.target.value);
+			const today = new Date();
+			if (inputDate > today) {
+				setClient({
+					...client,
+					uboInfo: { ...client.uboInfo, dateOfBirth: '' }
+				});
+			} else {
+				setClient({
+					...client,
+					uboInfo: { ...client.uboInfo, [event.target.name]: event.target.value }
+				});
+			}
+		} else {
+			setClient({
+				...client,
+				uboInfo: { ...client.uboInfo, [event.target.name]: event.target.value }
+			});
+		}
 	};
 
 	const handleChangeFileInput = () => {
@@ -281,18 +403,28 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 		updateUboModalShow(false);
 	};
 
-	useEffect(() => {
-		setShowModal(addUbo);
-	}, [addUbo]);
+	const handleDeleteFile = () => {
+		setClient({
+			...client,
+			fileIdentification: null
+		});
+
+		if (fileIdentification?.current) {
+			fileIdentification.current.value = '';
+		}
+	};
 
 	return (
 		<Portal
-			size="xl"
+			size="xxl"
 			isOpen={showModal}
 			handleClose={handleClose}
+			hasBackButton
+			backgroundColor='light'
 			handleBack={handleBack}
-			hasBackButton>
-			<WrapContainer>
+			themeMode='light'>
+			{/* @ts-ignore */}
+			<WrapContainer themeMode='dark'>
 				<div>
 					<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
 					<div
@@ -344,6 +476,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										align="left"
 										name="fullName"
 										error={client.fullName.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -361,6 +495,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										align="left"
 										name="placeOfBirth"
 										error={client.placeOfBirth.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -378,6 +514,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										align="left"
 										name="idNumber"
 										error={client.idNumber.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{
@@ -394,9 +532,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										onChange={handleDropDownInput}
 										value={client.gender}
 										id="label-select-gender"
-										style={{
-											borderRadius: '6px'
-										}}>
+										// @ts-ignore
+										themeMode='light'>
 										<option value="Select gender">Select gender</option>
 										<option value="Male">Male</option>
 										<option value="Female">Female</option>
@@ -413,6 +550,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										onChange={handleDropDownInput}
 										value={client.taxResidency}
 										id="label-select-tax-residency"
+										// @ts-ignore
+										themeMode='light'
 										style={{
 											minHeight: '46px',
 										}}>
@@ -436,7 +575,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
 										id='label-citizenship-natural-ubo'
 										options={countries}
-										placeholder='Select...'
+										themeMode='light'
+										placeholder='Select country...'
 									/>
 								</div>
 							</div>
@@ -445,16 +585,18 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									personal identification
 									or passport of the
 									representatives</ContentTitle>
-								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
 									<LabelInput htmlFor="file-input-address">
 										<FileInput
 											id="file-input-address"
 											type="file"
 											ref={fileIdentification as any}
-											onChange={handleChangeFileInput}>
-										</FileInput>
+											onChange={handleChangeFileInput} />
 										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
+									<IconContainer>
+										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+									</IconContainer>
 								</div>
 							</div>
 							<ContentTitle>
@@ -478,6 +620,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										onChange={handleChangeResidenceInput}
 										value={client.residence.stateOrCountry}
 										id="label-address-permanent-state-Or-Country"
+										// @ts-ignore
+										themeMode='light'
 										style={{
 											minHeight: '35px',
 										}}>
@@ -507,6 +651,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										size="small"
 										align="left"
 										name="street"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 
@@ -525,6 +671,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										size="small"
 										align="left"
 										name="streetNumber"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -542,6 +690,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										size="small"
 										align="left"
 										name="municipality"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -559,6 +709,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										size="small"
 										align="left"
 										name="zipCode"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 							</div>
@@ -610,12 +762,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												onChange={handleChangeMailInput}
 												value={client.mailAddress.stateOrCountry}
 												id="label-mail-address-state-Or-Country"
-												style={{
-													minHeight: '46px',
-													backgroundColor: '#1c2125',
-													color: 'white',
-													borderRadius: '6px'
-												}}>
+												// @ts-ignore
+												themeMode='light'>
 												<option value="Select country">Select country</option>
 												{COUNTRIES.map((country: any) => {
 													return (
@@ -642,6 +790,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												size="small"
 												align="left"
 												name="street"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -659,6 +809,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												size="small"
 												align="left"
 												name="streetNumber"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -676,6 +828,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												size="small"
 												align="left"
 												name="municipality"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -693,6 +847,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 												size="small"
 												align="left"
 												name="zipCode"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 									</div>
@@ -769,22 +925,26 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 									align="left"
 									name="companyName"
 									error={client.companyName.length < 2}
+									maxLength={100}
+									themeMode='light'
 								/>
 							</div>
 							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
 									or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
 									Foundation etc.)</ContentTitle>
-								<div style={{ textAlign: 'left' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
 									<LabelInput htmlFor="fileIdentification">
 										<FileInput
 											id="fileIdentification"
 											type="file"
 											ref={fileIdentification as any}
-											onChange={handleChangeFileInput}>
-										</FileInput>
+											onChange={handleChangeFileInput} />
 										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
+									<IconContainer>
+										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+									</IconContainer>
 								</div>
 							</div>
 							<div
@@ -819,6 +979,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											size="small"
 											align="left"
 											name="nameAndSurname"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 									<div style={{
@@ -836,19 +998,15 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											Date of incorporation
 										</label>
 										<DateInput
-											style={{
-												backgroundColor: `${theme.background.secondary}`,
-												color: `${theme.font.default}`,
-												minHeight: '40px',
-												border: '1px solid grey',
-												borderRadius: `${DEFAULT_BORDER_RADIUS}`
-											}}
 											type="date"
 											id="label-uboInfo-dateOfBirth"
 											value={client.uboInfo.dateOfBirth}
 											min="1900-01-01"
 											name="dateOfBirth"
 											onChange={handleChangeUboInfoInput}
+											max={today && today}
+											// @ts-ignore
+											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
@@ -858,6 +1016,7 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											Country of incorporation
 										</label>
 										<SelectDropdown
+											themeMode='light'
 											onChange={(e: any) => handleSelectDropdownUboInfo(e)}
 											options={countries}
 										/>
@@ -877,6 +1036,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											size="small"
 											align="left"
 											name="subsequentlyBusinessCompany"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
@@ -894,6 +1055,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											size="small"
 											align="left"
 											name="registeredOffice"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
@@ -911,6 +1074,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											size="small"
 											align="left"
 											name="permanentResidence"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
@@ -928,6 +1093,8 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 											size="small"
 											align="left"
 											name="idNumber"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 								</div>
@@ -936,9 +1103,9 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 					) : null}
 				</div>
 				<div style={{ textAlign: 'center' }}>
-					<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
+					<SubmitBtn onClick={handleSubmit} disabled={!isValid}>
 						{isValid ? 'Submit' : 'Please fill up all fields'}
-					</Button>
+					</SubmitBtn>
 				</div>
 			</WrapContainer>
 
