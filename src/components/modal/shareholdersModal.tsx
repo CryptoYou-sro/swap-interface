@@ -1,29 +1,68 @@
 import { useEffect, useRef, useState } from 'react';
+import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import countries from '../../data/countries.json';
 import COUNTRIES from '../../data/listOfAllCountries.json';
-import { BASE_URL, useStore } from '../../helpers';
+import { BASE_URL, getTodaysDate, useStore } from '../../helpers';
 import { useAxios, useMedia } from '../../hooks';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
-import { Button } from '../button/button';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
+import { Icon } from '../icon/icon';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 import { TextField } from '../textField/textField';
-import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { ContentTitle } from './kycL2LegalModal';
 import { Portal } from './portal';
-import { toast } from 'react-toastify';
 
-const Select = styled.select(() => {
+
+const WrapContainer = styled.div(({ themeMode }: any) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
-		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
-		border-radius: ${DEFAULT_BORDER_RADIUS};
+		width: 100%;
+		overflow-y: auto;
+		margin-bottom: ${spacing[10]};
+		color: ${themeMode === 'dark' ? '#000000' : themeMode === 'light' ? '#ffffff' : theme.font.default};
+
+
+		::-webkit-scrollbar {
+			display: block;
+			width: 1px;
+			background-color: ${theme.background.tertiary};
+		}
+
+		::-webkit-scrollbar-thumb {
+			display: block;
+			background-color: ${theme.button.default};
+			border-radius: ${pxToRem(4)};
+			border-right: none;
+			border-left: none;
+		}
+
+		::-webkit-scrollbar-track-piece {
+			display: block;
+			background: ${theme.button.disabled};
+		}
+	`;
+});
+
+const Select = styled.select(({ themeMode }: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
 		width: 100%;
 		height: 100%;
 		max-height: ${pxToRem(46)};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
+		background-color: transparent;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		option {
+			color: ${theme.font.default};
+			background: ${theme.background.default};
+		}
 	`;
 });
 
@@ -36,13 +75,14 @@ const LabelInput = styled.label(() => {
 		text-align: center;
 		cursor: pointer;
 		min-width: ${pxToRem(120)};
-		margin-bottom: ${pxToRem(20)};
+		/* margin-bottom: ${pxToRem(20)}; */
 		padding: ${spacing[4]};
 		border: 1px solid ${theme.button.wallet};
-		border-radius: ${pxToRem(4)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
 
 		&:hover {
-			border: 1px solid ${theme.border.secondary};
+			border: 1px solid ${theme.button.default};
+			color: ${theme.button.default};
 		}
 	`;
 });
@@ -53,7 +93,7 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-export const DateInput = styled.input((props: any) => {
+const DateInput = styled.input((props: any) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -80,6 +120,40 @@ const ShareHoldersContainer = styled.div`
 	padding: 0 ${spacing[6]};
 `;
 
+const SubmitBtn = styled.button((props: any) => {
+
+	return css`
+		background-color: ${!props.disabled ? '#20A100' : 'grey'};
+		width: 100%;
+		max-width: ${pxToRem(430)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		border: none;
+		padding: ${pxToRem(16)} 0;
+		text-align: center;
+		color: white;
+		font-size: ${fontSize[18]};
+		line-height: ${pxToRem(25)};
+		max-height: ${pxToRem(55)};
+		cursor: ${props.disabled ? 'not-allowed' : 'pointer'};
+	`;
+});
+
+const IconContainer = styled.div(() => {
+
+	return css`
+	cursor: pointer;
+	margin-left: ${spacing[10]};
+
+	&:hover {
+		fill: red;
+	}
+
+	&:focus {
+		outline: 6px solid red;
+	}
+	`;
+});
+
 type Props = {
 	addShareHolder?: boolean;
 	updateShareHoldersModalShow?: any;
@@ -93,7 +167,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
 	const [isShareHolderLegal, setIsShareHolderLegal] = useState<string>('empty');
-
+	const today = getTodaysDate();
 	const fileIdentification = useRef<HTMLInputElement>();
 	const [client, setClient] = useState<any>({
 		appliedSanctions: '',
@@ -175,11 +249,16 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 				&& client.gender !== 'Select gender' && client.taxResidency !== 'Select country' && client.citizenship.length > 0
 				&& client.fileIdentification && client.politicallPerson.length > 0 && client.appliedSanctions.length > 0
 				&& !Object.values(client.residence).includes('') && (client.permanentAndMailAddressSame === 'Yes'
-					|| client.permanentAndMailAddressSame === 'No' && !Object.values(client.mailAddress).includes(''))) {
+					|| client.permanentAndMailAddressSame === 'No' && !Object.values(client.mailAddress).includes('') && client.mailAddress.stateOrCountry !== 'Select country')) {
 				setIsValid(true);
 			}
 		} else if (isShareHolderLegal === 'legal') {
-			if (client.companyName && client.fileIdentification && !Object.values(client.shareHolderInfo).includes('')) {
+			if (client.companyName && client.fileIdentification
+				&& !Object.values(client.shareHolderInfo).includes('')
+				&& client.shareHolderInfo.countryOfIncorporate.length > 0
+				&& new Date(client.shareHolderInfo.dateOfBirth) <= new Date()
+				&& new Date(client.shareHolderInfo.dateOfBirth) >= new Date('01-01-1900')
+			) {
 				setIsValid(true);
 			}
 		}
@@ -226,10 +305,26 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 		});
 	};
 	const handleChangeShareHolderInfoInput = (event: any) => {
-		setClient({
-			...client,
-			shareHolderInfo: { ...client.shareHolderInfo, [event.target.name]: event.target.value }
-		});
+		if (event.target.name === 'dateOfBirth') {
+			const inputDate = new Date(event.target.value);
+			const today = new Date();
+			if (inputDate > today) {
+				setClient({
+					...client,
+					shareHolderInfo: { ...client.shareHolderInfo, dateOfBirth: '' }
+				});
+			} else {
+				setClient({
+					...client,
+					shareHolderInfo: { ...client.shareHolderInfo, [event.target.name]: event.target.value }
+				});
+			}
+		} else {
+			setClient({
+				...client,
+				shareHolderInfo: { ...client.shareHolderInfo, [event.target.name]: event.target.value }
+			});
+		}
 	};
 
 	const handleClose = () => {
@@ -293,18 +388,32 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 		updateShareHoldersModalShow(false);
 	};
 
+	const handleDeleteFile = () => {
+		setClient({
+			...client,
+			fileIdentification: null
+		});
+
+		if (fileIdentification?.current) {
+			fileIdentification.current.value = '';
+		}
+	};
+
 	useEffect(() => {
 		setShowModal(addShareHolder);
 	}, [addShareHolder]);
 
 	return (
 		<Portal
-			size="xl"
+			size="xxl"
 			isOpen={showModal}
 			handleClose={handleClose}
 			handleBack={handleBack}
-			hasBackButton>
-			<WrapContainer
+			hasBackButton
+			backgroundColor='light'
+			themeMode='light'>
+			{/* @ts-ignore */}
+			<WrapContainer themeMode='dark'
 				style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-between', padding: '0 10px' }}>
 				<div>
 					<ContentTitle>
@@ -358,6 +467,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										align="left"
 										name="fullName"
 										error={client.fullName.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -379,6 +490,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										align="left"
 										name="idNumber"
 										error={client.idNumber.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -400,6 +513,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										align="left"
 										name="placeOfBirth"
 										error={client.placeOfBirth.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -411,9 +526,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										onChange={handleDropDownInput}
 										value={client.gender}
 										id="label-shareholder-select-gender"
-										style={{
-											maxHeight: '45px',
-										}}>
+										// @ts-ignore
+										themeMode='light'>
 										<option value="Select gender">Select gender</option>
 										<option value="Male">Male</option>
 										<option value="Female">Female</option>
@@ -430,6 +544,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										onChange={handleDropDownInput}
 										value={client.taxResidency}
 										id="label-select-shareholder-tax-residency"
+										// @ts-ignore
+										themeMode='light'
 										style={{
 											minHeight: '46px',
 										}}>
@@ -450,9 +566,10 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										Citizenship(s)
 									</label>
 									<SelectDropdown
+										themeMode='light'
 										onChange={(e: any) => handleSelectDropdownNatural(e)}
 										options={countries}
-										placeholder='Select...'
+										placeholder='Select country...'
 									/>
 								</div>
 							</div>
@@ -463,15 +580,18 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									identification or
 									passport of the representatives
 								</ContentTitle>
-								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
 									<LabelInput htmlFor="label-input-file-natural">
 										<FileInput
 											id="label-input-file-natural"
 											type="file"
 											ref={fileIdentification as any}
-											onChange={handleChangeFileInput}></FileInput>
+											onChange={handleChangeFileInput} />
 										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
+									<IconContainer>
+										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+									</IconContainer>
 								</div>
 							</div>
 							<ContentTitle>Permanent or other residence</ContentTitle>
@@ -486,10 +606,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										name="stateOrCountry"
 										onChange={handleChangeResidenceInput}
 										value={client.residence.stateOrCountry}
-										id="label-shareholder-address-permanent-state-Or-Country"
-										style={{
-											maxHeight: '45px',
-										}}>
+										// @ts-ignore
+										themeMode='light'
+										id="label-shareholder-address-permanent-state-Or-Country">
 										<option value="Select country">Select country</option>
 										{COUNTRIES.map((country: any) => {
 											return (
@@ -516,6 +635,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="street"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -533,6 +654,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="streetNumber"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -550,6 +673,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="municipality"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -567,6 +692,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="zipCode"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 							</div>
@@ -605,7 +732,7 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 							</div>
 							{client.permanentAndMailAddressSame === 'No' && (
 								<>
-									<p style={{ textAlign: 'center', fontSize: '18px' }}>Mailing address</p>
+									<ContentTitle>Mailing address</ContentTitle>
 									<div
 										style={{
 											margin: '0 0 10px 0',
@@ -623,6 +750,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												Country
 											</label>
 											<Select
+												// @ts-ignore
+												themeMode='light'
 												name="stateOrCountry"
 												onChange={handleChangeMailInput}
 												value={client.mailAddress.stateOrCountry}
@@ -660,6 +789,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												size="small"
 												align="left"
 												name="street"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -680,6 +811,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												size="small"
 												align="left"
 												name="streetNumber"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -700,6 +833,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												size="small"
 												align="left"
 												name="municipality"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 										<div style={{ width: '48%' }}>
@@ -720,6 +855,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 												size="small"
 												align="left"
 												name="zipCode"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 									</div>
@@ -809,23 +946,28 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 									align="left"
 									name="companyName"
 									error={client.companyName.length < 2}
+									maxLength={100}
+									themeMode='light'
 								/>
 							</div>
 							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
 								<ContentTitle style={{ width: '80%' }}>Copy of
 									excerpt of public register or
-									other valid documents proving the existence of legal entity
+									other valid documents proving the existence of legal entity <br />
 									(Articles of Associations, Deed of Foundation etc.).
 								</ContentTitle>
-								<div style={{ textAlign: 'left', marginBottom: '40px' }}>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
 									<LabelInput htmlFor="file-input">
 										<FileInput
 											id="file-input"
 											type="file"
 											ref={fileIdentification as any}
-											onChange={handleChangeFileInput}></FileInput>
+											onChange={handleChangeFileInput} />
 										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelInput>
+									<IconContainer>
+										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+									</IconContainer>
 								</div>
 							</div>
 							<ContentTitle>
@@ -854,6 +996,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="nameAndSurname"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{
@@ -871,19 +1015,15 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										Date of incorporation
 									</label>
 									<DateInput
-										style={{
-											backgroundColor: `${theme.background.secondary}`,
-											color: `${theme.font.default}`,
-											minHeight: '40px',
-											border: '1px solid grey',
-											borderRadius: `${DEFAULT_BORDER_RADIUS}`
-										}}
 										type="date"
 										id="label-shareHolderInfo-dateOfBirth"
 										value={client.shareHolderInfo.dateOfBirth}
 										min="1900-01-01"
 										name="dateOfBirth"
 										onChange={handleChangeShareHolderInfoInput}
+										// @ts-ignore
+										themeMode='light'
+										max={today && today}
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -893,9 +1033,10 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										Country of incorporation
 									</label>
 									<SelectDropdown
+										themeMode='light'
 										onChange={(e: any) => handleSelectDropdownShareHolderInfo(e)}
 										options={countries}
-										placeholder='Select...'
+										placeholder='Select country...'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -913,6 +1054,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="subsequentlyBusinessCompany"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -930,6 +1073,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="registeredOffice"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -947,6 +1092,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="permanentResidence"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '48%' }}>
@@ -964,6 +1111,8 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 										size="small"
 										align="left"
 										name="idNumber"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 							</div>
@@ -971,9 +1120,9 @@ export const ShareHoldersModal = ({ addShareHolder = false, updateShareHoldersMo
 					) : null}
 				</div>
 				<div style={{ textAlign: 'center' }}>
-					<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
+					<SubmitBtn onClick={handleSubmit} disabled={!isValid}>
 						{isValid ? 'Submit' : 'Please fill up all fields'}
-					</Button>
+					</SubmitBtn>
 				</div>
 			</WrapContainer>
 
