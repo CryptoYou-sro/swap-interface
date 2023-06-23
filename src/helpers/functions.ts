@@ -104,3 +104,8 @@ export function customW3mProvider<C extends Chain>({ projectId }: WalletConnectP
 		}
 	});
 }
+
+export const getTodaysDate = () => {
+	
+	return new Date().toISOString().split('T')[0];
+};
