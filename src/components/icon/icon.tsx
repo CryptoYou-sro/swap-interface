@@ -272,6 +272,7 @@ import { ReactComponent as XVS } from '../../assets/xvs.svg';
 import { ReactComponent as YFI } from '../../assets/yfi.svg';
 import { ReactComponent as YFII } from '../../assets/yfii.svg';
 import { ReactComponent as YGG } from '../../assets/ygg.svg';
+import { ReactComponent as TRASHBIN } from '../../assets/trash.svg';
 
 
 import { useStore } from '../../helpers';
@@ -386,6 +387,7 @@ const Icons = {
 	settingsDark: SettingsDark,
 	settingsLight: SettingsLight,
 	moneyAnimated: MoneyAnimated,
+	trashBin: TRASHBIN,
 
 	// avaxapt: AVAXAPT,
 	akro: AKRO,
