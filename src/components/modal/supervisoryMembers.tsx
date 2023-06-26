@@ -1,40 +1,89 @@
-import styled, { css } from 'styled-components';
-import { Portal } from './portal';
-import { TextField } from '../textField/textField';
 import { useEffect, useState } from 'react';
-import { Button } from '../button/button';
-import { DEFAULT_BORDER_RADIUS, pxToRem, spacing } from '../../styles';
-import COUNTRIES from '../../data/listOfAllCountries.json';
 import { toast } from 'react-toastify';
-import { ContentTitle, WrapContainer } from './kycL2LegalModal';
-import { useAxios, useMedia } from '../../hooks';
-import { BASE_URL, useStore } from '../../helpers';
+import styled, { css } from 'styled-components';
 import countries from '../../data/countries.json';
-import { DateInput } from './shareholdersModal';
+import COUNTRIES from '../../data/listOfAllCountries.json';
+import { BASE_URL, getTodaysDate, useStore } from '../../helpers';
+import { useAxios, useMedia } from '../../hooks';
+import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
+import { TextField } from '../textField/textField';
+import { ContentTitle, WrapContainer } from './kycL2LegalModal';
+import { Portal } from './portal';
 
-const Wrapper = styled.div(() => {
+const Wrapper = styled.div(({ themeMode }: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
 	return css`
 		display: flex;
 		width: 100%;
 		flex-direction: column;
 		align-items: center;
 		padding: ${spacing[10]} ${spacing[20]};
+		color: ${themeMode === 'dark' ? '#000000' : themeMode === 'light' ? '#ffffff' : theme.font.default};
 	`;
 });
 
-const Select = styled.select(() => {
+const Select = styled.select(({ themeMode }: any) => {
 	const {
 		state: { theme }
 	} = useStore();
 
 	return css`
-		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
-		border-radius: ${DEFAULT_BORDER_RADIUS};
 		width: 100%;
 		height: 100%;
 		max-height: ${pxToRem(46)};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
+		background-color: transparent;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		option {
+			color: ${theme.font.default};
+			background: ${theme.background.default};
+		}
+	`;
+});
+
+const DateInput = styled.input((props: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		padding: 0 6px;
+		cursor: pointer;
+		background: none;
+		color: ${props.themeMode === 'light' ? '#000' : theme.font.default};
+		min-height: ${pxToRem(45)};
+		border: 1px solid ${theme.border.default};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		::-webkit-calendar-picker-indicator {
+			color: transparent;
+			opacity: 1;
+			background: url(https://cdn-icons-png.flaticon.com/512/591/591576.png) no-repeat center;
+			background-size: contain;
+		}
+	`;
+});
+
+const SubmitBtn = styled.button((props: any) => {
+
+	return css`
+		background-color: ${!props.disabled ? '#20A100' : 'grey'};
+		width: 100%;
+		max-width: ${pxToRem(430)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		border: none;
+		padding: ${pxToRem(16)} 0;
+		text-align: center;
+		color: white;
+		font-size: ${fontSize[18]};
+		line-height: ${pxToRem(25)};
+		max-height: ${pxToRem(55)};
+		cursor: ${props.disabled ? 'not-allowed' : 'pointer'};
 	`;
 });
 
@@ -50,6 +99,7 @@ export const SupervisoryMembers = ({
 		state: { theme }
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
+	const today = getTodaysDate();
 
 	const [showModal, setShowModal] = useState<boolean>(false);
 	const [isValid, setIsValid] = useState<boolean>(false);
@@ -107,7 +157,9 @@ export const SupervisoryMembers = ({
 			residence.stateOrCountry !== 'Select country' &&
 			citizenship.length &&
 			appliedSanctions.length &&
-			gender !== 'Select gender'
+			gender !== 'Select gender' &&
+			new Date(dateOfBirth) <= new Date() &&
+			new Date(dateOfBirth) >= new Date('01-01-1900')
 		) {
 			setIsValid(true);
 		}
@@ -135,7 +187,14 @@ export const SupervisoryMembers = ({
 	};
 
 	const handleChangeDate = (event: any) => {
-		setClient({ ...client, dateOfBirth: event.target.value });
+		const inputDate = new Date(event.target.value);
+		const today = new Date();
+
+		if (inputDate > today) {
+			setClient({ ...client, dateOfBirth: '' });
+		} else {
+			setClient({ ...client, dateOfBirth: event.target.value });
+		}
 	};
 	const handleClose = () => {
 		updateSupervisorModalShow(false);
@@ -187,12 +246,15 @@ export const SupervisoryMembers = ({
 
 	return (
 		<Portal
-			size="xl"
+			size="xxl"
 			isOpen={showModal}
 			handleClose={handleClose}
 			handleBack={handleBack}
-			hasBackButton>
-			<Wrapper>
+			hasBackButton
+			backgroundColor='light'
+			themeMode='light'>
+			{/* @ts-ignore */}
+			<Wrapper themeMode='dark'>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
 				<WrapContainer style={{ padding: '0 10px' }}>
 					<div style={{
@@ -204,10 +266,7 @@ export const SupervisoryMembers = ({
 						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-supervisory-full-name"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block'
-								}}>
+								style={{ display: 'inline-block', margin: '8px 0' }}>
 								Full name
 							</label>
 							<TextField
@@ -221,40 +280,31 @@ export const SupervisoryMembers = ({
 								name="fullName"
 								maxLength={50}
 								error={client.fullName.length < 2}
+								themeMode='light'
 							/>
 						</div>
-						<div style={{ width: '48%', display: 'flex', flexDirection: 'column' }}>
+						<div style={{ width: '48%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
 							<label
 								htmlFor="label-supervisory-date"
-								style={{
-									margin: '8px 0',
-									display: 'inline-block'
-								}}>
+								style={{ display: 'inline-block', margin: '8px 0' }}>
 								Date of birth
 							</label>
 							<DateInput
-								style={{
-									backgroundColor: `${theme.background.secondary}`,
-									color: `${theme.font.default}`,
-									minHeight: '40px',
-									border: '1px solid grey',
-									borderRadius: `${DEFAULT_BORDER_RADIUS}`
-								}}
 								type="date"
 								id="label-supervisory-date"
 								value={client.dateOfBirth}
 								min="1900-01-01"
 								name="dateOfBirth"
 								onChange={(e: any) => handleChangeDate(e)}
+								// @ts-ignore
+								themeMode='light'
+								max={today && today}
 							/>
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
 								htmlFor="label-shareholders-place-of-birth"
-								style={{
-									margin: '6px 0 8px 0',
-									display: 'inline-block'
-								}}>
+								style={{ display: 'inline-block', margin: '8px 0' }}>
 								Place of Birth
 							</label>
 							<TextField
@@ -268,6 +318,7 @@ export const SupervisoryMembers = ({
 								name="placeOfBirth"
 								maxLength={50}
 								error={client.placeOfBirth.length < 2}
+								themeMode='light'
 							/>
 						</div>
 						<div style={{
@@ -276,7 +327,7 @@ export const SupervisoryMembers = ({
 							flexDirection: 'column',
 							justifyContent: 'flex-end'
 						}}>
-							<label htmlFor="label-shareholder-select-gender">
+							<label htmlFor="label-shareholder-select-gender" style={{ display: 'inline-block', margin: '8px 0' }}>
 								Gender
 							</label>
 							<Select
@@ -284,10 +335,8 @@ export const SupervisoryMembers = ({
 								onChange={handleDropDownInput}
 								value={client.gender}
 								id="label-shareholder-select-gender"
-								style={{
-									minHeight: '46px',
-									marginTop: '8px',
-								}}>
+								// @ts-ignore
+								themeMode='light'>
 								<option value="Select gender">Select gender</option>
 								<option value="Male">Male</option>
 								<option value="Female">Female</option>
@@ -300,6 +349,7 @@ export const SupervisoryMembers = ({
 							Citizenship(s)
 						</ContentTitle>
 						<SelectDropdown
+							themeMode='light'
 							onChange={(e: any) => handleSelectDropdownNatural(e)}
 							options={countries}
 							placeholder='Select country...'
@@ -319,9 +369,8 @@ export const SupervisoryMembers = ({
 								onChange={handleChangeResidenceInput}
 								value={client.residence.stateOrCountry}
 								id="label-shareholder-address-permanent-state-Or-Country"
-								style={{
-									maxHeight: '45px',
-								}}>
+								// @ts-ignore
+								themeMode='light'>
 								<option value="Select country">Select country</option>
 								{COUNTRIES.map((country: any) => {
 									return (
@@ -349,6 +398,7 @@ export const SupervisoryMembers = ({
 								align="left"
 								name="street"
 								maxLength={50}
+								themeMode='light'
 							/>
 						</div>
 						<div style={{ width: '48%' }}>
@@ -367,6 +417,7 @@ export const SupervisoryMembers = ({
 								align="left"
 								name="streetNumber"
 								maxLength={50}
+								themeMode='light'
 							/>
 						</div>
 						<div style={{ width: '48%' }}>
@@ -385,6 +436,7 @@ export const SupervisoryMembers = ({
 								align="left"
 								name="municipality"
 								maxLength={50}
+								themeMode='light'
 							/>
 						</div>
 						<div style={{ width: '48%' }}>
@@ -403,6 +455,7 @@ export const SupervisoryMembers = ({
 								align="left"
 								name="zipCode"
 								maxLength={50}
+								themeMode='light'
 							/>
 						</div>
 					</div>
@@ -440,9 +493,9 @@ export const SupervisoryMembers = ({
 						</label>
 					</div>
 				</WrapContainer>
-				<Button variant="secondary" onClick={handleSubmit} disabled={!isValid}>
+				<SubmitBtn onClick={handleSubmit} disabled={!isValid}>
 					{isValid ? 'Submit' : 'Please fill up all fields'}
-				</Button>
+				</SubmitBtn>
 			</Wrapper>
 		</Portal>
 	);

@@ -147,8 +147,8 @@ const Select = styled.select(({ themeMode }: any) => {
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 
 		option {
-			color: ${theme.font.default};;
-			background: ${theme.background.default};;
+			color: ${theme.font.default};
+			background: ${theme.background.default};
 		}
 	`;
 });

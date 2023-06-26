@@ -19,6 +19,7 @@ import {
 import { useAxios, useMedia } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { Button } from '../button/button';
+import { Icon } from '../icon/icon';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
 import { TextField } from '../textField/textField';
 import { Portal } from './portal';
@@ -26,12 +27,19 @@ import { ShareHoldersModal } from './shareholdersModal';
 import { SupervisoryMembers } from './supervisoryMembers';
 import { UboModal } from './uboModal';
 
-const Wrapper = styled.div(() => {
+type WrapperProps = {
+	themeMode?: string;
+};
+
+const Wrapper = styled.div(({ themeMode }: WrapperProps) => {
+	const { state: { theme } } = useStore();
+
 	return css`
 		display: flex;
 		width: 100%;
 		flex-direction: column;
 		padding: ${spacing[10]} ${spacing[20]};
+		color: ${themeMode === 'dark' ? '#000000' : themeMode === 'light' ? '#ffffff' : theme.font.default};
 	`;
 });
 
@@ -64,7 +72,8 @@ const LabelInput = styled.label(() => {
 		border-radius: ${pxToRem(4)};
 
 		&:hover {
-			border: 1px solid ${theme.border.secondary};
+			border: 1px solid ${theme.button.default};
+			color: ${theme.button.default};
 		}
 	`;
 });
@@ -75,7 +84,7 @@ const FileInput = styled.input`
 	z-index: -100;
 `;
 
-const Select = styled.select(() => {
+const Select = styled.select(({ themeMode }: any) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -85,9 +94,14 @@ const Select = styled.select(() => {
 		width: ${isMobile ? '100%' : '50%'};
 		height: 100%;
 		max-height: ${pxToRem(46)};
-		color: ${theme.font.default};
-		background-color: ${theme.background.secondary};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
+		background: none;
 		border-radius: ${DEFAULT_BORDER_RADIUS};
+
+		option {
+			color: ${theme.font.default};
+			background: ${theme.background.default};
+		}
 	`;
 });
 
@@ -167,6 +181,58 @@ export const WrapContainer = styled.div(() => {
 			display: block;
 			background: ${theme.button.disabled};
 		}
+	`;
+});
+
+const NextBtn = styled.button((props: any) => {
+
+	return css`
+	background-color: ${!props.disabled ? '#20A100' : 'grey'};
+	width: 100%;
+ 	max-width: ${pxToRem(430)};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	border: none;
+	padding: ${pxToRem(16)} 0;
+	text-align: center;
+	color: white;
+	font-size: ${fontSize[18]};
+	line-height: ${pxToRem(25)};
+	max-height: ${pxToRem(55)};
+	cursor: ${props.disabled ? 'not-allowed' : 'pointer'};
+`;
+});
+
+const SubmitBtn = styled.button((props: any) => {
+
+	return css`
+		background-color: ${!props.disabled ? '#20A100' : 'grey'};
+		width: 100%;
+		max-width: ${pxToRem(430)};
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		border: none;
+		padding: ${pxToRem(16)} 0;
+		text-align: center;
+		color: white;
+		font-size: ${fontSize[18]};
+		line-height: ${pxToRem(25)};
+		max-height: ${pxToRem(55)};
+		cursor: ${props.disabled ? 'not-allowed' : 'pointer'};
+	`;
+});
+
+const IconContainer = styled.div(() => {
+
+	return css`
+	cursor: pointer;
+	margin-left: ${spacing[10]};
+
+	&:hover {
+		fill: red;
+	}
+
+	&:focus {
+		outline: 6px solid red;
+	}
 	`;
 });
 
@@ -454,6 +520,30 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			});
 	};
 
+	const handleDeleteFile = (name: string) => {
+		setInput({
+			...input,
+			file: {
+				...input.file,
+				[name]: null,
+			}
+		});
+
+		if (refPoaDoc1?.current) {
+			refPoaDoc1.current.value = '';
+		}
+		if (refPosofDoc1?.current) {
+			refPosofDoc1.current.value = '';
+		}
+		if (refPorDoc1?.current) {
+			refPorDoc1.current.value = '';
+		}
+		if (refPogDoc1?.current) {
+			refPogDoc1.current.value = '';
+		}
+
+	};
+
 	// useEffects
 	useEffect(() => {
 		if (kycL2Business === KycL2BusinessStatusEnum.BASIC) {
@@ -650,13 +740,15 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 
 	return (
 		<Portal
-			size="xl"
+			size="xxl"
 			isOpen={showModal}
 			handleClose={handleOnClose}
 			hasBackButton={(page > 0 && !isFirstPartSent) || page > PAGE_AFTER_FIRST_PART}
+			backgroundColor='light'
 			handleBack={handleOnBack}
-			closeOutside={false}>
-			<Wrapper ref={myRef}>
+			closeOutside={false}
+			themeMode='light'>
+			<Wrapper ref={myRef} themeMode='dark'>
 				<div
 					style={{
 						display: 'flex',
@@ -686,6 +778,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="companyName"
 										error={input.companyName.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ marginBottom: '10px', width: '50%' }}>
@@ -704,6 +798,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="companyIdentificationNumber"
 										error={input.companyIdentificationNumber.length < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 							</div>
@@ -721,11 +817,13 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										Country
 									</label>
 									<Select
-										style={{ width: '100%' }}
 										name="country"
 										onChange={handleChangeRegisteredOfficeInput}
 										value={input.registeredOffice.country}
-										id="label-registeredOffice-country">
+										id="label-registeredOffice-country"
+										// @ts-ignore
+										themeMode='light'
+										style={{ width: '100%' }}>
 										<option value="Select country">Select country</option>
 										{COUNTRIES.map((country: any) => {
 											return (
@@ -754,6 +852,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="street"
 										error={input.registeredOffice.street < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 									<label
 										htmlFor="label-registeredOffice-streetNumber"
@@ -772,6 +872,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										size="small"
 										align="left"
 										name="streetNumber"
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 								<div style={{ width: '50%' }}>
@@ -793,6 +895,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="state"
 										error={input.registeredOffice.state < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 									<label
 										htmlFor="label-registeredOffice-municipality"
@@ -812,6 +916,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="municipality"
 										error={input.registeredOffice.municipality < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 									<label
 										htmlFor="label-registeredOffice-pc"
@@ -831,6 +937,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 										align="left"
 										name="pc"
 										error={input.registeredOffice.pc < 2}
+										maxLength={100}
+										themeMode='light'
 									/>
 								</div>
 							</div>
@@ -856,7 +964,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									style={{ height: '40px' }}
 									name="taxResidency"
 									onChange={handleDropDownInput}
-									value={input.taxResidency}>
+									value={input.taxResidency}
+									// @ts-ignore
+									themeMode='light'>
 									<option value="Select country">Select country</option>
 									{COUNTRIES.map((country: any) => {
 										return (
@@ -930,7 +1040,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												width: '100%',
 												minHeight: '46px',
 
-											}}>
+											}}
+											// @ts-ignore
+											themeMode='light'>
 											<option value="Select country">Select country</option>
 											{COUNTRIES.map((country: any) => {
 												return (
@@ -958,6 +1070,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											size="small"
 											align="left"
 											name="street"
+											maxLength={100}
+											themeMode='light'
 										/>
 										<label
 											htmlFor="label-address-zipCode"
@@ -976,6 +1090,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											size="small"
 											align="left"
 											name="zipCode"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '50%' }}>
@@ -996,6 +1112,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											size="small"
 											align="left"
 											name="municipality"
+											maxLength={100}
+											themeMode='light'
 										/>
 										<label
 											htmlFor="label-address-street-number"
@@ -1014,6 +1132,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 											size="small"
 											align="left"
 											name="streetNumber"
+											maxLength={100}
+											themeMode='light'
 										/>
 									</div>
 								</div>
@@ -1171,6 +1291,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								operates
 							</ContentTitle>
 							<SelectDropdown
+								themeMode='light'
 								onChange={(e: any) => handleSelectDropdownCountryOfOperates(e)}
 								defaultValue={selectOperatesCountry}
 								options={countries}
@@ -1179,6 +1300,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								State or country, in which your company conducts its business
 							</ContentTitle>
 							<SelectDropdown
+								themeMode='light'
 								onChange={(e: any) => handleSelectDropdownCountryOfWork(e)}
 								defaultValue={selectWorkCountry}
 								options={countries}
@@ -1233,6 +1355,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												size="small"
 												align="left"
 												name="sourceOfIncomeNatureOther"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 									) : null}
@@ -1585,14 +1709,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Copy of an account statement kept by an institution in the European Economic Area
 								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPoasDoc1">
-									<FileInput
-										id="file-input-refPoasDoc1"
-										type="file"
-										ref={refPoaDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'stretch' }}>
+									<LabelInput htmlFor="file-input-refPoaDoc1">
+										<FileInput
+											id="file-input-refPoaDoc1"
+											type="file"
+											ref={refPoaDoc1 as any}
+											onChange={handleChangeFileInput} />
+										{input.file.poaDoc1 && input.file.poaDoc1.name.length < 15 ? input.file.poaDoc1.name : input.file.poaDoc1 && input.file.poaDoc1.name.length >= 15 ? input.file.poaDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+									<IconContainer>
+										{/* @ts-ignore */}
+										<Icon icon='trashBin' size='small' onClick={() => handleDeleteFile('poaDoc1')} style={{ outline: 'none' }} />
+									</IconContainer>
+								</div>
 							</div>
 							<div
 								style={{
@@ -1606,14 +1736,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									Documents proving information on the source of funds (i.e.: payslip, tax
 									return etc.)
 								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPosofDoc1">
-									<FileInput
-										id="file-input-refPosofDoc1"
-										type="file"
-										ref={refPosofDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.posofDoc1 && input.file.posofDoc1.name.length < 15 ? input.file.posofDoc1.name : input.file.posofDoc1 && input.file.posofDoc1.name.length >= 15 ? input.file.posofDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'stretch' }}>
+									<LabelInput htmlFor="file-input-refPosofDoc1">
+										<FileInput
+											id="file-input-refPosofDoc1"
+											type="file"
+											ref={refPosofDoc1 as any}
+											onChange={handleChangeFileInput} />
+										{input.file.posofDoc1 && input.file.posofDoc1.name.length < 15 ? input.file.posofDoc1.name : input.file.posofDoc1 && input.file.posofDoc1.name.length >= 15 ? input.file.posofDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+									<IconContainer>
+										{/* @ts-ignore */}
+										<Icon icon='trashBin' size='small' onClick={() => handleDeleteFile('posofDoc1')} style={{ outline: 'none' }} />
+									</IconContainer>
+								</div>
 							</div>
 							<div
 								style={{
@@ -1627,14 +1763,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 									Copy of excerpt of public register or other valid documents proving the existence of
 									legal entity (Articles of Associations, Deed of Foundation etc.).
 								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPorDoc1">
-									<FileInput
-										id="file-input-refPorDoc1"
-										type="file"
-										ref={refPorDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.porDoc1 && input.file.porDoc1.name.length < 15 ? input.file.porDoc1.name : input.file.porDoc1 && input.file.porDoc1.name.length >= 15 ? input.file.porDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'stretch' }}>
+									<LabelInput htmlFor="file-input-refPorDoc1">
+										<FileInput
+											id="file-input-refPorDoc1"
+											type="file"
+											ref={refPorDoc1 as any}
+											onChange={handleChangeFileInput} />
+										{input.file.porDoc1 && input.file.porDoc1.name.length < 15 ? input.file.porDoc1.name : input.file.porDoc1 && input.file.porDoc1.name.length >= 15 ? input.file.porDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+									<IconContainer>
+										{/* @ts-ignore */}
+										<Icon icon='trashBin' size='small' onClick={() => handleDeleteFile('porDoc1')} style={{ outline: 'none' }} />
+									</IconContainer>
+								</div>
 							</div>
 							<div
 								style={{
@@ -1647,14 +1789,20 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 									Court decision on appointment of legal guardian (if relevant).
 								</ContentTitle>
-								<LabelInput htmlFor="file-input-refPogDoc1">
-									<FileInput
-										id="file-input-refPogDoc1"
-										type="file"
-										ref={refPogDoc1 as any}
-										onChange={handleChangeFileInput}></FileInput>
-									{input.file.pogDoc1 && input.file.pogDoc1.name.length < 15 ? input.file.pogDoc1.name : input.file.pogDoc1 && input.file.pogDoc1.name.length > 15 ? input.file.pogDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
-								</LabelInput>
+								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'stretch' }}>
+									<LabelInput htmlFor="file-input-refPogDoc1">
+										<FileInput
+											id="file-input-refPogDoc1"
+											type="file"
+											ref={refPogDoc1 as any}
+											onChange={handleChangeFileInput} />
+										{input.file.pogDoc1 && input.file.pogDoc1.name.length < 15 ? input.file.pogDoc1.name : input.file.pogDoc1 && input.file.pogDoc1.name.length > 15 ? input.file.pogDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
+									</LabelInput>
+									<IconContainer>
+										{/* @ts-ignore */}
+										<Icon icon='trashBin' size='small' onClick={() => handleDeleteFile('pogDoc1')} style={{ outline: 'none' }} />
+									</IconContainer>
+								</div>
 							</div>
 						</WrapContainer>
 					)}
@@ -1665,9 +1813,9 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								width: '100%',
 								textAlign: 'center'
 							}}>
-							<Button variant="secondary" onClick={handleNext} disabled={!isValid}>
+							<NextBtn onClick={handleNext} disabled={!isValid}>
 								Next
-							</Button>
+							</NextBtn>
 						</div>
 					)}
 					{page >= 10 && (
@@ -1677,13 +1825,11 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 								width: '100%',
 								textAlign: 'center'
 							}}>
-							<Button
+							<SubmitBtn
 								disabled={!isValid}
-								variant="secondary"
-								// @ts-ignore
 								onClick={handleSubmit}>
 								Submit
-							</Button>
+							</SubmitBtn>
 						</div>
 					)}
 				</div>
