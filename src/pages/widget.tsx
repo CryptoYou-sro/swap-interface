@@ -416,7 +416,11 @@ export const Widget = () => {
     useEffect(() => {
         if (exchangeRate?.price) {
             const calcDestinationAmount: any = parseFloat(sourceAmount) * exchangeRate.price * (1 - BINANCE_FEE) - withdrawFee.amount;
-            setDestinationAmount(calcDestinationAmount);
+            if (calcDestinationAmount < 0) {
+                setDestinationAmount('0');
+            } else {
+                setDestinationAmount(calcDestinationAmount);
+            }
         }
     }, [exchangeRate]);
 
