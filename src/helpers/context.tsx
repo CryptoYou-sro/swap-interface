@@ -2,7 +2,7 @@ import axios from 'axios';
 import React, { createContext, ReactNode, useContext, useEffect, useReducer } from 'react';
 import type { ColorType, Theme } from '../styles';
 import { darkTheme } from '../styles';
-import { BASE_URL } from './constants';
+import { BASE_URL, CHAINS } from './constants';
 
 // TODO: should the enums be moved to the types.ts?
 export enum VerificationEnum {
@@ -359,9 +359,24 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 			url: `${BASE_URL}cex/currencies`
 		})
 			.then(function (response: any) {
+				// Filter source networks for only supported ones from CHAINS constant
+				const filteredSrcNetworks = Object.keys(response.data.sourceNetworks).
+  					filter((key) => Object.keys(CHAINS).includes(key)).
+  						reduce(
+							(cur, key) => { return Object.assign(cur, { [key]: response.data.sourceNetworks[key] }); },
+							{}
+						);
+				// Filter destination networks for only supported ones from CHAINS constant
+				const filteredDestNetworks = Object.keys(response.data.destinationNetworks).
+					filter((key) => Object.keys(CHAINS).includes(key)).
+						reduce(
+							(cur, key) => { return Object.assign(cur, { [key]: response.data.destinationNetworks[key] }); },
+							{}
+						);
+
 				dispatch({
 					type: AvailableCurrenciesEnum.SET,
-					payload: response.data
+					payload: { sourceNetworks: filteredSrcNetworks, destinationNetworks: filteredDestNetworks}
 				});
 			})
 			.catch(function (response: any) {
