@@ -776,8 +776,8 @@ export const Header = () => {
 					{buttonStatus.text}
 				</Button>
 			)}
-			{isUserVerified && <AddAccountBtn onClick={addAdditionalAccount} title='Add additional account'>+</AddAccountBtn>}
-			{isUserVerified && additionalAccounts.length > 0 && (
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && <AddAccountBtn onClick={addAdditionalAccount} title='Add additional account'>+</AddAccountBtn>}
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && additionalAccounts.length > 0 && (
 				<AdditionalAccWrapper onClick={() => setShowAdditionalAccounts(!showAdditionalAccounts)}>
 					<Icon
 						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
@@ -789,7 +789,7 @@ export const Header = () => {
 					/>
 				</AdditionalAccWrapper>
 			)}
-			{isUserVerified && showAdditionalAccounts && (
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && showAdditionalAccounts && (
 				<MenuWrapper theme={theme}>
 					<Accounts
 						theme={theme}
@@ -856,7 +856,7 @@ export const Header = () => {
 				updateStatusKycL2Modal={updateStatusKycL2Modal}
 			/>
 			<AddSubAccountModal showModal={showAddSubAccountModal} setShowModal={updateAddSubAccountModal} />
-			{isUserVerified && selectedAccount?.address && <SubAccountModal showModal={showSubAccountModal} setShowModal={updateSubAccountModal} account={selectedAccount} />}
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && selectedAccount?.address && <SubAccountModal showModal={showSubAccountModal} setShowModal={updateSubAccountModal} account={selectedAccount} />}
 		</StyledHeader>
 	);
 };
