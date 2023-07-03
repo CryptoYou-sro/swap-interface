@@ -176,7 +176,7 @@ export const SwapForm = () => {
 	const { switchNetworkAsync } = useSwitchNetwork();
 	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
-	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
+	// const [showNotificationsModal, setShowNotificationsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
 	const [withdrawTipsText, setWithdrawTipsText] = useState('');
@@ -196,7 +196,7 @@ export const SwapForm = () => {
 			try {
 				const parsed: ParsedProps | any = queryString.parse(location.search);
 
-				if(parsed && Object.keys(parsed).length > 1) {
+				if (parsed && Object.keys(parsed).length > 1) {
 					// Set parsed data if it has more than one key, else it is promo code
 					setParsedUrl(parsed);
 				}
@@ -207,7 +207,7 @@ export const SwapForm = () => {
 	}, [location.search]);
 
 	useEffect(() => {
-		if (!isParsedEmpty && DESTINATION_NETWORKS) {
+		if (!isParsedEmpty && DESTINATION_NETWORKS && Object.keys(parsedUrl).length >= 5) {
 			if (!isConnected) {
 				dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
 				dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
@@ -230,7 +230,7 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		async function switchToNetwork() {
-			if (!isParsedEmpty && isConnected && switchNetworkAsync && DESTINATION_NETWORKS && !sameUrlAndSiteNetworkId) {
+			if (!isParsedEmpty && isConnected && switchNetworkAsync && DESTINATION_NETWORKS && !sameUrlAndSiteNetworkId && Object.keys(parsedUrl).length >= 5) {
 				try {
 					// @ts-ignore
 					await switchNetworkAsync(NETWORK_TO_WC[parsedUrl?.sellAssetNet]?.id);
