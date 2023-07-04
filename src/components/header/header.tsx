@@ -347,6 +347,10 @@ export const Header = () => {
 						}
 					}
 				} catch (error) {
+					if (parsedKeys.length === 2 && parsed.address && parsed.nonce) {
+						window.history.replaceState({}, document.title, '/');
+						location.search = '';
+					}
 					console.log('error', error);
 				}
 			});
@@ -360,7 +364,6 @@ export const Header = () => {
 
 	const setTokensInStorageAndContext = async () => {
 		const parsed: ParsedProps | any = queryString.parse(location.search);
-
 
 		if (accountAddr && !parsed.nonce) {
 			setIsLoading(true);
@@ -674,7 +677,7 @@ export const Header = () => {
 			};
 			void getAdditionalAccountsList();
 		}
-	}, [isUserVerified, additionalAccounts]);
+	}, [isUserVerified]);
 
 	useEffect(() => {
 		if (selectedAccount?.address && selectedAccount.nonce) {
