@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import { useDisconnect } from 'wagmi';
 import { Portal } from '..';
 import { useStore } from '../../helpers';
 import { useClickOutside, useMedia } from '../../hooks';
@@ -25,9 +26,9 @@ const AccountWrapper = styled.div(() => {
     `;
 });
 
-const AccountTitle = styled.div(() => {
+const AccountTitle = styled.h1(() => {
     return css`
-        font-size: ${fontSize[16]};
+        font-size: ${fontSize[18]};
         line-height: ${fontSize[22]};
         margin: 0;
     `;
@@ -37,6 +38,8 @@ const CopyContainer = styled.div`
     display: flex;
     align-items: center;
     cursor: pointer;
+    width: 100%;
+    justify-content: flex-end;
 
     ${mediaQuery('xs')} {
         margin-bottom: ${spacing[16]};
@@ -124,12 +127,13 @@ type Props = {
 };
 
 export const SubAccountModal = ({ showModal, setShowModal, account }: Props) => {
+    const { disconnect } = useDisconnect();
     const [isCopied, setIsCopied] = useState(false);
     const isConfirmed = account.is_confirmed;
 
     const handleCopy = () => {
         setIsCopied(true);
-        void navigator.clipboard.writeText(`http://localhost:3000/?address=${account.address}&nonce=${account.nonce}`);
+        void navigator.clipboard.writeText(`https://app.cryptoyou.io/?address=${account.address}&nonce=${account.nonce}`);
         setTimeout(() => {
             setIsCopied(false);
         }, 2000);
@@ -138,6 +142,12 @@ export const SubAccountModal = ({ showModal, setShowModal, account }: Props) => 
     const domNode = useClickOutside(() => {
         setShowModal(false);
     });
+
+    const handleLink = () => {
+        disconnect();
+        window.location.href = `https://app.cryptoyou.io/?address=${account.address}&nonce=${account.nonce}`;
+    };
+
 
     return (
         <Portal
@@ -152,9 +162,9 @@ export const SubAccountModal = ({ showModal, setShowModal, account }: Props) => 
                 {!isConfirmed ? (
                     <AccountWrapper>
                         <AccountTitle>Verification link</AccountTitle>
-                        <p>To verify your secondary account, follow the link below and log in to your secondary account.</p>
+                        <p>To verify your additional account, follow the link below and log in to your additional account.</p>
                         <LinkContainer>
-                            <TextLink onClick={() => window.open(`https://app.cryptoyou.io/?address=${account.address}&nonce=${account.nonce}`)}>
+                            <TextLink onClick={handleLink}>
                                 https://app.cryptoyou.io/?address=${account.address}&nonce=${account.nonce}
                             </TextLink>
                         </LinkContainer>
