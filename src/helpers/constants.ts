@@ -1,4 +1,4 @@
-import { mainnet, polygon } from 'wagmi/chains';
+import { mainnet } from 'wagmi/chains';
 import { moonbeam, bsc } from './chains';
 
 export const LOCAL_STORAGE_THEME = 'darkMode';
@@ -58,28 +58,24 @@ export const TRANSACTION_GAS_LIMIT_BUFFER = 10;
 export const CONTRACT_ADDRESSES = {
 	1: '0xa9EB7218Fd8153c93aD1b4acf42330E7044E75A1',
 	56: '0x1fcC225E5F4AA6FeD5640CaBc065eE39534025d4',
-	137: '0xAB71b6b19Ddbb1B74eE7D8668f5bFB66020856F0',
 	1284: '0xb8F18F75D5513F2fAA6477f0b54cC676eaedcAC4'
 };
 
 export const CHAINS = {
 	// TODO: add types
 	'1284': { name: 'GLMR', network: moonbeam.id },
-	'137': { name: 'MATIC', network: polygon.id },
 	'56': { name: 'BSC', network: bsc.id },
 	'1': { name: 'ETH', network: mainnet.id },
 };
 
 export const NETWORK_TO_ID = {
 	GLMR: '1284',
-	MATIC: '137',
 	BSC: '56',
 	ETH: '1'
 };
 
 export const NETWORK_TO_WC = {
 	GLMR: moonbeam,
-	MATIC: polygon,
 	BSC: bsc,
 	ETH: mainnet
 };
