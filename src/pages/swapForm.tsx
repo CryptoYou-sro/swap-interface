@@ -19,7 +19,7 @@ import {
 	useStore
 } from '../helpers';
 import { useFees, useMedia } from '../hooks';
-import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
+import { MAIN_MAX_WIDTH, fontSize, mediaQuery, pxToRem, spacing } from '../styles';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -140,6 +140,26 @@ const WithdrawTips = styled.div(
 	`
 );
 
+const CopyPasteBtn = styled.button(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+	border: none;
+	background: transparent;
+	color: ${theme.font.default};
+	cursor: pointer;
+	padding: 0;
+	font-size: ${fontSize[14]};
+	line-height: ${pxToRem(18)};
+	&:hover {
+			opacity: 0.8;
+		}
+
+	`;
+});
+
 type Limit = { message: string; value: string; error: boolean };
 
 interface DepthResponse {
@@ -172,7 +192,7 @@ export const SwapForm = () => {
 	const { mobileWidth: isMobile } = useMedia('xs');
 	const { chain: wagmiChain } = useNetwork();
 	const { disconnect } = useDisconnect();
-	const { isConnected } = useAccount();
+	const { isConnected, address: accountAddr } = useAccount();
 	const { switchNetworkAsync } = useSwitchNetwork();
 	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
@@ -196,7 +216,7 @@ export const SwapForm = () => {
 			try {
 				const parsed: ParsedProps | any = queryString.parse(location.search);
 
-				if(parsed && Object.keys(parsed).length > 1) {
+				if (parsed && Object.keys(parsed).length > 1) {
 					// Set parsed data if it has more than one key, else it is promo code
 					setParsedUrl(parsed);
 				}
@@ -540,6 +560,15 @@ export const SwapForm = () => {
 					})
 				}
 			/>
+			{accountAddr && (
+				<CopyPasteBtn onClick={() =>
+					dispatch({
+						type: DestinationEnum.ADDRESS,
+						payload: accountAddr
+					})
+				}>
+					Insert current address
+				</CopyPasteBtn>)}
 			{hasMemo && (
 				<div style={{ marginTop: 24 }}>
 					<TextField
