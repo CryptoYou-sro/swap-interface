@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import styled, { css } from 'styled-components';
 import { Button } from '../../components';
 import { KycL2LegalModal } from '../../components/modal/kycL2LegalModal';
-import { KycL2BusinessStatusEnum, useStore } from '../../helpers';
+import { KycL2BusinessStatusEnum, KycL2StatusEnum, useStore } from '../../helpers';
 import { useMedia } from '../../hooks';
 import { fontSize, pxToRem, spacing } from '../../styles';
 
@@ -98,7 +98,8 @@ export const Footer = () => {
 		state: {
 			isUserVerified,
 			account,
-			kycL2Business
+			kycL2Business,
+			kycL2Status
 		}
 	} = useStore();
 
@@ -110,7 +111,7 @@ export const Footer = () => {
 
 	return (
 		<KYCL2Wrapper>
-			{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
+			{isUserVerified && account && kycL2Status === KycL2StatusEnum.PASSED && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
 				<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
 					Verify as a business
 				</Button>
