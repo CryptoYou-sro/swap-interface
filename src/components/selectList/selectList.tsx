@@ -41,7 +41,7 @@ const Title = styled.div(() => {
 	return css`
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[22]};
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		padding: ${spacing[12]};
 	`;
 });
