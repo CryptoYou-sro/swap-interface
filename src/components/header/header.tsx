@@ -643,7 +643,17 @@ export const Header = () => {
 									changeTheme();
 									setShowMenu(!showMenu);
 								}}>
-								{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+								{isLightTheme(theme) ? (
+									<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+										<Icon size='small' icon='moon' />
+										<p>Dark Theme</p>
+									</div>
+								) : (
+									<div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+										<Icon size='small' icon='sun' />
+										<p>Light Theme</p>
+									</div>
+								)}
 							</Button>
 						</li>
 					</Menu>
