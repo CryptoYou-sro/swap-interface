@@ -144,6 +144,14 @@ const WalletBalance = styled.div(() => {
 
 });
 
+const ThemeBtnWrapper = styled.div(() => {
+	return css`
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	`;
+});
+
 type ParsedProps = {
 	[key: string]: string;
 };
@@ -643,7 +651,17 @@ export const Header = () => {
 									changeTheme();
 									setShowMenu(!showMenu);
 								}}>
-								{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+								{isLightTheme(theme) ? (
+									<ThemeBtnWrapper>
+										<Icon size='small' icon='moon' />
+										<p>Dark Theme</p>
+									</ThemeBtnWrapper>
+								) : (
+									<ThemeBtnWrapper>
+										<Icon size='small' icon='sun' />
+										<p>Light Theme</p>
+									</ThemeBtnWrapper>
+								)}
 							</Button>
 						</li>
 					</Menu>
