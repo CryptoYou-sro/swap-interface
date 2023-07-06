@@ -273,6 +273,8 @@ import { ReactComponent as YFI } from '../../assets/yfi.svg';
 import { ReactComponent as YFII } from '../../assets/yfii.svg';
 import { ReactComponent as YGG } from '../../assets/ygg.svg';
 import { ReactComponent as TRASHBIN } from '../../assets/trash.svg';
+import { ReactComponent as GREENCHECK } from '../../assets/greenCheck.svg';
+import { ReactComponent as REDERROR } from '../../assets/redError.svg';
 
 
 import { useStore } from '../../helpers';
@@ -376,6 +378,8 @@ const Icons = {
 	logoLight: LogoLight,
 	checkDark: CheckDark,
 	checkLight: CheckLight,
+	greenCheck: GREENCHECK,
+	redError: REDERROR,
 	logoMobile: LogoMobile,
 	arrowDark: ArrowDark,
 	arrowLight: ArrowLight,

@@ -6,7 +6,7 @@ import { useLocation } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import styled, { css } from 'styled-components';
 import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
-import { Button, Icon, IconType, KycL2Modal } from '../../components';
+import { Button, Icon, IconType, JazzIcon, KycL2Modal } from '../../components';
 import {
 	AmountEnum,
 	BASE_URL,
@@ -44,11 +44,14 @@ import {
 	DEFAULT_TRANSITION,
 	Theme,
 	theme as defaultTheme,
+	fontSize,
 	mediaQuery,
 	pxToRem,
 	spacing
 } from '../../styles';
+import { AddSubAccountModal } from '../modal/addSubAccountModal';
 import { StatusKycL2Modal } from '../modal/statusKycL2Modal';
+import { SubAccountModal } from '../modal/subAccountModal';
 
 type Props = {
 	theme: Theme;
@@ -63,7 +66,7 @@ const StyledHeader = styled.header`
 
 	${mediaQuery('s')} {
 		height: ${pxToRem(55)};
-		gap: ${spacing[16]};
+		gap: ${spacing[12]};
 		justify-content: space-between;
 		margin-bottom: ${pxToRem(39.5)};
 	}
@@ -110,6 +113,14 @@ const NetworkWrapper = styled.button`
 	cursor: pointer;
 `;
 
+const AdditionalAccWrapper = styled.button`
+	all: unset;
+	display: flex;
+	gap: ${spacing[8]};
+	align-items: center;
+	cursor: pointer;
+`;
+
 const Networks = styled(Menu)`
 	width: calc(100% - ${pxToRem(8)});
 	& li {
@@ -124,6 +135,22 @@ const Networks = styled(Menu)`
 		}
 	}
 `;
+
+const Accounts = styled(Menu)`
+	width: calc(100% - ${pxToRem(8)});
+	& li {
+		display: flex;
+		align-items: center;
+		gap: ${spacing[10]};
+		cursor: pointer;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		transition: 0.3s;
+		&:hover {
+			transform: scale(1.05);
+		}
+	}
+`;
+
 const WalletContainer = styled.div`
 	display: flex;
 	align-items: center;
@@ -144,8 +171,75 @@ const WalletBalance = styled.div(() => {
 
 });
 
+const AddAccountBtn = styled.button(() => {
+	const { state: { theme } } = useStore();
+	const { mobileWidth: isMobile } = useMedia('xs');
+
+	return css`
+	padding: ${isMobile ? `${spacing[4]} ${spacing[6]}` : `${spacing[8]} ${spacing[10]}`};
+	background: transparent;
+	color: ${theme.button.default};
+	border: 1px solid ${theme.button.default};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	cursor: pointer;
+	transition: transform 0.7 ease;
+
+	&:hover {
+		opacity: 0.8;
+	}
+
+	&:active {
+		color: white;
+		border: 1px solid white;
+  }
+	`;
+
+});
+
+const IconContainer = styled.div(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+	cursor: pointer;
+	margin-left: ${spacing[10]};
+	fill: ${theme.font.default};
+
+	&:hover {
+		fill: red;
+	}
+
+	&:focus {
+		outline: 6px solid red;
+	}
+	`;
+});
+
+const AccountContainer = styled.div(() => {
+	return css`
+	display: flex;
+	justify-content: space-between;
+	
+	&:not(:last-child) {
+		margin-bottom: ${spacing[12]};
+	}
+	`;
+});
+
+const AccountItem = styled.li(() => {
+	return css`
+		font-size: ${fontSize[16]};
+	`;
+});
+
 type ParsedProps = {
 	[key: string]: string;
+};
+
+type AdditionalAccount = {
+	id: number;
+	address: string;
+	nonce: string;
+	is_confirmed: boolean;
 };
 
 export const Header = () => {
@@ -191,6 +285,32 @@ export const Header = () => {
 	const { chain: wagmiChain } = useNetwork();
 	const { open, setDefaultChain } = useWeb3Modal();
 	const [signMessage, setSignMessage] = useState('');
+
+	const { mobileWidth: isMobile } = useMedia('s');
+	const { mobileWidth: isDeskTop } = useMedia('m');
+	const api = useAxios();
+
+	const [showMenu, setShowMenu] = useState(false);
+	const [showNetworksList, setShowNetworksList] = useState(false);
+	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
+	const [isLoading, setIsLoading] = useState(false);
+
+	const [additionalAccounts, setAdditionalAccounts] = useState<AdditionalAccount[] | []>([]);
+	const [showAdditionalAccounts, setShowAdditionalAccounts] = useState<boolean>(false);
+	const [showSubAccountModal, setShowSubAccountModal] = useState<boolean>(false);
+	const [showAddSubAccountModal, setShowAddSubAccountModal] = useState<boolean>(false);
+	const [selectedAccount, setSelectedAccount] = useState<AdditionalAccount | null>(null);
+
+	const [binanceToken, setBinanceToken] = useState('');
+	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
+	const { switchNetwork } = useSwitchNetwork();
+
+	const isLight = isLightTheme(theme);
+	const changeTheme = (): void => {
+		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
+		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
+	};
+
 	const { signMessage: requestSignMsg } = useSignMessage({
 		message: signMessage,
 		onSuccess(data) {
@@ -213,14 +333,26 @@ export const Header = () => {
 				method: 'POST',
 				data: payload
 			}).then((r) => {
-				if (accountAddr) {
-					dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
-					dispatch({ type: VerificationEnum.REFRESH, payload: r.data.refresh });
-					setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
-					if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
-						// Remove promo from the page URL
-						window.history.replaceState({}, document.title, '/');
+				try {
+					if (accountAddr) {
+						dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
+						dispatch({ type: VerificationEnum.REFRESH, payload: r.data.refresh });
+						setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
+						if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
+							// Remove promo from the page URL
+							window.history.replaceState({}, document.title, '/');
+						}
+						if (parsedKeys.length === 2 && parsed.address && parsed.nonce) {
+							window.history.replaceState({}, document.title, '/');
+							location.search = '';
+						}
 					}
+				} catch (error) {
+					if (parsedKeys.length === 2 && parsed.address && parsed.nonce) {
+						window.history.replaceState({}, document.title, '/');
+						location.search = '';
+					}
+					console.log('error', error);
 				}
 			});
 		},
@@ -231,48 +363,22 @@ export const Header = () => {
 		},
 	});
 
-	const { mobileWidth: isMobile } = useMedia('s');
-	const { mobileWidth: isDeskTop } = useMedia('m');
-	const api = useAxios();
-
-	const [showMenu, setShowMenu] = useState(false);
-	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
-	const [isLoading, setIsLoading] = useState(false);
-
-	const [binanceToken, setBinanceToken] = useState('');
-	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
-	const { switchNetwork } = useSwitchNetwork();
-	// const navigate = useNavigate();
-	// const { pathname } = useLocation();
-
-	// const noKycStatusMessage = 'kyc verify not exist';
-
-	const isLight = isLightTheme(theme);
-	const changeTheme = (): void => {
-		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
-		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
-	};
-
 	const setTokensInStorageAndContext = async () => {
-		if (accountAddr) {
+		const parsed: ParsedProps | any = queryString.parse(location.search);
+
+		if (accountAddr && !parsed.nonce) {
 			setIsLoading(true);
 			try {
 				const msg: any = await getAuthTokensFromNonce(accountAddr);
 				setSignMessage(msg);
 			} catch (error: any) {
-				// FIXME: ask Denial about Metamask
-				toast.error('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', { theme: theme.name });
+				toast.error('You need to sign the “nonce” in the wallet in order to continue with CryptoYou. If you want to login, click on the Login button again.', { theme: theme.name });
 			}
 			setIsLoading(false);
+		} else if (Object.keys(parsed).length === 2 && parsed.address && parsed.nonce) {
+			setSignMessage(`By signing this nonce: "${parsed.nonce}" you accept the terms and conditions available at https://cryptoyou.io/terms-of-use/`);
 		}
 	};
-
-	useEffect(() => {
-		if (signMessage) {
-			requestSignMsg();
-		}
-	}, [signMessage]);
 
 	const getBinanceToken = async () => {
 		try {
@@ -293,39 +399,10 @@ export const Header = () => {
 				// @ts-ignore
 				switchNetwork?.(NETWORK_TO_WC[name]?.id);
 			} catch (error: any) {
-				// if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-				// 	try {
-				// 		// // @ts-ignore
-				// 		// await ethereum.request({
-				// 		// 	method: 'wallet_addEthereumChain',
-				// 		// 	params: NETWORK_PARAMS['1284']
-				// 		// });
-				// 		switchNetwork?.(moonbeam.id);
-				// 		dispatch({
-				// 			type: SourceEnum.NETWORK,
-				// 			payload: name
-				// 		});
-				// 		dispatch({
-				// 			type: SourceEnum.TOKEN,
-				// 			payload: name
-				// 		});
-				// 	} catch (e) {
-				// 		dispatch({
-				// 			type: SourceEnum.NETWORK,
-				// 			payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-				// 		});
-				// 		dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-				// 	}
-				// } else if (error.code === 4001) {
-				// 	return;
-				// } else {
-				// 	addToast('Something went wrong - please try again');
-				// }
 				toast.error('Something went wrong - please try again or later', { theme: theme.name });
 
 				return;
 			}
-
 		} else {
 			dispatch({
 				type: SourceEnum.NETWORK,
@@ -347,7 +424,7 @@ export const Header = () => {
 	};
 
 	const checkStatus = async () => {
-		if (!isUserVerified && accountAddr === userAccount && isNetworkConnected) {
+		if (!isUserVerified && accountAddr === userAccount && isNetworkConnected && accessToken) {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
@@ -391,29 +468,37 @@ export const Header = () => {
 			} catch (error: any) {
 				if (error?.response?.status === 401) {
 					await setTokensInStorageAndContext();
+				} else {
+					console.log('error in checkStatus', error);
 				}
 			}
 			setIsLoading(false);
 		}
 	};
 
-
 	const domNode: any = useClickOutside(() => {
 		setShowMenu(false);
 		setShowNetworksList(false);
 	});
 
+	const accountsRef: any = useClickOutside(() => {
+		setShowAdditionalAccounts(false);
+	});
 
 	const updateStatusKycL2Modal = (value: boolean) => {
 		setShowStatusKycL2Modal(value);
 	};
 
 	useEffect(() => {
-		const script = document.createElement('script');
+		if (signMessage) {
+			requestSignMsg();
+		}
+	}, [signMessage]);
 
+	useEffect(() => {
+		const script = document.createElement('script');
 		script.src = 'https://www.socialintents.com/api/socialintents.1.3.js#2c9faa35871f751e0187282239990717';
 		script.async = true;
-
 		document.body.appendChild(script);
 
 		return () => {
@@ -426,11 +511,6 @@ export const Header = () => {
 			makeBinanceKycCall(binanceToken);
 		}
 	}, [binanceToken, binanceScriptLoaded]);
-
-	// useEffect(() => {
-	// 	dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
-	// 	dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	// }, [sourceNetwork]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -524,6 +604,93 @@ export const Header = () => {
 		void checkStatus();
 	}, [accountAddr, userAccount, kycL2Status, accessToken, isUserVerified]);
 
+	const handleSelectedAccount = (account: AdditionalAccount) => {
+		setSelectedAccount(account);
+		updateSubAccountModal(true);
+	};
+
+	const addAdditionalAccount = () => {
+		setShowAddSubAccountModal(true);
+	};
+
+	const deleteAdditionalAccount = async (id: number) => {
+		try {
+			await api.request({
+				method: 'DELETE',
+				url: `${BASE_URL}account/wallet/${id}`,
+			}).then((res) => {
+				const findDeletingAccount: AdditionalAccount | undefined = additionalAccounts.find((acc) => acc.address === accountAddr);
+
+				if (res.status === 204) {
+					const filteredAccounts: AdditionalAccount[] = additionalAccounts.filter((account: AdditionalAccount) => account.id !== id);
+					setAdditionalAccounts(filteredAccounts);
+					setShowAdditionalAccounts(false);
+					toast.success('Additional account has been successfully deleted!', { theme: theme.name });
+
+					if (findDeletingAccount) {
+						dispatch({ type: VerificationEnum.ACCESS, payload: '' });
+						dispatch({ type: VerificationEnum.REFRESH, payload: '' });
+						dispatch({
+							type: KycL2Enum.STATUS,
+							payload: null
+						});
+						dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
+						setStorage({ account: '', access: '', isKyced: false, refresh: '' });
+
+						disconnect();
+					}
+				}
+			});
+		} catch (error) {
+			toast.error('Something went wrong please try again!', { theme: theme.name });
+			console.log('something wrong', error);
+		}
+	};
+
+	const updateSubAccountModal = (value: boolean) => {
+		setShowSubAccountModal(value);
+	};
+
+	const updateAddSubAccountModal = (showModal: boolean, account?: AdditionalAccount) => {
+		setShowAddSubAccountModal(showModal);
+		if (account) {
+			setAdditionalAccounts([...additionalAccounts, account]);
+			handleSelectedAccount(account);
+		}
+	};
+
+	useEffect(() => {
+		if (isUserVerified) {
+			const getAdditionalAccountsList = async () => {
+				try {
+					await api.request({
+						method: 'GET',
+						url: `${BASE_URL}account/wallet/`
+					}).then((res) => {
+						const accounts: AdditionalAccount[] = res.data;
+						if (accounts.length > 0) {
+							setAdditionalAccounts(accounts);
+						}
+					});
+				} catch (error) {
+					console.log('something goes wrong', error);
+				}
+			};
+			void getAdditionalAccountsList();
+		}
+	}, [isUserVerified]);
+
+	useEffect(() => {
+		if (selectedAccount?.address && selectedAccount.nonce) {
+			setShowSubAccountModal(true);
+		}
+	}, [selectedAccount?.address]);
+
+	useEffect(() => {
+		updateSubAccountModal(false);
+		updateAddSubAccountModal(false);
+	}, [isUserVerified]);
+
 	return (
 		<StyledHeader theme={theme}>
 			<Icon
@@ -613,6 +780,44 @@ export const Header = () => {
 					{buttonStatus.text}
 				</Button>
 			)}
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && <AddAccountBtn onClick={addAdditionalAccount} title='Add additional account'>+</AddAccountBtn>}
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && additionalAccounts.length > 0 && (
+				<AdditionalAccWrapper onClick={() => setShowAdditionalAccounts(!showAdditionalAccounts)}>
+					<Icon
+						icon={isLightTheme(theme) ? 'arrowDark' : 'arrowLight'}
+						size={16}
+						style={{
+							transform: `rotate(${showAdditionalAccounts ? 180 : 0}deg)`,
+							transition: DEFAULT_TRANSITION
+						}}
+					/>
+				</AdditionalAccWrapper>
+			)}
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && showAdditionalAccounts && (
+				<MenuWrapper theme={theme}>
+					<Accounts
+						theme={theme}
+						style={{
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(300)}`,
+							left: `${!isDeskTop && '77%'}`
+						}}
+						ref={accountsRef}>
+						{additionalAccounts.map((account: any) => (
+							<AccountContainer key={account.id} >
+								<AccountItem
+									onClick={() => handleSelectedAccount(account)}>
+									<JazzIcon />
+									{account.address.slice(0, 10)}...{account.address.slice(-5)}
+									<Icon icon={account.is_confirmed ? 'greenCheck' : 'redError'} size={20} />
+								</AccountItem>
+								<IconContainer onClick={() => deleteAdditionalAccount(account.id)} >
+									<Icon icon='trashBin' size={18} style={{ outline: 'none' }} />
+								</IconContainer>
+							</AccountContainer>
+						))}
+					</Accounts>
+				</MenuWrapper>
+			)}
 			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small" />}
 			{isMobile && (
 				<Icon
@@ -654,6 +859,8 @@ export const Header = () => {
 				showStatusKycL2Modal={showStatusKycL2Modal}
 				updateStatusKycL2Modal={updateStatusKycL2Modal}
 			/>
+			<AddSubAccountModal showModal={showAddSubAccountModal} setShowModal={updateAddSubAccountModal} />
+			{isUserVerified && kycL2Status === KycL2StatusEnum.PASSED && selectedAccount?.address && <SubAccountModal showModal={showSubAccountModal} setShowModal={updateSubAccountModal} account={selectedAccount} />}
 		</StyledHeader>
 	);
 };
