@@ -173,9 +173,10 @@ const WalletBalance = styled.div(() => {
 
 const AddAccountBtn = styled.button(() => {
 	const { state: { theme } } = useStore();
+	const { mobileWidth: isMobile } = useMedia('xs');
 
 	return css`
-	padding: ${spacing[4]} ${spacing[8]};
+	padding: ${isMobile ? `${spacing[4]} ${spacing[6]}` : `${spacing[8]} ${spacing[10]}`};
 	background: transparent;
 	color: ${theme.button.default};
 	border: 1px solid ${theme.button.default};
@@ -184,7 +185,7 @@ const AddAccountBtn = styled.button(() => {
 	transition: transform 0.7 ease;
 
 	&:hover {
-		transform: scale(1.06);
+		opacity: 0.8;
 	}
 
 	&:active {
@@ -810,7 +811,7 @@ export const Header = () => {
 									<Icon icon={account.is_confirmed ? 'greenCheck' : 'redError'} size={20} />
 								</AccountItem>
 								<IconContainer onClick={() => deleteAdditionalAccount(account.id)} >
-									<Icon icon='trashBin' size={22} style={{ outline: 'none' }} />
+									<Icon icon='trashBin' size={18} style={{ outline: 'none' }} />
 								</IconContainer>
 							</AccountContainer>
 						))}
