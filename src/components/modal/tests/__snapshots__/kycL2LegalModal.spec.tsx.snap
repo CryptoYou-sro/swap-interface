@@ -1,0 +1,192 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KycL2LegalModal should render a kycL2 form for LEGAL persons 1`] = `
+<div
+  class="sc-dycYrt kvpFnv"
+  data-testid="kycL2LegalModalTest"
+>
+  <div
+    style="display: flex; width: 100%; height: 100%; flex-direction: column; justify-content: space-between; align-items: center;"
+  >
+    <div
+      class="sc-jOnpCo bZwdfQ"
+      style="display: flex; flex-direction: column; width: 100%;"
+    >
+      <h2
+        class="sc-hTUWRQ lipcwn"
+      >
+        Business verification
+      </h2>
+      <div
+        style="margin: 0px 0px 10px; text-align: left; display: flex; align-items: baseline; flex-wrap: wrap;"
+      >
+        <p
+          class="sc-lizKOf fvYQYa"
+          style="max-width: 75%; margin-right: 10px;"
+        >
+          Copy of an account statement kept by an institution in the European Economic Area
+        </p>
+        <div
+          style="text-align: left; margin-bottom: 40px; display: flex; align-items: stretch;"
+        >
+          <label
+            class="sc-eoVZPG hmvdnO"
+            for="file-input-refPoaDoc1"
+          >
+            <input
+              class="sc-dWZqqJ jnLnFB"
+              id="file-input-refPoaDoc1"
+              type="file"
+            />
+            123.txt
+          </label>
+          <div
+            class="sc-dhFUGM hGQIIk"
+          >
+            <div
+              class="sc-jnOGJG iEiuXy"
+              data-testid="icon"
+              style="outline: none;"
+            >
+              <svg
+                theme="[object Object]"
+              >
+                trash.svg
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="margin: 0px 0px 10px; text-align: left; display: flex; align-items: baseline; flex-wrap: wrap;"
+      >
+        <p
+          class="sc-lizKOf fvYQYa"
+          style="max-width: 75%; margin-right: 10px;"
+        >
+          Documents proving information on the source of funds (i.e.: payslip, tax return etc.)
+        </p>
+        <div
+          style="text-align: left; margin-bottom: 40px; display: flex; align-items: stretch;"
+        >
+          <label
+            class="sc-eoVZPG hmvdnO"
+            for="file-input-refPosofDoc1"
+          >
+            <input
+              class="sc-dWZqqJ jnLnFB"
+              id="file-input-refPosofDoc1"
+              type="file"
+            />
+            123.txt
+          </label>
+          <div
+            class="sc-dhFUGM hGQIIk"
+          >
+            <div
+              class="sc-jnOGJG iEiuXy"
+              data-testid="icon"
+              style="outline: none;"
+            >
+              <svg
+                theme="[object Object]"
+              >
+                trash.svg
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="margin: 0px 0px 10px; text-align: left; display: flex; align-items: baseline; flex-wrap: wrap;"
+      >
+        <p
+          class="sc-lizKOf fvYQYa"
+          style="max-width: 75%; margin-right: 10px;"
+        >
+          Copy of excerpt of public register or other valid documents proving the existence of legal entity (Articles of Associations, Deed of Foundation etc.).
+        </p>
+        <div
+          style="text-align: left; margin-bottom: 40px; display: flex; align-items: stretch;"
+        >
+          <label
+            class="sc-eoVZPG hmvdnO"
+            for="file-input-refPorDoc1"
+          >
+            <input
+              class="sc-dWZqqJ jnLnFB"
+              id="file-input-refPorDoc1"
+              type="file"
+            />
+            123.txt
+          </label>
+          <div
+            class="sc-dhFUGM hGQIIk"
+          >
+            <div
+              class="sc-jnOGJG iEiuXy"
+              data-testid="icon"
+              style="outline: none;"
+            >
+              <svg
+                theme="[object Object]"
+              >
+                trash.svg
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        style="margin: 0px 0px 10px; text-align: left; display: flex; align-items: baseline; flex-wrap: wrap;"
+      >
+        <p
+          class="sc-lizKOf fvYQYa"
+          style="max-width: 75%; margin-right: 10px;"
+        >
+          Court decision on appointment of legal guardian (if relevant).
+        </p>
+        <div
+          style="text-align: left; margin-bottom: 40px; display: flex; align-items: stretch;"
+        >
+          <label
+            class="sc-eoVZPG hmvdnO"
+            for="file-input-refPogDoc1"
+          >
+            <input
+              class="sc-dWZqqJ jnLnFB"
+              id="file-input-refPogDoc1"
+              type="file"
+            />
+            123.txt
+          </label>
+          <div
+            class="sc-dhFUGM hGQIIk"
+          >
+            <div
+              class="sc-jnOGJG iEiuXy"
+              data-testid="icon"
+              style="outline: none;"
+            >
+              <svg
+                theme="[object Object]"
+              >
+                trash.svg
+              </svg>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      style="margin: 0px auto; width: 100%; text-align: center;"
+    >
+      <button
+        class="sc-bkEOxz gPpopC"
+      >
+        Submit
+      </button>
+    </div>
+  </div>
+</div>
+`;

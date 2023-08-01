@@ -115,30 +115,6 @@ exports[`Accordion should match snapshot 1`] = `
   transition: all 0.2s ease-in;
 }
 
-.c6 {
-  display: -webkit-inline-box;
-  display: -webkit-inline-flex;
-  display: -ms-inline-flexbox;
-  display: inline-flex;
-  -webkit-box-pack: center;
-  -webkit-justify-content: center;
-  -ms-flex-pack: center;
-  justify-content: center;
-  -webkit-align-items: center;
-  -webkit-box-align: center;
-  -ms-flex-align: center;
-  align-items: center;
-  cursor: unset;
-  -webkit-transition: all .2s ease-in-out;
-  transition: all .2s ease-in-out;
-}
-
-.c6 > * {
-  width: 1em;
-  height: 1em;
-  font-size: 1.25rem;
-}
-
 .c11 {
   list-style: none;
   padding: 0;
@@ -178,16 +154,6 @@ exports[`Accordion should match snapshot 1`] = `
   margin-bottom: 0.25rem;
 }
 
-.c14 {
-  color: #B4B4B4;
-  line-height: 1.375rem;
-}
-
-.c16 {
-  color: #00A8E8;
-  line-height: 1.375rem;
-}
-
 .c15 {
   color: #B4B4B4;
   line-height: 1rem;
@@ -200,6 +166,40 @@ exports[`Accordion should match snapshot 1`] = `
 
 .c15:hover {
   color: #00A8E8;
+}
+
+.c14 {
+  color: #B4B4B4;
+  line-height: 1.375rem;
+}
+
+.c16 {
+  color: #00A8E8;
+  line-height: 1.375rem;
+}
+
+.c6 {
+  display: -webkit-inline-box;
+  display: -webkit-inline-flex;
+  display: -ms-inline-flexbox;
+  display: inline-flex;
+  -webkit-box-pack: center;
+  -webkit-justify-content: center;
+  -ms-flex-pack: center;
+  justify-content: center;
+  -webkit-align-items: center;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+  cursor: unset;
+  -webkit-transition: all .2s ease-in-out;
+  transition: all .2s ease-in-out;
+}
+
+.c6 > * {
+  width: 1em;
+  height: 1em;
+  font-size: 1.25rem;
 }
 
 @media (max-width:760px) {
