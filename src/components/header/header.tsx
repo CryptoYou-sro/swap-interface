@@ -599,7 +599,7 @@ export const Header = () => {
 				<WalletContainer>
 					{!isMobile && (
 						<WalletBalance>
-							{balanceAccount?.formatted.slice(0, 15)} {balanceAccount?.symbol}
+							{balanceAccount?.formatted.slice(0, 13)} {balanceAccount?.symbol}
 						</WalletBalance>
 					)}
 					<Web3Button balance={'hide'} icon="show" />
