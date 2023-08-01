@@ -8,7 +8,7 @@ import COUNTRIES from '../../data/listOfAllCountries.json';
 import SOURCE_OF_FUNDS_LIST from '../../data/sourceOfFundsList.json';
 import SOURCE_OF_INCOME_NATURE_LIST from '../../data/sourceOfIncomeNatureList.json';
 import WORK_AREA_LIST from '../../data/workAreaList.json';
-import { BASE_URL, ButtonEnum, KycL2ModalShowEnum, button, findAndReplace, routes, useStore } from '../../helpers';
+import { BASE_URL, ButtonEnum, KycL2ModalShowEnum, button, findAndReplace, getTodaysDate, routes, useStore } from '../../helpers';
 import { useAxios, useMedia } from '../../hooks';
 import { DEFAULT_BORDER_RADIUS, fontSize, pxToRem, spacing } from '../../styles';
 import { SelectDropdown } from '../selectDropdown/selectDropdown';
@@ -54,7 +54,7 @@ const DisclaimerContainer = styled.div(() => {
 	`;
 });
 
-const Label = styled.label(() => {
+export const Label = styled.label(() => {
 
 	return css`
 		display: inline-block;
@@ -94,7 +94,7 @@ export const WrapContainer = styled.div(() => {
 	`;
 });
 
-const Title = styled.h2(() => {
+export const Title = styled.h2(() => {
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	return css`
@@ -105,7 +105,7 @@ const Title = styled.h2(() => {
 `;
 });
 
-const LabelFileInput = styled.label(() => {
+export const LabelFileInput = styled.label(() => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -126,13 +126,13 @@ const LabelFileInput = styled.label(() => {
 	`;
 });
 
-const FileInput = styled.input`
+export const FileInput = styled.input`
 	opacity: 0;
 	position: absolute;
 	z-index: -100;
 `;
 
-const Select = styled.select(({ themeMode }: any) => {
+export const SelectInput = styled.select(({ themeMode }: any) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -176,7 +176,7 @@ const DisclaimerText = styled.div(() => {
 	`;
 });
 
-const SpecifyContainer = styled.div(() => {
+export const SpecifyContainer = styled.div(() => {
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	return css`
@@ -186,7 +186,7 @@ const SpecifyContainer = styled.div(() => {
 	`;
 });
 
-const NextBtn = styled.button((props: any) => {
+export const NextBtn = styled.button((props: any) => {
 	return css`
 	background-color: ${!props.disabled ? '#20A100' : 'grey'};
 	width: 100%;
@@ -203,7 +203,7 @@ const NextBtn = styled.button((props: any) => {
 `;
 });
 
-const SubmitBtn = styled.button((props: any) => {
+export const SubmitBtn = styled.button((props: any) => {
 
 	return css`
 		background-color: ${!props.disabled ? '#20A100' : 'grey'};
@@ -291,7 +291,7 @@ const DateInput = styled.input((props: any) => {
 	`;
 });
 
-const FileContainerBox = styled.div(() => {
+export const FileContainerBox = styled.div(() => {
 	const { mobileWidth: isMobile } = useMedia('s');
 
 	return css`
@@ -325,6 +325,7 @@ export const KycL2Modal = () => {
 	const api = useAxios();
 	const myRef = useRef<HTMLDivElement | null>(null);
 	const { mobileWidth: isMobile } = useMedia('s');
+	const today = getTodaysDate();
 
 	useEffect(() => {
 		setShowModal(kycL2ModalShow);
@@ -406,7 +407,7 @@ export const KycL2Modal = () => {
 	});
 
 	const handleNext = () => {
-		myRef?.current?.scrollTo(0, 0);
+		// myRef?.current?.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
@@ -504,7 +505,13 @@ export const KycL2Modal = () => {
 	};
 
 	const handleChangeDate = (event: any) => {
-		setInput({ ...input, dateOfBirth: event.target.value });
+		const inputDate = new Date(event.target.value);
+		const today = new Date();
+		if (inputDate <= today) {
+			setInput({ ...input, dateOfBirth: event.target.value });
+		} else {
+			setInput({ ...input, dateOfBirth: '' });
+		}
 	};
 
 	const handleSelectDropdownCountryOfWork = (event: any) => {
@@ -635,7 +642,7 @@ export const KycL2Modal = () => {
 			handleBack={handleOnBack}
 			closeOutside={false}
 			themeMode='light'>
-			<Wrapper ref={myRef} themeMode='dark'>
+			<Wrapper ref={myRef} themeMode='dark' data-testid='kycL2Modal'>
 				<ContentContainer>
 					{page === 0 && (
 						<WrapContainer>
@@ -648,7 +655,7 @@ export const KycL2Modal = () => {
 										<DisclaimerTestListItem>
 											<DisclaimerTextListItemBox >
 												<div style={{ marginRight: '10px' }}>
-													<Icon size={55} icon='passport' />
+													<Icon size={55} icon='passport' data-testid='iconComponent' />
 												</div>
 												<p>	&#9679; A valid government-issued identification document, such as a Passport or National ID card.</p>
 											</DisclaimerTextListItemBox>
@@ -747,6 +754,7 @@ export const KycL2Modal = () => {
 											onChange={(e: any) => handleChangeDate(e)}
 											// @ts-ignore
 											themeMode='light'
+											max={today && today}
 										/>
 									</div>
 									<div style={{ marginBottom: '10px', width: '50%', }}>
@@ -770,7 +778,7 @@ export const KycL2Modal = () => {
 										<Label htmlFor="label-select-gender" style={{ display: 'block' }}>
 											Gender
 										</Label>
-										<Select
+										<SelectInput
 											name="gender"
 											onChange={handleDropDownInput}
 											value={input.gender}
@@ -783,7 +791,7 @@ export const KycL2Modal = () => {
 											<option value="Select gender">Select gender</option>
 											<option value="Male">Male</option>
 											<option value="Female">Female</option>
-										</Select>
+										</SelectInput>
 									</div>
 								</div>
 							</div>
@@ -794,7 +802,7 @@ export const KycL2Modal = () => {
 							<Title style={{ marginBottom: `${!isMobile ? `${spacing[60]}` : null}` }}>KYC and AML Questionnaire for Individuals</Title>
 							<FileContainerBox>
 								<ContentTitle style={{ width: '100%', marginRight: '10px' }}>Provide photos of one of the following documents: Passport /ID</ContentTitle>
-								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexDirection: `${isMobile ? 'column' : 'row'}` }}>
 									<ContentTitle>
 										Front side / second page for Passport
 									</ContentTitle>
@@ -808,7 +816,7 @@ export const KycL2Modal = () => {
 										{input.file.identificationDoc1 && input.file.identificationDoc1.name.length < 15 ? input.file.identificationDoc1.name : input.file.identificationDoc1 && input.file.identificationDoc1.name.length >= 15 ? input.file.identificationDoc1.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelFileInput>
 								</div>
-								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexDirection: `${isMobile ? 'column' : 'row'}` }}>
 									<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
 										Back side / third page for Passport
 									</ContentTitle>
@@ -822,9 +830,9 @@ export const KycL2Modal = () => {
 										{input.file.identificationDoc2 && input.file.identificationDoc2.name.length < 15 ? input.file.identificationDoc2.name : input.file.identificationDoc2 && input.file.identificationDoc2.name.length >= 15 ? input.file.identificationDoc2.name.slice(0, 15).concat('...') : 'Upload File'}
 									</LabelFileInput>
 								</div>
-								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline' }}>
+								<div style={{ width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', flexDirection: `${isMobile ? 'column' : 'row'}` }}>
 									<ContentTitle style={{ maxWidth: '75%', marginRight: '10px' }}>
-										Submit a selfie in which you're holding a piece of paper that clearly shows today's date <br /> and the
+										Submit a selfie in which you're holding a piece of paper that clearly shows today's date and the
 										number of the document you have uploaded (Passport / ID).</ContentTitle>
 									<LabelFileInput htmlFor="file-natural-selfie">
 										<FileInput
@@ -875,7 +883,7 @@ export const KycL2Modal = () => {
 							<div style={{ width: `${isMobile ? '100%' : '75%'}`, margin: `${spacing[20]} auto` }}>
 								<Label htmlFor="label-select-tax-residency">Declare your tax
 									Residency</Label>
-								<Select
+								<SelectInput
 									// @ts-ignore
 									themeMode='light'
 									style={{ minHeight: `${pxToRem(46)}`, width: '100%' }}
@@ -892,23 +900,25 @@ export const KycL2Modal = () => {
 										);
 									})}
 									;
-								</Select>
+								</SelectInput>
 							</div>
 						</WrapContainer>
 					)}
 					{page === 4 && (
-						<div style={{ marginBottom: '10px', width: '75%' }}>
-							<Title style={{ marginBottom: `${isMobile ? '0' : '20px'}}` }}>KYC and AML Questionnaire for Individuals</Title>
+						<div style={{ marginBottom: '10px', width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+							<Title style={{ marginBottom: `${isMobile ? '0' : '20px'}` }}>KYC and AML Questionnaire for Individuals</Title>
 							<ContentTitle>
 								State the country in which you are conducting your work / business activity
 							</ContentTitle>
-							<SelectDropdown
-								themeMode='light'
-								onChange={(e) => handleSelectDropdownCountryOfWork(e)}
-								defaultValue={selectWorkCountry}
-								placeholder='Select country...'
-								options={countries}
-							/>
+							<div style={{ marginBottom: '10px', width: `${isMobile ? '100%' : '75%'}` }}>
+								<SelectDropdown
+									themeMode='light'
+									onChange={(e) => handleSelectDropdownCountryOfWork(e)}
+									defaultValue={selectWorkCountry}
+									placeholder='Select country...'
+									options={countries}
+								/>
+							</div>
 						</div>
 					)}
 					{page === 5 && (
@@ -1167,7 +1177,7 @@ export const KycL2Modal = () => {
 										onChange={handleChangeInput}
 										name="declare"
 									/>
-									I am a national of another state or country, specifically:
+									I am registered to a permanent or other type of residency in another state or country, specifically:
 								</Label>
 							</div>
 							{input.declare.includes(
@@ -1277,12 +1287,12 @@ export const KycL2Modal = () => {
 					{page === 14 && (
 						<div>
 							<ContentTitle style={{ textAlign: 'center' }}>Your Residence</ContentTitle>
-							<div style={{ display: 'flex', margin: '0 auto', maxWidth: `${!isMobile ? `${pxToRem(900)}` : null}` }}>
+							<div style={{ display: 'flex', margin: '0 auto' }}>
 								<div style={{ width: '50%', marginRight: '20px' }}>
 									<Label htmlFor="input.residence.country" style={{ marginTop: '6px' }}>
 										Country
 									</Label>
-									<Select
+									<SelectInput
 										// @ts-ignore
 										themeMode='light'
 										style={{ width: '100%' }}
@@ -1298,7 +1308,7 @@ export const KycL2Modal = () => {
 											);
 										})}
 										;
-									</Select>
+									</SelectInput>
 									<Label
 										htmlFor="label-address-permanent-street"
 										style={{ marginTop: '6px' }}>
@@ -1413,7 +1423,7 @@ export const KycL2Modal = () => {
 												}}>
 												Country
 											</Label>
-											<Select
+											<SelectInput
 												// @ts-ignore
 												themeMode='light'
 												style={{ width: '100%' }}
@@ -1430,7 +1440,7 @@ export const KycL2Modal = () => {
 													);
 												})}
 												;
-											</Select>
+											</SelectInput>
 											<Label
 												htmlFor="label-input-mailAddress-street"
 												style={{
