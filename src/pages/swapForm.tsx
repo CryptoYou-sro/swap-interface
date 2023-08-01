@@ -16,6 +16,7 @@ import {
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
+	useDebounce,
 	useStore
 } from '../helpers';
 import { useFees, useMedia } from '../hooks';
@@ -274,21 +275,25 @@ export const SwapForm = () => {
 		}
 		void switchToNetwork();
 	}, [isParsedEmpty, isConnected, switchNetworkAsync, DESTINATION_NETWORKS]);
+	const [loading, setLoading] = useState(false);
 
 	async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
 		let pair: string | '' = '';
 		let res: DepthResponse | any = null;
 		let totalPrice: string | number = 0;
 		let totalCurrencyAmount: string | number = 0;
+		setLoading(true);
 		try {
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency1}${currency2}&limit=4999`).then(r => res = r.data);
 			if (res) {
 				pair = `${currency1}${currency2}`;
+				setLoading(false);
 			}
 		} catch (error: any) {
 			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency2}${currency1}&limit=4999`).then(r => res = r.data);
 			if (res) {
 				pair = `${currency2}${currency1}`;
+				setLoading(false);
 			}
 		}
 		if (startAmount > 0) {
@@ -449,6 +454,13 @@ export const SwapForm = () => {
 		swapButtonRef.current.onSubmit();
 	};
 
+	const [inputValue, setInputValue] = useState(amount);
+	const debouncedInputValue = useDebounce(inputValue, 1000);
+
+	useEffect(() => {
+		dispatch({ type: AmountEnum.AMOUNT, payload: debouncedInputValue });
+	}, [debouncedInputValue]);
+
 	return (
 		<Wrapper>
 			<NetworkTokenModal
@@ -486,10 +498,8 @@ export const SwapForm = () => {
 							type="number"
 							placeholder="Amount"
 							error={limit.error}
-							value={amount}
-							onChange={(e) => {
-								dispatch({ type: AmountEnum.AMOUNT, payload: e.target.value });
-							}}
+							value={inputValue}
+							onChange={(e) => setInputValue(e.target.value)}
 						/>
 					</SwapInput>
 					<NamesWrapper>
@@ -500,7 +510,10 @@ export const SwapForm = () => {
 								</Name>
 								<MaxButton
 									color={theme.button.error}
-									onClick={() => dispatch({ type: AmountEnum.AMOUNT, payload: maxAmount })}>
+									onClick={() => {
+										dispatch({ type: AmountEnum.AMOUNT, payload: maxAmount });
+										setInputValue(maxAmount);
+									}}>
 									Max
 								</MaxButton>
 							</Names>
@@ -531,6 +544,7 @@ export const SwapForm = () => {
 							autocomplete='off'
 							disabled
 							type="text"
+							isLoading={loading}
 							value={beautifyNumbers({ n: destinationAmount })}
 							error={+destinationAmount < 0}
 						/>
