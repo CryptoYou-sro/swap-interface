@@ -34,7 +34,6 @@ describe('SelectList', () => {
 				</AuthProvider>
 			</WagmiConfig>
 		);
-
 		expect(getByTestId('select-list')).toMatchSnapshot();
 	});
 });
