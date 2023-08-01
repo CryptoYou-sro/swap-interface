@@ -12,6 +12,22 @@ import { TextField } from '../textField/textField';
 import { ContentTitle } from './kycL2LegalModal';
 import { Portal } from './portal';
 
+const Wrapper = styled.div(({ themeMode }: any) => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+		display: flex;
+		width: 100%;
+		flex-direction: column;
+		align-items: center;
+		justify-content: space-between;
+		padding: ${spacing[10]} ${spacing[20]};
+		color: ${themeMode === 'dark' ? '#000000' : themeMode === 'light' ? '#ffffff' : theme.font.default};
+	`;
+});
+
 const WrapContainer = styled.div(({ themeMode }: any) => {
 	const {
 		state: { theme }
@@ -423,562 +439,98 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 			backgroundColor='light'
 			handleBack={handleBack}
 			themeMode='light'>
-			{/* @ts-ignore */}
-			<WrapContainer themeMode='dark'>
-				<div>
-					<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
-					<div
-						style={{
-							display: 'flex',
-							width: '100%',
-							marginBottom: '20px',
-							alignItems: 'baseline'
-						}}>
-						<p style={{ textAlign: 'left', marginRight: '30px' }}>
-							Is the Ultimate Beneficial Owner (UBO) a legal entity?
-						</p>
-						<label htmlFor="label-typeOfClient-true" style={{ display: 'inline-block', marginRight: '30px' }}>
-							<input
-								id="label-typeOfClient-true"
-								type="radio"
-								value="Yes"
-								checked={isUBOLegalEntity === 'legal'}
-								onChange={() => setIsUBOLegalEntity('legal')}
-							/>
-							Yes
-						</label>
-						<label htmlFor="label-typeOfClient-false">
-							<input
-								id="label-typeOfClient-false"
-								type="radio"
-								value="No"
-								checked={isUBOLegalEntity === 'natural'}
-								onChange={() => setIsUBOLegalEntity('natural')}
-							/>
-							No
-						</label>
-					</div>
-					{isUBOLegalEntity === 'natural' ? (
-						<>
-							<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-ubo-full-name" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Name and surname
-									</label>
-									<TextField
-										id="label-ubo-full-name"
-										value={client.fullName}
-										placeholder="Name and surname"
-										type="text"
-										onChange={handleChangeClientInput}
-										size="small"
-										align="left"
-										name="fullName"
-										error={client.fullName.length < 2}
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-ubo-place-of-birth" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Place of Birth
-									</label>
-									<TextField
-										id="label-ubo-place-of-birth"
-										value={client.placeOfBirth}
-										placeholder="Place of Birth"
-										type="text"
-										onChange={handleChangeClientInput}
-										size="small"
-										align="left"
-										name="placeOfBirth"
-										error={client.placeOfBirth.length < 2}
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-ubo-id-number" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Birth identification number
-									</label>
-									<TextField
-										id="label-ubo-id-number"
-										value={client.idNumber}
-										placeholder="Birth identification number"
-										type="text"
-										onChange={handleChangeClientInput}
-										size="small"
-										align="left"
-										name="idNumber"
-										error={client.idNumber.length < 2}
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-								<div style={{
-									width: '48%',
-									display: 'flex',
-									flexDirection: 'column',
-									justifyContent: 'space-between'
-								}}>
-									<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Gender
-									</label>
-									<Select
-										name="gender"
-										onChange={handleDropDownInput}
-										value={client.gender}
-										id="label-select-gender"
-										// @ts-ignore
-										themeMode='light'>
-										<option value="Select gender">Select gender</option>
-										<option value="Male">Male</option>
-										<option value="Female">Female</option>
-										<option value="Other">Other</option>
-									</Select>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label htmlFor="label-select-tax-residency"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Tax Residency
-									</label>
-									<Select
-										name="taxResidency"
-										onChange={handleDropDownInput}
-										value={client.taxResidency}
-										id="label-select-tax-residency"
-										// @ts-ignore
-										themeMode='light'
-										style={{
-											minHeight: '46px',
-										}}>
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label htmlFor="label-citizenship-natural-ubo"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Citizenship(s)
-									</label>
-									<SelectDropdown
-										onChange={(e: any) => handleSelectDropdownNatural(e)}
-										id='label-citizenship-natural-ubo'
-										options={countries}
-										themeMode='light'
-										placeholder='Select country...'
-									/>
-								</div>
-							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px', flexDirection: 'column' }}>
-								<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
-									personal identification
-									or passport of the
-									representatives</ContentTitle>
-								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
-									<LabelInput htmlFor="file-input-address">
-										<FileInput
-											id="file-input-address"
-											type="file"
-											ref={fileIdentification as any}
-											onChange={handleChangeFileInput} />
-										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
-									</LabelInput>
-									<IconContainer>
-										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
-									</IconContainer>
-								</div>
-							</div>
-							<ContentTitle>
-								Permanent or other residence
-							</ContentTitle>
-							<div
-								style={{
-									margin: '0 0 10px 0',
-									display: 'flex',
-									flexWrap: 'wrap',
-									justifyContent: 'space-between'
-								}}>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-address-permanent-state-Or-Country"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Country
-									</label>
-									<Select
-										name="stateOrCountry"
-										onChange={handleChangeResidenceInput}
-										value={client.residence.stateOrCountry}
-										id="label-address-permanent-state-Or-Country"
-										// @ts-ignore
-										themeMode='light'
-										style={{
-											minHeight: '35px',
-										}}>
-										<option value="Select country">Select country</option>
-										{COUNTRIES.map((country: any) => {
-											return (
-												<option value={country.name} key={country.name}>
-													{country.name}
-												</option>
-											);
-										})}
-										;
-									</Select>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-address-permanent-street"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Street
-									</label>
-									<TextField
-										id="label-address-permanent-street"
-										value={client.residence.street}
-										placeholder="Street"
-										type="text"
-										onChange={handleChangeResidenceInput}
-										size="small"
-										align="left"
-										name="street"
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-address-permanent-street-number"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										Street number
-									</label>
-									<TextField
-										id="label-address-permanent-street-number"
-										value={client.residence.streetNumber}
-										placeholder="Street number"
-										type="text"
-										onChange={handleChangeResidenceInput}
-										size="small"
-										align="left"
-										name="streetNumber"
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-address-permanent-municipality"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										City
-									</label>
-									<TextField
-										id="label-address-permanent-municipality"
-										value={client.residence.municipality}
-										placeholder="City"
-										type="text"
-										onChange={handleChangeResidenceInput}
-										size="small"
-										align="left"
-										name="municipality"
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-								<div style={{ width: '48%' }}>
-									<label
-										htmlFor="label-address-permanent-zipCode"
-										style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-										ZIP Code
-									</label>
-									<TextField
-										id="label-address-permanent-zipCode"
-										value={client.residence.zipCode}
-										placeholder="ZIP Code"
-										type="text"
-										onChange={handleChangeResidenceInput}
-										size="small"
-										align="left"
-										name="zipCode"
-										maxLength={100}
-										themeMode='light'
-									/>
-								</div>
-							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px' }}>
-									Is your permanent (RESIDENCE) address the same as your mailing address?
-								</p>
-								<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
-									<input
-										id="label-mailing-permanent-address-true"
-										type="radio"
-										value="Yes"
-										checked={client.permanentAndMailAddressSame === 'Yes'}
-										onChange={handleChangeClientInput}
-										name="permanentAndMailAddressSame"
-									/>
-									Yes
-								</label>
-								<label htmlFor="label-mailing-permanent-address-false">
-									<input
-										id="label-mailing-permanent-address-false"
-										type="radio"
-										value="No"
-										checked={client.permanentAndMailAddressSame === 'No'}
-										onChange={handleChangeClientInput}
-										name="permanentAndMailAddressSame"
-									/>
-									No
-								</label>
-							</div>
-							{client.permanentAndMailAddressSame === 'No' && (
-								<>
-									<ContentTitle>Mailing address</ContentTitle>
-									<div
-										style={{
-											margin: '0 0 10px 0',
-											display: 'flex',
-											flexWrap: 'wrap',
-											justifyContent: 'space-between'
-										}}>
-										<div style={{ width: '48%' }}>
-											<label
-												htmlFor="label-mail-address-state-Or-Country"
-												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-												Country
-											</label>
-											<Select
-												name="stateOrCountry"
-												onChange={handleChangeMailInput}
-												value={client.mailAddress.stateOrCountry}
-												id="label-mail-address-state-Or-Country"
-												// @ts-ignore
-												themeMode='light'>
-												<option value="Select country">Select country</option>
-												{COUNTRIES.map((country: any) => {
-													return (
-														<option value={country.name} key={country.name}>
-															{country.name}
-														</option>
-													);
-												})}
-												;
-											</Select>
-										</div>
-										<div style={{ width: '48%' }}>
-											<label
-												htmlFor="label-address-street"
-												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-												Street
-											</label>
-											<TextField
-												id="label-address-street"
-												value={client.mailAddress.street}
-												placeholder="Street"
-												type="text"
-												onChange={handleChangeMailInput}
-												size="small"
-												align="left"
-												name="street"
-												maxLength={100}
-												themeMode='light'
-											/>
-										</div>
-										<div style={{ width: '48%' }}>
-											<label
-												htmlFor="label-address-street-number"
-												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-												Street number
-											</label>
-											<TextField
-												id="label-address-street-number"
-												value={client.mailAddress.streetNumber}
-												placeholder="Street number"
-												type="text"
-												onChange={handleChangeMailInput}
-												size="small"
-												align="left"
-												name="streetNumber"
-												maxLength={100}
-												themeMode='light'
-											/>
-										</div>
-										<div style={{ width: '48%' }}>
-											<label
-												htmlFor="label-address-municipality"
-												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-												City
-											</label>
-											<TextField
-												id="label-address-municipality"
-												value={client.mailAddress.municipality}
-												placeholder="City"
-												type="text"
-												onChange={handleChangeMailInput}
-												size="small"
-												align="left"
-												name="municipality"
-												maxLength={100}
-												themeMode='light'
-											/>
-										</div>
-										<div style={{ width: '48%' }}>
-											<label
-												htmlFor="label-address-zipCode"
-												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-												ZIP Code
-											</label>
-											<TextField
-												id="label-address-zipCode"
-												value={client.mailAddress.zipCode}
-												placeholder="ZIP Code"
-												type="text"
-												onChange={handleChangeMailInput}
-												size="small"
-												align="left"
-												name="zipCode"
-												maxLength={100}
-												themeMode='light'
-											/>
-										</div>
-									</div>
-								</>
-							)}
-							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px' }}>Are you a politically exposed person?</p>
-								<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
-									<input
-										id="politicallPersonTrue"
-										type="radio"
-										value="Yes"
-										checked={client.politicallPerson === 'Yes'}
-										onChange={handleChangeClientInput}
-										name="politicallPerson"
-									/>
-									Yes
-								</label>
-								<label htmlFor="politicallPersonFalse">
-									<input
-										id="politicallPersonFalse"
-										type="radio"
-										value="No"
-										checked={client.politicallPerson === 'No'}
-										onChange={handleChangeClientInput}
-										name="politicallPerson"
-									/>
-									No
-								</label>
-							</div>
-							<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
-								<p style={{ marginBottom: '25px' }}>
-									Are you a person against whom are applied Czech or international sanctions?
-								</p>
-								<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
-									<input
-										id="appliedSanctionsTrue"
-										type="radio"
-										value="Yes"
-										checked={client.appliedSanctions === 'Yes'}
-										onChange={handleChangeClientInput}
-										name="appliedSanctions"
-									/>
-									Yes
-								</label>
-								<label htmlFor="appliedSanctionsFalse">
-									<input
-										id="appliedSanctionsFalse"
-										type="radio"
-										value="No"
-										checked={client.appliedSanctions === 'No'}
-										onChange={handleChangeClientInput}
-										name="appliedSanctions"
-									/>
-									No
-								</label>
-							</div>
-						</>
-					) : isUBOLegalEntity === 'legal' ? (
-						<UboLegalContainer>
-							<div style={{ width: `${isMobile ? '100%' : '48%'}` }}>
-								<label
-									style={{ display: 'block', marginBottom: '10px' }}
-									htmlFor="label-ubo-company-name">
-									Company name
-								</label>
-								<TextField
-									id="label-ubo-company-name"
-									value={client.companyName}
-									placeholder="Company name"
-									type="text"
-									onChange={handleChangeClientInput}
-									size="small"
-									align="left"
-									name="companyName"
-									error={client.companyName.length < 2}
-									maxLength={100}
-									themeMode='light'
+			<Wrapper data-testid='uboModalTest'>
+				{/* @ts-ignore */}
+				<WrapContainer themeMode='dark'>
+					<div>
+						<ContentTitle>Information on Ultimate Beneficial Owner(s) (optional)</ContentTitle>
+						<div
+							style={{
+								display: 'flex',
+								width: '100%',
+								marginBottom: '20px',
+								alignItems: 'baseline'
+							}}>
+							<p style={{ textAlign: 'left', marginRight: '30px' }}>
+								Is the Ultimate Beneficial Owner (UBO) a legal entity?
+							</p>
+							<label htmlFor="label-typeOfClient-true" style={{ display: 'inline-block', marginRight: '30px' }}>
+								<input
+									id="label-typeOfClient-true"
+									type="radio"
+									value="Yes"
+									checked={isUBOLegalEntity === 'legal'}
+									onChange={() => setIsUBOLegalEntity('legal')}
 								/>
-							</div>
-							<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
-								<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
-									or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
-									Foundation etc.)</ContentTitle>
-								<div style={{ textAlign: 'left', marginBottom: '40px', display: 'flex', alignItems: 'center' }}>
-									<LabelInput htmlFor="fileIdentification">
-										<FileInput
-											id="fileIdentification"
-											type="file"
-											ref={fileIdentification as any}
-											onChange={handleChangeFileInput} />
-										{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
-									</LabelInput>
-									<IconContainer>
-										<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
-									</IconContainer>
-								</div>
-							</div>
-							<div
-								style={{
-									margin: '0 0 20px',
-									display: 'flex',
-									flexDirection: 'column'
-								}}>
-								<ContentTitle style={{ marginBottom: '16px' }}>
-									Provide information about your statutory body
-								</ContentTitle>
-								<div
-									style={{
-										margin: '10px 0',
-										display: 'flex',
-										flexWrap: 'wrap',
-										justifyContent: 'space-between',
-										alignItems: 'flex-end',
-									}}>
+								Yes
+							</label>
+							<label htmlFor="label-typeOfClient-false">
+								<input
+									id="label-typeOfClient-false"
+									type="radio"
+									value="No"
+									checked={isUBOLegalEntity === 'natural'}
+									onChange={() => setIsUBOLegalEntity('natural')}
+								/>
+								No
+							</label>
+						</div>
+						{isUBOLegalEntity === 'natural' ? (
+							<>
+								<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 									<div style={{ width: '48%' }}>
 										<label
-											htmlFor="label-uboInfo-name-surname"
-											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
-											Name and Surname
+											htmlFor="label-ubo-full-name" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Name and surname
 										</label>
 										<TextField
-											id="label-uboInfo-name-surname"
-											value={client.uboInfo.nameAndSurname}
-											placeholder="Name and Surname"
+											id="label-ubo-full-name"
+											value={client.fullName}
+											placeholder="Name and surname"
 											type="text"
-											onChange={handleChangeUboInfoInput}
+											onChange={handleChangeClientInput}
 											size="small"
 											align="left"
-											name="nameAndSurname"
+											name="fullName"
+											error={client.fullName.length < 2}
+											maxLength={100}
+											themeMode='light'
+										/>
+									</div>
+									<div style={{ width: '48%' }}>
+										<label
+											htmlFor="label-ubo-place-of-birth" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Place of Birth
+										</label>
+										<TextField
+											id="label-ubo-place-of-birth"
+											value={client.placeOfBirth}
+											placeholder="Place of Birth"
+											type="text"
+											onChange={handleChangeClientInput}
+											size="small"
+											align="left"
+											name="placeOfBirth"
+											error={client.placeOfBirth.length < 2}
+											maxLength={100}
+											themeMode='light'
+										/>
+									</div>
+									<div style={{ width: '48%' }}>
+										<label
+											htmlFor="label-ubo-id-number" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Birth identification number
+										</label>
+										<TextField
+											id="label-ubo-id-number"
+											value={client.idNumber}
+											placeholder="Birth identification number"
+											type="text"
+											onChange={handleChangeClientInput}
+											size="small"
+											align="left"
+											name="idNumber"
+											error={client.idNumber.length < 2}
 											maxLength={100}
 											themeMode='light'
 										/>
@@ -989,125 +541,588 @@ export const UboModal = ({ addUbo = false, updateUboModalShow }: Props) => {
 										flexDirection: 'column',
 										justifyContent: 'space-between'
 									}}>
-										<label
-											htmlFor="label-uboInfo-dateOfBirth"
-											style={{
-												margin: '8px 0',
-												display: 'inline-block'
-											}}>
-											Date of incorporation
+										<label htmlFor="label-select-gender" style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Gender
 										</label>
-										<DateInput
-											type="date"
-											id="label-uboInfo-dateOfBirth"
-											value={client.uboInfo.dateOfBirth}
-											min="1900-01-01"
-											name="dateOfBirth"
-											onChange={handleChangeUboInfoInput}
-											max={today && today}
+										<Select
+											name="gender"
+											onChange={handleDropDownInput}
+											value={client.gender}
+											id="label-select-gender"
+											// @ts-ignore
+											themeMode='light'>
+											<option value="Select gender">Select gender</option>
+											<option value="Male">Male</option>
+											<option value="Female">Female</option>
+											<option value="Other">Other</option>
+										</Select>
+									</div>
+									<div style={{ width: '48%' }}>
+										<label htmlFor="label-select-tax-residency"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Tax Residency
+										</label>
+										<Select
+											name="taxResidency"
+											onChange={handleDropDownInput}
+											value={client.taxResidency}
+											id="label-select-tax-residency"
 											// @ts-ignore
 											themeMode='light'
-										/>
+											style={{
+												minHeight: '46px',
+											}}>
+											<option value="Select country">Select country</option>
+											{COUNTRIES.map((country: any) => {
+												return (
+													<option value={country.name} key={country.name}>
+														{country.name}
+													</option>
+												);
+											})}
+											;
+										</Select>
 									</div>
 									<div style={{ width: '48%' }}>
-										<label
-											htmlFor="label-uboInfo-country-incorporate"
-											style={{ margin: '8px 0', display: 'inline-block' }}>
-											Country of incorporation
+										<label htmlFor="label-citizenship-natural-ubo"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Citizenship(s)
 										</label>
 										<SelectDropdown
-											themeMode='light'
-											onChange={(e: any) => handleSelectDropdownUboInfo(e)}
+											onChange={(e: any) => handleSelectDropdownNatural(e)}
+											id='label-citizenship-natural-ubo'
 											options={countries}
+											themeMode='light'
+											placeholder='Select country...'
 										/>
+									</div>
+								</div>
+								<div style={{ display: 'flex', alignItems: 'baseline', marginTop: '20px', flexDirection: 'column' }}>
+									<ContentTitle style={{ width: '80%' }}>Identification (ID card or passport). Copy of
+										personal identification
+										or passport of the
+										representatives</ContentTitle>
+									<div style={{ textAlign: 'left', marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+										<LabelInput htmlFor="file-input-address">
+											<FileInput
+												id="file-input-address"
+												type="file"
+												ref={fileIdentification as any}
+												onChange={handleChangeFileInput} />
+											{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
+										</LabelInput>
+										<IconContainer>
+											<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+										</IconContainer>
+									</div>
+								</div>
+								<ContentTitle>
+									Permanent or other residence
+								</ContentTitle>
+								<div
+									style={{
+										margin: '0 0 10px 0',
+										display: 'flex',
+										flexWrap: 'wrap',
+										justifyContent: 'space-between'
+									}}>
+									<div style={{ width: '48%' }}>
+										<label
+											htmlFor="label-address-permanent-state-Or-Country"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Country
+										</label>
+										<Select
+											name="stateOrCountry"
+											onChange={handleChangeResidenceInput}
+											value={client.residence.stateOrCountry}
+											id="label-address-permanent-state-Or-Country"
+											// @ts-ignore
+											themeMode='light'
+											style={{
+												minHeight: '35px',
+											}}>
+											<option value="Select country">Select country</option>
+											{COUNTRIES.map((country: any) => {
+												return (
+													<option value={country.name} key={country.name}>
+														{country.name}
+													</option>
+												);
+											})}
+											;
+										</Select>
 									</div>
 									<div style={{ width: '48%' }}>
 										<label
-											htmlFor="label-uboInfo-subsequentlyBusinessCompany"
-											style={{ margin: '8px 0', display: 'inline-block' }}>
-											Subsequently business company
+											htmlFor="label-address-permanent-street"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Street
 										</label>
 										<TextField
-											id="label-uboInfo-subsequentlyBusinessCompany"
-											value={client.uboInfo.subsequentlyBusinessCompany}
-											placeholder="Subsequently business company"
+											id="label-address-permanent-street"
+											value={client.residence.street}
+											placeholder="Street"
 											type="text"
-											onChange={handleChangeUboInfoInput}
+											onChange={handleChangeResidenceInput}
 											size="small"
 											align="left"
-											name="subsequentlyBusinessCompany"
+											name="street"
 											maxLength={100}
 											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
 										<label
-											htmlFor="label-uboInfo-registeredOffice"
-											style={{ margin: '8px 0', display: 'inline-block' }}>
-											Registered office address
+											htmlFor="label-address-permanent-street-number"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											Street number
 										</label>
 										<TextField
-											id="label-uboInfo-registeredOffice"
-											value={client.uboInfo.registeredOffice}
-											placeholder="Registered office address"
+											id="label-address-permanent-street-number"
+											value={client.residence.streetNumber}
+											placeholder="Street number"
 											type="text"
-											onChange={handleChangeUboInfoInput}
+											onChange={handleChangeResidenceInput}
 											size="small"
 											align="left"
-											name="registeredOffice"
+											name="streetNumber"
 											maxLength={100}
 											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
 										<label
-											htmlFor="label-uboInfo-permanentResidence"
-											style={{ margin: '8px 0', display: 'inline-block' }}>
-											Permanent Residence
+											htmlFor="label-address-permanent-municipality"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											City
 										</label>
 										<TextField
-											id="label-uboInfo-permanentResidence"
-											value={client.uboInfo.permanentResidence}
-											placeholder="Permanent Residence"
+											id="label-address-permanent-municipality"
+											value={client.residence.municipality}
+											placeholder="City"
 											type="text"
-											onChange={handleChangeUboInfoInput}
+											onChange={handleChangeResidenceInput}
 											size="small"
 											align="left"
-											name="permanentResidence"
+											name="municipality"
 											maxLength={100}
 											themeMode='light'
 										/>
 									</div>
 									<div style={{ width: '48%' }}>
 										<label
-											htmlFor="label-uboInfo-idNumber"
-											style={{ margin: '8px 0', display: 'inline-block' }}>
-											Identification number
+											htmlFor="label-address-permanent-zipCode"
+											style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+											ZIP Code
 										</label>
 										<TextField
-											id="label-uboInfo-idNumber"
-											value={client.uboInfo.idNumber}
-											placeholder="Identification number"
+											id="label-address-permanent-zipCode"
+											value={client.residence.zipCode}
+											placeholder="ZIP Code"
 											type="text"
-											onChange={handleChangeUboInfoInput}
+											onChange={handleChangeResidenceInput}
 											size="small"
 											align="left"
-											name="idNumber"
+											name="zipCode"
 											maxLength={100}
 											themeMode='light'
 										/>
 									</div>
 								</div>
-							</div>
-						</UboLegalContainer>
-					) : null}
-				</div>
-				<div style={{ textAlign: 'center' }}>
-					<SubmitBtn onClick={handleSubmit} disabled={!isValid}>
-						{isValid ? 'Submit' : 'Please fill up all fields'}
-					</SubmitBtn>
-				</div>
-			</WrapContainer>
+								<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+									<p style={{ marginBottom: '25px' }}>
+										Is your permanent (RESIDENCE) address the same as your mailing address?
+									</p>
+									<label htmlFor="label-mailing-permanent-address-true" style={{ display: 'block', marginRight: '10px' }}>
+										<input
+											id="label-mailing-permanent-address-true"
+											type="radio"
+											value="Yes"
+											checked={client.permanentAndMailAddressSame === 'Yes'}
+											onChange={handleChangeClientInput}
+											name="permanentAndMailAddressSame"
+										/>
+										Yes
+									</label>
+									<label htmlFor="label-mailing-permanent-address-false">
+										<input
+											id="label-mailing-permanent-address-false"
+											type="radio"
+											value="No"
+											checked={client.permanentAndMailAddressSame === 'No'}
+											onChange={handleChangeClientInput}
+											name="permanentAndMailAddressSame"
+										/>
+										No
+									</label>
+								</div>
+								{client.permanentAndMailAddressSame === 'No' && (
+									<>
+										<ContentTitle>Mailing address</ContentTitle>
+										<div
+											style={{
+												margin: '0 0 10px 0',
+												display: 'flex',
+												flexWrap: 'wrap',
+												justifyContent: 'space-between'
+											}}>
+											<div style={{ width: '48%' }}>
+												<label
+													htmlFor="label-mail-address-state-Or-Country"
+													style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+													Country
+												</label>
+												<Select
+													name="stateOrCountry"
+													onChange={handleChangeMailInput}
+													value={client.mailAddress.stateOrCountry}
+													id="label-mail-address-state-Or-Country"
+													// @ts-ignore
+													themeMode='light'>
+													<option value="Select country">Select country</option>
+													{COUNTRIES.map((country: any) => {
+														return (
+															<option value={country.name} key={country.name}>
+																{country.name}
+															</option>
+														);
+													})}
+													;
+												</Select>
+											</div>
+											<div style={{ width: '48%' }}>
+												<label
+													htmlFor="label-address-street"
+													style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+													Street
+												</label>
+												<TextField
+													id="label-address-street"
+													value={client.mailAddress.street}
+													placeholder="Street"
+													type="text"
+													onChange={handleChangeMailInput}
+													size="small"
+													align="left"
+													name="street"
+													maxLength={100}
+													themeMode='light'
+												/>
+											</div>
+											<div style={{ width: '48%' }}>
+												<label
+													htmlFor="label-address-street-number"
+													style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+													Street number
+												</label>
+												<TextField
+													id="label-address-street-number"
+													value={client.mailAddress.streetNumber}
+													placeholder="Street number"
+													type="text"
+													onChange={handleChangeMailInput}
+													size="small"
+													align="left"
+													name="streetNumber"
+													maxLength={100}
+													themeMode='light'
+												/>
+											</div>
+											<div style={{ width: '48%' }}>
+												<label
+													htmlFor="label-address-municipality"
+													style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+													City
+												</label>
+												<TextField
+													id="label-address-municipality"
+													value={client.mailAddress.municipality}
+													placeholder="City"
+													type="text"
+													onChange={handleChangeMailInput}
+													size="small"
+													align="left"
+													name="municipality"
+													maxLength={100}
+													themeMode='light'
+												/>
+											</div>
+											<div style={{ width: '48%' }}>
+												<label
+													htmlFor="label-address-zipCode"
+													style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+													ZIP Code
+												</label>
+												<TextField
+													id="label-address-zipCode"
+													value={client.mailAddress.zipCode}
+													placeholder="ZIP Code"
+													type="text"
+													onChange={handleChangeMailInput}
+													size="small"
+													align="left"
+													name="zipCode"
+													maxLength={100}
+													themeMode='light'
+												/>
+											</div>
+										</div>
+									</>
+								)}
+								<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+									<p style={{ marginBottom: '25px' }}>Are you a politically exposed person?</p>
+									<label htmlFor="politicallPersonTrue" style={{ display: 'block', marginRight: '10px' }}>
+										<input
+											id="politicallPersonTrue"
+											type="radio"
+											value="Yes"
+											checked={client.politicallPerson === 'Yes'}
+											onChange={handleChangeClientInput}
+											name="politicallPerson"
+										/>
+										Yes
+									</label>
+									<label htmlFor="politicallPersonFalse">
+										<input
+											id="politicallPersonFalse"
+											type="radio"
+											value="No"
+											checked={client.politicallPerson === 'No'}
+											onChange={handleChangeClientInput}
+											name="politicallPerson"
+										/>
+										No
+									</label>
+								</div>
+								<div style={{ display: 'flex', alignItems: 'baseline', width: '100%' }}>
+									<p style={{ marginBottom: '25px' }}>
+										Are you a person against whom are applied Czech or international sanctions?
+									</p>
+									<label htmlFor="appliedSanctionsTrue" style={{ display: 'block', marginRight: '10px' }}>
+										<input
+											id="appliedSanctionsTrue"
+											type="radio"
+											value="Yes"
+											checked={client.appliedSanctions === 'Yes'}
+											onChange={handleChangeClientInput}
+											name="appliedSanctions"
+										/>
+										Yes
+									</label>
+									<label htmlFor="appliedSanctionsFalse">
+										<input
+											id="appliedSanctionsFalse"
+											type="radio"
+											value="No"
+											checked={client.appliedSanctions === 'No'}
+											onChange={handleChangeClientInput}
+											name="appliedSanctions"
+										/>
+										No
+									</label>
+								</div>
+							</>
+						) : isUBOLegalEntity === 'legal' ? (
+							<UboLegalContainer>
+								<div style={{ width: `${isMobile ? '100%' : '48%'}` }}>
+									<label
+										style={{ display: 'block', marginBottom: '10px' }}
+										htmlFor="label-ubo-company-name">
+										Company name
+									</label>
+									<TextField
+										id="label-ubo-company-name"
+										value={client.companyName}
+										placeholder="Company name"
+										type="text"
+										onChange={handleChangeClientInput}
+										size="small"
+										align="left"
+										name="companyName"
+										error={client.companyName.length < 2}
+										maxLength={100}
+										themeMode='light'
+									/>
+								</div>
+								<div style={{ display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
+									<ContentTitle style={{ width: '80%' }}>Copy of excerpt of public register
+										or other valid documents proving the existence of legal entity (Articles of Associations, Deed of
+										Foundation etc.)</ContentTitle>
+									<div style={{ textAlign: 'left', marginBottom: '20px', display: 'flex', alignItems: 'center' }}>
+										<LabelInput htmlFor="fileIdentification">
+											<FileInput
+												id="fileIdentification"
+												type="file"
+												ref={fileIdentification as any}
+												onChange={handleChangeFileInput} />
+											{client.fileIdentification && client.fileIdentification.name.length < 15 ? client.fileIdentification.name : client.fileIdentification && client.fileIdentification.name.length >= 15 ? client.fileIdentification.name.slice(0, 15).concat('...') : 'Upload File'}
+										</LabelInput>
+										<IconContainer>
+											<Icon icon='trashBin' size='small' onClick={handleDeleteFile} style={{ outline: 'none' }} />
+										</IconContainer>
+									</div>
+								</div>
+								<div
+									style={{
+										margin: '0 0 20px',
+										display: 'flex',
+										flexDirection: 'column'
+									}}>
+									<ContentTitle style={{ marginBottom: '16px' }}>
+										Provide information about your statutory body
+									</ContentTitle>
+									<div
+										style={{
+											margin: '10px 0',
+											display: 'flex',
+											flexWrap: 'wrap',
+											justifyContent: 'space-between',
+											alignItems: 'flex-end',
+										}}>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-name-surname"
+												style={{ margin: '6px 0 8px 0', display: 'inline-block' }}>
+												Name and Surname
+											</label>
+											<TextField
+												id="label-uboInfo-name-surname"
+												value={client.uboInfo.nameAndSurname}
+												placeholder="Name and Surname"
+												type="text"
+												onChange={handleChangeUboInfoInput}
+												size="small"
+												align="left"
+												name="nameAndSurname"
+												maxLength={100}
+												themeMode='light'
+											/>
+										</div>
+										<div style={{
+											width: '48%',
+											display: 'flex',
+											flexDirection: 'column',
+											justifyContent: 'space-between'
+										}}>
+											<label
+												htmlFor="label-uboInfo-dateOfBirth"
+												style={{
+													margin: '8px 0',
+													display: 'inline-block'
+												}}>
+												Date of incorporation
+											</label>
+											<DateInput
+												type="date"
+												id="label-uboInfo-dateOfBirth"
+												value={client.uboInfo.dateOfBirth}
+												min="1900-01-01"
+												name="dateOfBirth"
+												onChange={handleChangeUboInfoInput}
+												max={today && today}
+												// @ts-ignore
+												themeMode='light'
+											/>
+										</div>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-country-incorporate"
+												style={{ margin: '8px 0', display: 'inline-block' }}>
+												Country of incorporation
+											</label>
+											<SelectDropdown
+												themeMode='light'
+												onChange={(e: any) => handleSelectDropdownUboInfo(e)}
+												options={countries}
+											/>
+										</div>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-subsequentlyBusinessCompany"
+												style={{ margin: '8px 0', display: 'inline-block' }}>
+												Subsequently business company
+											</label>
+											<TextField
+												id="label-uboInfo-subsequentlyBusinessCompany"
+												value={client.uboInfo.subsequentlyBusinessCompany}
+												placeholder="Subsequently business company"
+												type="text"
+												onChange={handleChangeUboInfoInput}
+												size="small"
+												align="left"
+												name="subsequentlyBusinessCompany"
+												maxLength={100}
+												themeMode='light'
+											/>
+										</div>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-registeredOffice"
+												style={{ margin: '8px 0', display: 'inline-block' }}>
+												Registered office address
+											</label>
+											<TextField
+												id="label-uboInfo-registeredOffice"
+												value={client.uboInfo.registeredOffice}
+												placeholder="Registered office address"
+												type="text"
+												onChange={handleChangeUboInfoInput}
+												size="small"
+												align="left"
+												name="registeredOffice"
+												maxLength={100}
+												themeMode='light'
+											/>
+										</div>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-permanentResidence"
+												style={{ margin: '8px 0', display: 'inline-block' }}>
+												Permanent Residence
+											</label>
+											<TextField
+												id="label-uboInfo-permanentResidence"
+												value={client.uboInfo.permanentResidence}
+												placeholder="Permanent Residence"
+												type="text"
+												onChange={handleChangeUboInfoInput}
+												size="small"
+												align="left"
+												name="permanentResidence"
+												maxLength={100}
+												themeMode='light'
+											/>
+										</div>
+										<div style={{ width: '48%' }}>
+											<label
+												htmlFor="label-uboInfo-idNumber"
+												style={{ margin: '8px 0', display: 'inline-block' }}>
+												Identification number
+											</label>
+											<TextField
+												id="label-uboInfo-idNumber"
+												value={client.uboInfo.idNumber}
+												placeholder="Identification number"
+												type="text"
+												onChange={handleChangeUboInfoInput}
+												size="small"
+												align="left"
+												name="idNumber"
+												maxLength={100}
+												themeMode='light'
+											/>
+										</div>
+									</div>
+								</div>
+							</UboLegalContainer>
+						) : null}
+					</div>
+				</WrapContainer>
+				<SubmitBtn onClick={handleSubmit} disabled={!isValid}>
+					{isValid ? 'Submit' : 'Please fill up all fields'}
+				</SubmitBtn>
+			</Wrapper>
 
 		</Portal>
 	);
