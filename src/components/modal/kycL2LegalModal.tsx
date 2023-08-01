@@ -51,7 +51,7 @@ const Title = styled.h2(() => {
 	`;
 });
 export const ContentTitle = styled.p`
-	margin-bottom: ${pxToRem(26)};
+	margin-bottom: ${pxToRem(24)};
 	font-size: ${fontSize[18]};
 	text-align: left;
 	line-height: 1.4;
@@ -334,7 +334,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 	const refPorDoc1 = useRef<HTMLInputElement>();
 	const refPogDoc1 = useRef<HTMLInputElement>();
 	const handleNext = () => {
-		myRef?.current?.scrollTo(0, 0);
+		// myRef?.current?.scrollTo(0, 0);
 		setPage((prev: number) => prev + 1);
 	};
 	const handleSubmit = (event: any) => {
@@ -748,7 +748,7 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 			handleBack={handleOnBack}
 			closeOutside={false}
 			themeMode='light'>
-			<Wrapper ref={myRef} themeMode='dark'>
+			<Wrapper ref={myRef} themeMode='dark' data-testid='kycL2LegalModalTest'>
 				<div
 					style={{
 						display: 'flex',
@@ -1420,6 +1420,8 @@ export const KycL2LegalModal = ({ showKycL2 = true, updateShowKycL2 }: Props) =>
 												size="small"
 												align="left"
 												name="sourceOfFundsOther"
+												maxLength={100}
+												themeMode='light'
 											/>
 										</div>
 									) : null}
