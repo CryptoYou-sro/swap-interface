@@ -1,9 +1,10 @@
+import { disconnect } from '@wagmi/core';
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
-import { Portal, JazzIcon, Button } from '../../components';
-import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
+import { Button, JazzIcon, Portal } from '../../components';
 import { ButtonEnum, button, useStore } from '../../helpers';
-import { useEthers } from '@usedapp/core';
+import { useMedia } from '../../hooks';
+import { fontSize, fontWeight, mediaQuery, pxToRem, spacing } from '../../styles';
 
 type Props = {
 	showModal: boolean;
@@ -33,15 +34,22 @@ const AccountTitle = styled.div(() => {
 
 	return css`
 		font-size: ${fontSize[16]};
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		line-height: ${fontSize[22]};
 		margin-bottom: ${spacing[28]};
 	`;
 });
 
-const StatusContainer = styled.div`
-	margin-bottom: ${spacing[6]};
-`;
+const StatusContainer = styled.div(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+		font-size: ${fontSize[16]};
+		color: ${theme.font.default};
+		line-height: ${fontSize[22]};
+		margin-bottom: ${spacing[28]};
+	`;
+});
 
 const CopyContainer = styled.div`
 	display: flex;
@@ -70,7 +78,7 @@ const AccountNumber = styled.div(() => {
 	} = useStore();
 
 	return css`
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		margin-right: ${spacing[6]};
 	`;
 });
@@ -86,7 +94,7 @@ const IconContainer = styled.div(() => {
 		background-color: ${theme.button.transparent};
 		border: 1px solid ${theme.font.default};
 		transform: rotate(90deg);
-		margin-right: ${spacing[6]};
+		margin-right: ${spacing[8]};
 
 		&::after {
 			content: '';
@@ -103,15 +111,16 @@ const IconContainer = styled.div(() => {
 });
 
 const CopyText = styled.p.attrs((props: { isCopied: boolean }) => props)`
-	opacity: ${(props) => (props.isCopied ? '0.5' : '1')};
+	color: ${({ isCopied }) => isCopied ? '#2ea8e8' : '#B4B4B4'};
 	font-size: ${fontSize[14]};
 	line-height: ${fontSize[20]};
+	margin-top: ${pxToRem(18)};
 `;
 
 export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
-	const { deactivate } = useEthers();
 	const { dispatch } = useStore();
 	const [isCopied, setIsCopied] = useState(false);
+	const { mobileWidth: isMobile } = useMedia('xs');
 
 	const handleCopy = () => {
 		setIsCopied(true);
@@ -121,8 +130,8 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 		}, 2000);
 	};
 
-	const handleDisconnect = () => {
-		deactivate();
+	const handleDisconnect = async () => {
+		await disconnect();
 		setShowModal(false);
 		dispatch({
 			type: ButtonEnum.BUTTON,
@@ -131,7 +140,10 @@ export const WalletModal = ({ showModal, setShowModal, account }: Props) => {
 	};
 
 	return (
-		<Portal handleClose={() => setShowModal(false)} isOpen={showModal}>
+		<Portal
+			handleClose={() => setShowModal(false)}
+			isOpen={showModal}
+			size={isMobile ? 'small' : 'xs'}>
 			<ModalWrapper>
 				<div>
 					<AccountTitle>Account</AccountTitle>

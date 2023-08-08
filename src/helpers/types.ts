@@ -1,11 +1,9 @@
-import SOURCE_NETWORKS from '../data/sourceNetworks.json';
-import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
 import { CONTRACT_ADDRESSES } from '../helpers';
 
-export type Networks = typeof DESTINATION_NETWORKS;
-export type Sources = typeof SOURCE_NETWORKS;
+export type Networks = any;
+export type Sources = any;
 export type DestinationNetworks = keyof Networks;
-export type ContractAdress = keyof typeof CONTRACT_ADDRESSES;
+export type ContractAddress = keyof typeof CONTRACT_ADDRESSES;
 
 export type ApiAuthType = { access: string; is_kyced: boolean; refresh: string };
 

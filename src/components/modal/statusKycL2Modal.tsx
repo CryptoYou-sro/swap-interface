@@ -60,16 +60,13 @@ export const StatusKycL2Modal = ({ showStatusKycL2Modal, updateStatusKycL2Modal 
 	return (
 		<Portal isOpen={showModal} handleClose={handleClose} size="small">
 			<Wrapper>
-				<Title>KYC L2 STATUS</Title>
+				<Title>KYC STATUS</Title>
 				<Text>
 					Your documents are under review, please wait for the results of the verification!
 				</Text>
 				<LinkContainer>
-					<Link href="https://www.yanda.io/" target="_blank" rel="noopener noreferrer">
-						Yanda.io
-					</Link>
-					<Link href="https://www.yanda.io/blog" target="_blank" rel="noopener noreferrer">
-						Blog
+					<Link href="https://cryptoyou.io/" target="_blank" rel="noopener noreferrer">
+						CryptoYou.io
 					</Link>
 				</LinkContainer>
 			</Wrapper>

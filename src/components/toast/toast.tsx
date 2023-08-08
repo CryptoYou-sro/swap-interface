@@ -1,10 +1,10 @@
 import React, { createContext, ReactNode, useContext, useState } from 'react';
 import styled, { css } from 'styled-components';
-import { fontSize, mediaQuery, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
 import type { ColorType } from '../../styles';
+import { DEFAULT_BORDER_RADIUS, fontSize, mediaQuery, spacing } from '../../styles';
 import { useStore } from '../../helpers';
-import { Icon } from '../../components';
 import type { IconType } from '../../components';
+import { Icon } from '../../components';
 
 const ToastContext = createContext({});
 
@@ -14,6 +14,7 @@ const ToastContainer = styled.div`
 	bottom: ${spacing[48]};
 	overflow-wrap: break-word;
 	max-width: 335px;
+	z-index: 1000000;
 
 	${mediaQuery('xs')} {
 		right: 0;
@@ -29,12 +30,13 @@ const Toaster = styled.div(({ color }: { color: ColorType }) => {
 	} = useStore();
 
 	return css`
+		z-index: 1000000;
 		display: flex;
 		align-items: center;
 		background: ${theme.button[color]};
 		color: ${theme.background.default};
 		cursor: pointer;
-		font-size: ${fontSize[14]};
+		font-size: ${fontSize[16]};
 		margin: ${spacing[10]};
 		padding: ${spacing[10]};
 		gap: ${spacing[8]};
@@ -54,7 +56,7 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 
 	return (
 		<Toaster color={color} onClick={onDismiss}>
-			<Icon icon={type as IconType} />
+			<Icon icon={type as IconType} size={45}/>
 			{message}
 		</Toaster>
 	);
@@ -63,14 +65,14 @@ const Toast = ({ message, onDismiss, type = 'error' }: Props) => {
 let toastCount = 0;
 
 export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-	const [toasts, setToasts] = useState<
+	const [ toasts, setToasts ] = useState<
 		{ message: string; id: number; type: string; timer: number }[]
 	>([]);
 
-	const addToast = (message: string, type = 'error', timer = 5000) => {
+	const addToast = (message: string, type = 'error', timer = 10000) => {
 		const id = toastCount++;
 		const toast = { message, id, type, timer };
-		setToasts([...toasts, toast]);
+		setToasts([ ...toasts, toast ]);
 	};
 	const remove = (id: number) => {
 		const newToasts = toasts.filter((t) => t.id !== id);
@@ -90,7 +92,7 @@ export const ToastProvider: React.FC<{ children: ReactNode }> = ({ children }) =
 			{children}
 			<ToastContainer>
 				{toasts.map(({ message, id, type }: { message: string; id: number; type: any }) => (
-					<Toast key={id} message={message} type={type} onDismiss={onDismiss(id)} />
+					<Toast key={id} message={message} type={type} onDismiss={onDismiss(id)}/>
 				))}
 			</ToastContainer>
 		</ToastContext.Provider>

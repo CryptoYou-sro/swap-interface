@@ -1,9 +1,11 @@
+import { formatEther, formatUnits } from '@ethersproject/units';
+import Jazzicon from '@metamask/jazzicon';
 import { useEffect, useRef, useState } from 'react';
 import styled from 'styled-components';
-import Jazzicon from '@metamask/jazzicon';
-import { useEtherBalance, useEthers, useTokenBalance } from '@usedapp/core';
-import { formatEther, formatUnits } from '@ethersproject/units';
-import { beautifyNumbers, isTokenSelected, NETWORK_TO_ID, useStore } from '../../helpers';
+import { useAccount, useBalance } from 'wagmi';
+import { WalletModal } from '../../components';
+import { NETWORK_TO_ID, beautifyNumbers, isTokenSelected, useStore } from '../../helpers';
+import { useMedia } from '../../hooks';
 import type { Theme } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -14,9 +16,6 @@ import {
 	pxToRem,
 	spacing
 } from '../../styles';
-import { useMedia } from '../../hooks';
-import { WalletModal } from '../../components';
-import SOURCE_NETWORKS from '../../data/sourceNetworks.json';
 
 const StyledJazzIcon = styled.div`
 	height: ${pxToRem(16)};
@@ -25,14 +24,14 @@ const StyledJazzIcon = styled.div`
 
 export const JazzIcon = () => {
 	const ref = useRef<HTMLDivElement>();
-	const { account } = useEthers();
+	const { address } = useAccount();
 
 	useEffect(() => {
-		if (account && ref.current) {
+		if (address && ref.current) {
 			ref.current.innerHTML = '';
-			ref.current.appendChild(Jazzicon(16, parseInt(account.slice(2, 10), 16)));
+			ref.current.appendChild(Jazzicon(16, parseInt(address.slice(2, 10), 16)));
 		}
-	}, [account]);
+	}, [address]);
 
 	return <StyledJazzIcon ref={ref as any} />;
 };
@@ -86,15 +85,23 @@ export const Wallet = () => {
 	const [showModal, setShowModal] = useState(false);
 	const openModal = () => setShowModal(!showModal);
 	const {
-		state: { theme, account, sourceNetwork, sourceToken }
+		state: { theme, account, sourceNetwork, sourceToken, availableSourceNetworks: SOURCE_NETWORKS }
 	} = useStore();
 	const { mobileWidth: isMobile } = useMedia('s');
+	const { address } = useAccount();
+	const balanceWagmi = useBalance({
+		address,
+		watch: true,
+	});
 
-	const etherBalance = account && useEtherBalance(account);
-	const tokenData =
+
+	const etherBalance = account && balanceWagmi.data?.formatted;
+	const tokenData = SOURCE_NETWORKS ?
 		// @ts-ignore
-		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken];
-	const tokenBalance = useTokenBalance(tokenData?.contractAddr, account);
+		sourceToken && SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+		: {};
+
+	const tokenBalance = balanceWagmi.data?.formatted;
 	const balance = tokenData?.isNative
 		? etherBalance && formatEther(etherBalance)
 		: tokenBalance && formatUnits(tokenBalance, tokenData?.decimals);
@@ -112,7 +119,7 @@ export const Wallet = () => {
 			<WalletModal showModal={showModal} setShowModal={setShowModal} account={account} />
 			{isTokenSelected(sourceToken) && (
 				<Amount theme={theme}>
-					{beautifyNumbers({ n: balance ?? '0.0', digits: 3 })} {sourceToken}
+					{beautifyNumbers({ n: balance ?? '0.0', digits: 4 })} {sourceToken}
 				</Amount>
 			)}
 			<Account theme={theme} onClick={openModal}>

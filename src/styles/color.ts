@@ -58,7 +58,7 @@ export const lightTheme: Theme = {
 		transparent: 'transparent'
 	},
 	border: {
-		default: '#E5E5E5',
+		default: '#B4B4B4',
 		secondary: '#E5E5E5'
 	},
 	modal: {

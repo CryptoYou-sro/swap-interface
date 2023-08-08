@@ -1,51 +1,53 @@
-import { useEffect, useState } from 'react';
-import styled from 'styled-components';
-import { Mainnet, MetamaskConnector, Moonbeam, useEthers } from '@usedapp/core';
-import { ethers } from 'ethers';
+import { Web3Button, useWeb3Modal } from '@web3modal/react';
+import axios from 'axios';
+import queryString from 'query-string';
+import { useEffect, useMemo, useState } from 'react';
+import { useLocation } from 'react-router-dom';
+import { toast } from 'react-toastify';
+import styled, { css } from 'styled-components';
+import { useAccount, useBalance, useDisconnect, useNetwork, useSignMessage, useSwitchNetwork } from 'wagmi';
+import { Button, Icon, IconType, KycL2Modal } from '../../components';
 import {
-	ColorType,
-	DEFAULT_BORDER_RADIUS,
-	DEFAULT_TRANSITION,
-	mediaQuery,
-	pxToRem,
-	spacing,
-	Theme,
-	theme as defaultTheme
-} from '../../styles';
-import type { ApiAuthType } from '../../helpers';
-import {
-	BasicStatusEnum,
-	button,
+	AmountEnum,
+	BASE_URL,
 	ButtonEnum,
 	CHAINS,
 	DefaultSelectEnum,
 	DestinationEnum,
-	ETHEREUM_URL,
-	getAuthTokensFromNonce,
-	hexToRgbA,
 	INITIAL_STORAGE,
-	isLightTheme,
-	isNetworkSelected,
-	KycEnum,
-	KycL2Enum,
-	KycL2StatusEnum,
 	KycL2BusinessEnum,
-	KycStatusEnum,
-	loadBinanceKycScript,
+	KycL2Enum,
+	KycL2ModalShowEnum,
+	KycL2StatusEnum,
 	LOCAL_STORAGE_AUTH,
 	LOCAL_STORAGE_THEME,
-	makeBinanceKycCall,
-	MOONBEAM_URL,
-	routes,
+	NETWORK_TO_ID,
+	NETWORK_TO_WC,
 	SourceEnum,
 	ThemeEnum,
+	VerificationEnum,
+	button,
+	findNativeToken,
+	getAuthTokensFromNonce,
+	hexToRgbA,
+	isLightTheme,
+	isNetworkSelected,
+	loadBinanceKycScript,
+	makeBinanceKycCall,
+	routes,
 	useStore,
-	VerificationEnum
 } from '../../helpers';
-import type { IconType } from '../../components';
-import { Button, Icon, KycL2Modal, useToasts, Wallet } from '../../components';
 import { useAxios, useClickOutside, useLocalStorage, useMedia } from '../../hooks';
-import _ from 'lodash';
+import {
+	ColorType,
+	DEFAULT_BORDER_RADIUS,
+	DEFAULT_TRANSITION,
+	Theme,
+	theme as defaultTheme,
+	mediaQuery,
+	pxToRem,
+	spacing
+} from '../../styles';
 import { StatusKycL2Modal } from '../modal/statusKycL2Modal';
 
 type Props = {
@@ -100,16 +102,6 @@ const Menu = styled.ul`
 	}
 `;
 
-const Networks = styled(Menu)`
-	width: 100%;
-
-	& li {
-		display: flex;
-		align-items: center;
-		gap: ${spacing[10]};
-	}
-`;
-
 const NetworkWrapper = styled.button`
 	all: unset;
 	display: flex;
@@ -118,104 +110,177 @@ const NetworkWrapper = styled.button`
 	cursor: pointer;
 `;
 
-export const NETWORK_PARAMS = {
-	'1': [
-		{
-			chainId: ethers.utils.hexValue(Mainnet.chainId),
-			chainName: Mainnet.chainName,
-			rpcUrls: [ETHEREUM_URL],
-			nativeCurrency: {
-				name: 'Ethereum',
-				symbol: 'ETH',
-				decimals: 18
-			},
-			blockExplorerUrls: ['https://etherscan.io/']
+const Networks = styled(Menu)`
+	width: calc(100% - ${pxToRem(8)});
+	& li {
+		display: flex;
+		align-items: center;
+		gap: ${spacing[10]};
+		cursor: pointer;
+		border-radius: ${DEFAULT_BORDER_RADIUS};
+		transition: 0.3s;
+		&:hover {
+			transform: scale(1.05);
 		}
-	],
-	'1284': [
-		{
-			chainId: ethers.utils.hexValue(Moonbeam.chainId),
-			chainName: Moonbeam.chainName,
-			rpcUrls: [MOONBEAM_URL],
-			nativeCurrency: {
-				name: 'Glimer',
-				symbol: 'GLMR',
-				decimals: 18
-			},
-			blockExplorerUrls: ['https://moonscan.io/']
-		}
-	]
+	}
+`;
+const WalletContainer = styled.div`
+	display: flex;
+	align-items: center;
+`;
+
+const WalletBalance = styled.div(() => {
+	const { state: { theme } } = useStore();
+
+	return css`
+	color: ${theme.font.default};
+	border: 1px solid ${theme.border.default};
+	padding: ${spacing[10]} ${spacing[18]} ${spacing[10]} ${spacing[12]};
+	border-radius: ${DEFAULT_BORDER_RADIUS};
+	border-top-right-radius: 0px;
+	border-bottom-right-radius: 0px;
+	margin-right: -5px;
+`;
+
+});
+
+const ThemeBtnWrapper = styled.div(() => {
+	return css`
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	`;
+});
+
+type ParsedProps = {
+	[key: string]: string;
 };
 
 export const Header = () => {
-	const { mobileWidth: isMobile } = useMedia('s');
 	const {
 		state: {
+			sourceToken,
 			buttonStatus,
 			isUserVerified,
 			accessToken,
-			kycStatus,
 			sourceNetwork,
 			account: userAccount,
 			isNetworkConnected,
 			theme,
-			kycL2Status
+			kycL2Status,
+			availableSourceNetworks: SOURCE_NETWORKS,
 		},
 		dispatch
 	} = useStore();
 	const [storage, setStorage] = useLocalStorage(LOCAL_STORAGE_AUTH, INITIAL_STORAGE);
-	// @ts-ignore
-	const { addToast } = useToasts();
+	const { isConnected, address: accountAddr } = useAccount();
+	const { disconnect } = useDisconnect();
+	const sourceTokenData = useMemo(
+		() =>
+			// eslint-disable-next-line
+			SOURCE_NETWORKS ?
+				// @ts-ignore
+				// eslint-disable-next-line
+				SOURCE_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.['tokens'][sourceToken]
+				: {},
+		[SOURCE_NETWORKS, sourceToken]
+	);
+	const { data: nativeBalance } = useBalance({
+		address: accountAddr,
+	});
+	const { data: tokenBalance } = useBalance({
+		address: accountAddr,
+		token: sourceTokenData?.contractAddr,
+		watch: true,
+		enabled: sourceTokenData && sourceTokenData.contractAddr
+	});
+	const location = useLocation();
+	const balanceAccount = sourceTokenData?.isNative ? nativeBalance : tokenBalance;
+	const { chain: wagmiChain } = useNetwork();
+	const { open, setDefaultChain } = useWeb3Modal();
+	const [signMessage, setSignMessage] = useState('');
+	const { signMessage: requestSignMsg } = useSignMessage({
+		message: signMessage,
+		onSuccess(data) {
+			const payload: any = { address: accountAddr, signature: data };
+			let parsed: ParsedProps | any = {};
+			let parsedKeys: string[] = [];
+			// Parse URL
+			try {
+				parsed = queryString.parse(location.search);
+				parsedKeys = Object.keys(parsed);
+			} catch (error) {
+				console.log('error in URL parsing', error);
+			}
+			// Add promo into payload if it is present in the URL
+			if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
+				payload.promo = parsedKeys[0];
+			}
+			void axios.request({
+				url: `${BASE_URL}${routes.auth}`,
+				method: 'POST',
+				data: payload
+			}).then((r) => {
+				if (accountAddr) {
+					dispatch({ type: VerificationEnum.ACCESS, payload: r.data.access });
+					dispatch({ type: VerificationEnum.REFRESH, payload: r.data.refresh });
+					setStorage({ account: accountAddr as string, access: r.data.access, isKyced: r.data.is_kyced, refresh: r.data.refresh });
+					if (parsedKeys.length === 1 && parsed[parsedKeys[0]] === null) {
+						// Remove promo from the page URL
+						window.history.replaceState({}, document.title, '/');
+					}
+				}
+			});
+		},
+		onError() {
+			disconnect();
+			setSignMessage('');
+			toast.warning('You have been disconnected due to unsigning on a computer or mobile device. Confirm the signature to sign in.', { theme: theme.name });
+		},
+	});
+
+	const { mobileWidth: isMobile } = useMedia('s');
+	const { mobileWidth: isDeskTop } = useMedia('m');
 	const api = useAxios();
 
 	const [showMenu, setShowMenu] = useState(false);
 	const [showNetworksList, setShowNetworksList] = useState(false);
-	const [showModal, setShowModal] = useState(false);
 	const [showStatusKycL2Modal, setShowStatusKycL2Modal] = useState(false);
 	const [isLoading, setIsLoading] = useState(false);
 
 	const [binanceToken, setBinanceToken] = useState('');
 	const [binanceScriptLoaded, setBinanceScriptLoaded] = useState(false);
+	const { switchNetwork } = useSwitchNetwork();
 	// const navigate = useNavigate();
 	// const { pathname } = useLocation();
 
-	const noKycStatusMessage = 'kyc verify not exist';
+	// const noKycStatusMessage = 'kyc verify not exist';
 
 	const isLight = isLightTheme(theme);
-	const { activate, library, account, chainId, switchNetwork, activateBrowserWallet } = useEthers();
-
 	const changeTheme = (): void => {
 		dispatch({ type: ThemeEnum.THEME, payload: isLight ? defaultTheme.dark : defaultTheme.light });
 		localStorage.setItem(LOCAL_STORAGE_THEME, JSON.stringify(isLight));
 	};
 
-	const checkNetwork = async (): Promise<void> => {
-		if (Object.keys(CHAINS).includes(chainId?.toString() as string)) {
-			await switchNetwork(chainId === 1 ? Mainnet.chainId : Moonbeam.chainId); // TODO: has to be dynamic
-		} else {
-			await switchNetwork(Mainnet.chainId);
-		}
-	};
-
 	const setTokensInStorageAndContext = async () => {
-		if (account) {
+		if (accountAddr) {
 			setIsLoading(true);
 			try {
-				const res: ApiAuthType = await getAuthTokensFromNonce(account, library);
-				dispatch({ type: VerificationEnum.ACCESS, payload: res.access });
-				dispatch({ type: VerificationEnum.REFRESH, payload: res.refresh });
-				dispatch({
-					type: KycEnum.STATUS,
-					payload: res.is_kyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
-				});
-				setStorage({ account, access: res.access, isKyced: res.is_kyced, refresh: res.refresh });
+				const msg: any = await getAuthTokensFromNonce(accountAddr);
+				setSignMessage(msg);
 			} catch (error: any) {
-				// TODO: do we need toast here?
-				addToast('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', 'error');
+				// FIXME: ask Denial about Metamask
+				toast.error('You need to sign the “nonce” via Metamask in order to continue with CryptoYou. If you want to login, click on the Login button again.', { theme: theme.name });
 			}
 			setIsLoading(false);
 		}
 	};
+
+	useEffect(() => {
+		if (signMessage) {
+			requestSignMsg();
+		}
+	}, [signMessage]);
 
 	const getBinanceToken = async () => {
 		try {
@@ -229,65 +294,76 @@ export const Header = () => {
 		}
 	};
 
-	const handleNetworkChange = async (name: string) => {
+	const handleNetworkChange = (name: string) => {
 		setShowNetworksList(!showNetworksList);
-		try {
-			// @ts-ignore
-			await ethereum.request({
-				method: 'wallet_switchEthereumChain',
-				params: [
-					{
-						chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
-					}
-				]
-			});
-		} catch (error: any) {
-			if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
-				try {
-					// @ts-ignore
-					await ethereum.request({
-						method: 'wallet_addEthereumChain',
-						params: NETWORK_PARAMS['1284']
-					});
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name
-					});
-					dispatch({
-						type: SourceEnum.TOKEN,
-						payload: name
-					});
-				} catch (e) {
-					dispatch({
-						type: SourceEnum.NETWORK,
-						payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-					});
-					dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-				}
-			} else if (error.code === 4001) {
+		if (isUserVerified) {
+			try {
+				// @ts-ignore
+				switchNetwork?.(NETWORK_TO_WC[name]?.id);
+			} catch (error: any) {
+				// if ((error.code === 4902 || error.code === -32603) && name === 'GLMR') {
+				// 	try {
+				// 		// // @ts-ignore
+				// 		// await ethereum.request({
+				// 		// 	method: 'wallet_addEthereumChain',
+				// 		// 	params: NETWORK_PARAMS['1284']
+				// 		// });
+				// 		switchNetwork?.(moonbeam.id);
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name
+				// 		});
+				// 		dispatch({
+				// 			type: SourceEnum.TOKEN,
+				// 			payload: name
+				// 		});
+				// 	} catch (e) {
+				// 		dispatch({
+				// 			type: SourceEnum.NETWORK,
+				// 			payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+				// 		});
+				// 		dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+				// 	}
+				// } else if (error.code === 4001) {
+				// 	return;
+				// } else {
+				// 	addToast('Something went wrong - please try again');
+				// }
+				toast.error('Something went wrong - please try again or later', { theme: theme.name });
+
 				return;
-			} else {
-				addToast('Something went wrong - please try again');
+			}
+
+		} else {
+			dispatch({
+				type: SourceEnum.NETWORK,
+				payload: name
+			});
+
+			if (SOURCE_NETWORKS && isNetworkSelected(name)) {
+				dispatch({
+					type: SourceEnum.TOKEN,
+					// @ts-ignore
+					payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[name]]?.['tokens'])
+				});
 			}
 		}
 		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+		dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+		dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 	};
 
 	const checkStatus = async () => {
-		if (!isUserVerified && account === userAccount && isNetworkConnected) {
+		if (!isUserVerified && accountAddr === userAccount && isNetworkConnected) {
 			setIsLoading(true);
 			try {
 				const res = await api.get(routes.kycStatus);
-				if (res.data.errorData === noKycStatusMessage) {
-					await getBinanceToken();
-				}
-				const { kycStatus: kyc, basicStatus: basic } = res?.data?.L1?.statusInfo;
-				const { status: kycL2Status, statusBusiness: kycL2StatusBusiness, representativeType: reprType } = res?.data?.L2;
-				dispatch({
-					type: KycEnum.STATUS,
-					payload: kyc
-				});
+				const {
+					status: kycL2Status,
+					statusBusiness: kycL2StatusBusiness,
+					representativeType: reprType
+				} = res?.data?.L2;
 				dispatch({
 					type: KycL2Enum.STATUS,
 					payload: kycL2Status
@@ -296,7 +372,7 @@ export const Header = () => {
 					type: KycL2BusinessEnum.STATUS,
 					payload: kycL2StatusBusiness
 				});
-				if(reprType !== undefined) {
+				if (reprType !== undefined) {
 					dispatch({
 						type: KycL2BusinessEnum.REPR,
 						payload: reprType
@@ -304,21 +380,18 @@ export const Header = () => {
 				}
 				setStorage({
 					...storage,
-					isKyced: kyc === KycStatusEnum.PASS && kycL2Status === KycL2StatusEnum.PASSED
+					isKyced: kycL2Status === KycL2StatusEnum.PASSED || kycL2Status === KycL2StatusEnum.INITIAL
 				});
 				// TODO: move this part to context?
-				if (kyc === KycStatusEnum.REJECT) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-					addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
-				} else if (kycL2Status === KycL2StatusEnum.REJECTED) {
+				// if (kyc === KycStatusEnum.REJECT) {
+				// 	dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
+				// 	addToast('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', 'warning');
+				// }
+				if (kycL2Status === KycL2StatusEnum.REJECTED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-					addToast('Your KYC L2 process has been rejected - please start again!', 'warning');
-				} else if (basic === BasicStatusEnum.INITIAL && kyc === KycStatusEnum.PROCESS) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC });
-				} else if (kycL2Status === KycL2StatusEnum.INITIAL) {
+					toast.warning('Your verification was rejected. Please try again. If you have questions, please send us an email at support@cryptoyou.io.', { theme: theme.name, position: 'top-center' });
+				} else if (kycL2Status === KycL2StatusEnum.REQUIRED) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.PASS_KYC_L2 });
-				} else if (kyc === KycStatusEnum.REVIEW) {
-					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC });
 				} else if (kycL2Status === KycL2StatusEnum.PENDING) {
 					dispatch({ type: ButtonEnum.BUTTON, payload: button.CHECK_KYC_L2 });
 					setShowStatusKycL2Modal(true);
@@ -332,87 +405,29 @@ export const Header = () => {
 		}
 	};
 
-	const handleButtonClick = async () => {
-		let metamaskMissing = true;
-		const onMobileDevice = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(
-			navigator.userAgent
-		);
-
-		try {
-			// @ts-ignore
-			const provider = new ethers.providers.Web3Provider(window.ethereum);
-			if (provider) {
-				metamaskMissing = false;
-			}
-		} catch (error) {
-			console.log('Can not find a Web3Provider in the browser');
-		}
-
-		if (!account) {
-			if (onMobileDevice && metamaskMissing) {
-				window.open(
-					`https://metamask.app.link/dapp/${process.env.REACT_APP_PROD_URL}`,
-					'_blank',
-					'noopener,noreferrer'
-				);
-			}
-			if (onMobileDevice && !metamaskMissing) {
-				try {
-					await activate(new MetamaskConnector());
-				} catch (error) {
-					console.log('error in connect wallet', error);
-				}
-			}
-			if (!onMobileDevice && metamaskMissing) {
-				addToast(
-					'Looks like your browser doesent have Metamask wallet. Please install it first and then try again.'
-				);
-				setTimeout(
-					() => window.open('https://metamask.io/download/', '_blank', 'noopener,noreferrer'),
-					5000
-				);
-			}
-			if (!onMobileDevice && !metamaskMissing) {
-				try {
-					activateBrowserWallet();
-				} catch (error) {
-					console.log('error in connect wallet', error);
-				}
-			}
-		}
-
-		if (_.isEqual(buttonStatus, button.CHANGE_NETWORK)) {
-			await checkNetwork();
-		}
-
-		if (chainId && account) {
-			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
-				await getBinanceToken();
-			} else if (buttonStatus === button.PASS_KYC_L2) {
-				// add  request to base to get status of KYC review show modal window
-				setShowModal(!showModal);
-			} else if (buttonStatus === button.CHECK_KYC_L2) {
-				void checkStatus();
-			} else if (buttonStatus === button.LOGIN) {
-				await setTokensInStorageAndContext();
-			} else {
-				void checkStatus();
-			}
-		}
-	};
 
 	const domNode: any = useClickOutside(() => {
 		setShowMenu(false);
 		setShowNetworksList(false);
 	});
 
-	const updateShowKycL2 = (value: boolean) => {
-		setShowModal(value);
-	};
 
 	const updateStatusKycL2Modal = (value: boolean) => {
 		setShowStatusKycL2Modal(value);
 	};
+
+	useEffect(() => {
+		const script = document.createElement('script');
+
+		script.src = 'https://www.socialintents.com/api/socialintents.1.3.js#2c9faa35871f751e0187282239990717';
+		script.async = true;
+
+		document.body.appendChild(script);
+
+		return () => {
+			document.body.removeChild(script);
+		};
+	}, []);
 
 	useEffect(() => {
 		if (binanceScriptLoaded && binanceToken) {
@@ -420,10 +435,10 @@ export const Header = () => {
 		}
 	}, [binanceToken, binanceScriptLoaded]);
 
-	useEffect(() => {
-		dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
-		dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
-	}, [sourceNetwork]);
+	// useEffect(() => {
+	// 	dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
+	// 	dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+	// }, [sourceNetwork]);
 
 	useEffect(() => {
 		const localStorageTheme = localStorage.getItem(LOCAL_STORAGE_THEME);
@@ -440,14 +455,10 @@ export const Header = () => {
 			dispatch({ type: VerificationEnum.ACCESS, payload: JSON.parse(localStorageAuth).access });
 			dispatch({ type: VerificationEnum.REFRESH, payload: JSON.parse(localStorageAuth).refresh });
 			dispatch({
-				type: KycEnum.STATUS,
-				payload: JSON.parse(localStorageAuth).isKyced ? KycStatusEnum.PASS : KycStatusEnum.INITIAL
-			});
-			dispatch({
 				type: KycL2Enum.STATUS,
 				payload: JSON.parse(localStorageAuth).isKyced
 					? KycL2StatusEnum.PASSED
-					: KycL2StatusEnum.INITIAL
+					: KycL2StatusEnum.REQUIRED
 			});
 		}
 	}, []);
@@ -459,43 +470,67 @@ export const Header = () => {
 	}, []);
 
 	useEffect(() => {
-		if (account) {
-			dispatch({ type: VerificationEnum.ACCOUNT, payload: account });
+		if (accountAddr) {
+			dispatch({ type: VerificationEnum.ACCOUNT, payload: accountAddr });
 		} else {
 			dispatch({ type: VerificationEnum.ACCOUNT, payload: '' });
 		}
 
-		if (account && storage?.account && storage?.account !== account) {
-			addToast(
-				'Switch to your verified account on Metamask to come back to CryptoYou.',
-				'error'
-			);
+		if (accountAddr && storage?.account && storage?.account !== accountAddr) {
+			toast.warning('Switch to your verified account in the wallet to come back to CryptoYou.', { theme: theme.name });
 			dispatch({ type: VerificationEnum.ACCESS, payload: '' });
 			dispatch({ type: VerificationEnum.REFRESH, payload: '' });
 			dispatch({
-				type: KycEnum.STATUS,
-				payload: KycStatusEnum.INITIAL
-			});
-			dispatch({
 				type: KycL2Enum.STATUS,
-				payload: KycL2StatusEnum.INITIAL
+				payload: null
 			});
-			setStorage({ account, access: '', isKyced: false, refresh: '' });
+			setStorage({ account: accountAddr, access: '', isKyced: false, refresh: '' });
 		}
-	}, [account, isUserVerified, isNetworkConnected]);
+	}, [accountAddr, isUserVerified, isNetworkConnected]);
 
 	useEffect(() => {
-		if (!chainId) {
+		if (!wagmiChain) {
 			dispatch({ type: VerificationEnum.NETWORK, payload: false });
-			void checkNetwork();
 		} else {
 			dispatch({ type: VerificationEnum.NETWORK, payload: true });
 		}
-	}, [chainId]);
+	}, [wagmiChain]);
+
+	const handleButtonClick = async () => {
+		if (!isConnected) {
+			// @ts-ignore
+			setDefaultChain(NETWORK_TO_WC[sourceNetwork]);
+			await open();
+		}
+		if (wagmiChain && wagmiChain.id && accountAddr) {
+			if (buttonStatus === button.PASS_KYC || buttonStatus === button.CHECK_KYC) {
+				await getBinanceToken();
+			} else if (buttonStatus === button.PASS_KYC_L2) {
+				// add  request to base to get status of KYC review show modal window
+				dispatch({ type: KycL2ModalShowEnum.isKycL2ModalShow, payload: true });
+			} else if (buttonStatus === button.CHECK_KYC_L2) {
+				void checkStatus();
+			} else if (buttonStatus === button.LOGIN) {
+				await setTokensInStorageAndContext();
+			}
+		}
+	};
+
+	useEffect(() => {
+		// @ts-ignore
+		// const startNetworkId = Number(Object.keys(CHAINS).find((key) => CHAINS[key].name === sourceNetwork));
+		if (wagmiChain && !Object.keys(CHAINS).includes(wagmiChain?.id.toString())) {
+			disconnect();
+			toast.error('Please change the network to one that is supported', { theme: theme.name });
+
+			return;
+		}
+
+	}, [wagmiChain]);
 
 	useEffect(() => {
 		void checkStatus();
-	}, [kycStatus, kycL2Status, accessToken, account, userAccount]);
+	}, [accountAddr, userAccount, kycL2Status, accessToken, isUserVerified]);
 
 	return (
 		<StyledHeader theme={theme}>
@@ -504,6 +539,18 @@ export const Header = () => {
 				style={{ marginRight: 'auto' }}
 				size={isMobile ? 'medium' : 112}
 			/>
+			{!isMobile && (
+				<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/"
+					target="_blank">
+					<Button
+						variant="pure"
+						onClick={() =>
+							console.log('Out')
+						}>
+						Step-by-step Guide
+					</Button>
+				</a>
+			)}
 			{!isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
 					{sourceNetwork ? sourceNetwork : null}
@@ -518,26 +565,6 @@ export const Header = () => {
 					/>
 				</NetworkWrapper>
 			)}
-			{/* {!isMobile && (
-				<Button
-					variant="pure"
-					onClick={() =>
-						navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/')
-					}>
-					{pathname !== '/transaction-history' ? 'Transaction History' : 'Cross-Chain Form'}
-				</Button>
-			)} */}
-			{isUserVerified && account && isNetworkConnected ? (
-				<Wallet />
-			) : (
-				<Button
-					isLoading={isLoading}
-					variant="secondary"
-					onClick={handleButtonClick}
-					color={buttonStatus.color as ColorType}>
-					{buttonStatus.text}
-				</Button>
-			)}
 			{isMobile && isNetworkSelected(sourceNetwork) && (
 				<NetworkWrapper onClick={() => setShowNetworksList(!showNetworksList)}>
 					<Icon icon={sourceNetwork.toLowerCase() as IconType} size="small" />
@@ -551,6 +578,49 @@ export const Header = () => {
 					/>
 				</NetworkWrapper>
 			)}
+			{showNetworksList && (
+				<MenuWrapper theme={theme}>
+					<Networks
+						theme={theme}
+						ref={domNode}
+						style={{
+							maxWidth: `${isDeskTop ? '100%' : pxToRem(200)}`,
+							right: `${!isDeskTop && '20%'}`
+						}}>
+						{Object.values(CHAINS).map((chain) => (
+							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
+								<Icon icon={chain.name.toLowerCase() as IconType} size="small" />
+								{chain.name}
+								{sourceNetwork === chain.name && (
+									<Icon
+										icon={isLightTheme(theme) ? 'checkLight' : 'checkDark'}
+										size={16}
+										style={{ marginLeft: 'auto' }}
+									/>
+								)}
+							</li>
+						))}
+					</Networks>
+				</MenuWrapper>
+			)}
+			{isConnected && isUserVerified && accountAddr && isNetworkConnected ? (
+				<WalletContainer>
+					{!isMobile && (
+						<WalletBalance>
+							{balanceAccount?.formatted.slice(0, 13)} {balanceAccount?.symbol}
+						</WalletBalance>
+					)}
+					<Web3Button balance={'hide'} icon="show" />
+				</WalletContainer>
+			) : (
+				<Button
+					isLoading={isLoading}
+					variant="secondary"
+					onClick={handleButtonClick}
+					color={buttonStatus.color as ColorType}>
+					{buttonStatus.text}
+				</Button>
+			)}
 			{!isMobile && <Icon icon={isLight ? 'moon' : 'sun'} onClick={changeTheme} size="small" />}
 			{isMobile && (
 				<Icon
@@ -562,47 +632,42 @@ export const Header = () => {
 			{showMenu && (
 				<MenuWrapper theme={theme}>
 					<Menu theme={theme} ref={domNode}>
-						{/* <li
-							onClick={() => {
-								navigate(pathname !== '/transaction-history' ? '/transaction-history' : '/');
-								setShowMenu(!showMenu);
-							}}>
-							{pathname !== '/transaction-history' ? <>Transaction History &#11044;</> : <>Cross-Chain Swap &#11044;</>}
-						</li> */}
-						<li
-							onClick={() => {
-								changeTheme();
-								setShowMenu(!showMenu);
-							}}>
-							{isLightTheme(theme) ? <>Dark theme</> : <>Light theme</>}
+						<li>
+							<a href="https://cryptoyou.io/step-by-step-guide-on-how-to-use-cryptoyou-cross-chain-hybrid-exchange/"
+								target="_blank">
+								<Button
+									variant="pure"
+									onClick={() =>
+										console.log('Out')
+									}>
+									Step-by-step Guide
+								</Button>
+							</a>
+						</li>
+						<li>
+							<Button
+								variant="pure"
+								onClick={() => {
+									changeTheme();
+									setShowMenu(!showMenu);
+								}}>
+								{isLightTheme(theme) ? (
+									<ThemeBtnWrapper>
+										<Icon size='small' icon='moon' />
+										<p>Dark Theme</p>
+									</ThemeBtnWrapper>
+								) : (
+									<ThemeBtnWrapper>
+										<Icon size='small' icon='sun' />
+										<p>Light Theme</p>
+									</ThemeBtnWrapper>
+								)}
+							</Button>
 						</li>
 					</Menu>
 				</MenuWrapper>
 			)}
-			{showNetworksList && (
-				<MenuWrapper theme={theme}>
-					<Networks theme={theme} ref={domNode}>
-						{Object.values(CHAINS).map((chain) => (
-							<li onClick={() => handleNetworkChange(chain.name)} key={chain.name}>
-								<Icon icon={chain.name === 'ETH' ? 'eth' : 'glmr'} size="small" />
-								{chain.name === 'ETH' ? 'Ethereum' : 'Moonbeam'}
-								<Icon
-									icon={
-										sourceNetwork !== chain.name
-											? undefined
-											: isLightTheme(theme)
-											? 'checkLight'
-											: 'checkDark'
-									}
-									size={16}
-									style={{ marginLeft: 'auto' }}
-								/>
-							</li>
-						))}
-					</Networks>
-				</MenuWrapper>
-			)}
-			<KycL2Modal showKycL2={showModal} updateShowKycL2={updateShowKycL2} />
+			<KycL2Modal />
 			<StatusKycL2Modal
 				showStatusKycL2Modal={showStatusKycL2Modal}
 				updateStatusKycL2Modal={updateStatusKycL2Modal}

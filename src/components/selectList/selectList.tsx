@@ -1,17 +1,21 @@
 import { useCallback, useMemo, useState } from 'react';
 import styled, { css } from 'styled-components';
+import { useSwitchNetwork } from 'wagmi';
+import type { IconType } from '../../components';
+import { Icon, TextField } from '../../components';
 import {
 	AmountEnum,
 	DefaultSelectEnum,
 	DestinationEnum,
+	NETWORK_TO_ID,
+	NETWORK_TO_WC,
 	SourceEnum,
+	findNativeToken,
+	isNetworkSelected,
 	useStore
 } from '../../helpers';
-import { Mainnet, Moonbeam, useEthers } from '@usedapp/core';
-import { fontSize, spacing, DEFAULT_BORDER_RADIUS } from '../../styles';
-import { Icon, NETWORK_PARAMS, TextField, useToasts } from '../../components';
-import type { IconType } from '../../components';
-import { ethers } from 'ethers';
+import { toast } from 'react-toastify';
+import { DEFAULT_BORDER_RADIUS, fontSize, spacing } from '../../styles';
 
 const Wrapper = styled.div(() => {
 	const {
@@ -37,7 +41,7 @@ const Title = styled.div(() => {
 	return css`
 		font-size: ${fontSize[16]};
 		line-height: ${fontSize[22]};
-		color: ${theme.font.secondary};
+		color: ${theme.font.default};
 		padding: ${spacing[12]};
 	`;
 });
@@ -93,21 +97,22 @@ type Props = {
 };
 
 export const SelectList = ({ data, placeholder, value }: Props) => {
-	const { chainId } = useEthers();
-	// @ts-ignore
-	const { addToast } = useToasts();
-
+	const { switchNetwork } = useSwitchNetwork();
 	const [search, setSearch] = useState('');
 	const dataList =
 		data &&
 		data.filter((coin: unknown) => (coin as string).toLowerCase().includes(search.toLowerCase()));
 	const {
 		dispatch,
-		state: { destinationToken, destinationNetwork, sourceNetwork, sourceToken }
+		state: {
+			destinationToken, destinationNetwork, sourceNetwork, sourceToken, isUserVerified,
+			availableSourceNetworks: SOURCE_NETWORKS,
+			availableDestinationNetworks: DESTINATION_NETWORKS, theme
+		}
 	} = useStore();
 
 	const handleClick = useCallback(
-		async (name: string) => {
+		(name: string) => {
 			if (value === 'WALLET') {
 				dispatch({
 					type: DestinationEnum.WALLET,
@@ -124,52 +129,56 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 					type: DestinationEnum.TOKEN,
 					payload: name
 				});
-				dispatch({
-					type: AmountEnum.AMOUNT,
-					payload: ''
-				});
 			} else if (value === 'SOURCE_NETWORK' && name !== sourceNetwork) {
-				try {
-					// @ts-ignore
-					await ethereum.request({
-						method: 'wallet_switchEthereumChain',
-						params: [
-							{
-								chainId: ethers.utils.hexValue(chainId === 1 ? Moonbeam.chainId : Mainnet.chainId)
-							}
-						]
-					});
-				} catch (error: any) {
-					if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
-						try {
-							// @ts-ignore
-							await ethereum.request({
-								method: 'wallet_addEthereumChain',
-								params: NETWORK_PARAMS['1284']
-							});
-							dispatch({
-								type: SourceEnum.NETWORK,
-								payload: name
-							});
-							dispatch({
-								type: SourceEnum.TOKEN,
-								payload: name
-							});
-						} catch (e) {
-							dispatch({
-								type: SourceEnum.NETWORK,
-								payload: name === 'GLMR' ? 'ETH' : 'GLMR'
-							});
-							dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
-						}
-					} else if (error.code === 4001) {
+				if (isUserVerified) {
+					try {
+						// @ts-ignore
+						switchNetwork?.(NETWORK_TO_WC[name]?.id);
+					} catch (error: any) {
+						// if (error.code === 4902 || (error.code === -32603 && name === 'GLMR')) {
+						// 	try {
+						// 		switchNetwork?.(moonbeam.id);
+						// 		dispatch({
+						// 			type: SourceEnum.NETWORK,
+						// 			payload: name
+						// 		});
+						// 		dispatch({
+						// 			type: SourceEnum.TOKEN,
+						// 			payload: name
+						// 		});
+						// 	} catch (e) {
+						// 		dispatch({
+						// 			type: SourceEnum.NETWORK,
+						// 			payload: name === 'GLMR' ? 'ETH' : 'GLMR'
+						// 		});
+						// 		dispatch({ type: SourceEnum.TOKEN, payload: name === 'GLMR' ? 'ETH' : 'GLMR' });
+						// 	}
+						// } else if (error.code === 4001) {
+						// 	return;
+						// } else {
+						// 	addToast('Something went wrong - please try again');
+						// }
+						toast.error('Something went wrong - please try again', { theme: theme.name });
+
 						return;
-					} else {
-						addToast('Something went wrong - please try again');
+					}
+				} else {
+					dispatch({
+						type: SourceEnum.NETWORK,
+						payload: name
+					});
+					if (SOURCE_NETWORKS && isNetworkSelected(name)) {
+						dispatch({
+							type: SourceEnum.TOKEN,
+							// @ts-ignore
+							payload: findNativeToken(SOURCE_NETWORKS[NETWORK_TO_ID[name]]?.['tokens'])
+						});
 					}
 				}
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			} else if (value === 'SOURCE_TOKEN') {
 				dispatch({
 					type: SourceEnum.TOKEN,
@@ -177,6 +186,8 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 				});
 				dispatch({ type: DestinationEnum.NETWORK, payload: DefaultSelectEnum.NETWORK });
 				dispatch({ type: DestinationEnum.TOKEN, payload: DefaultSelectEnum.TOKEN });
+				dispatch({ type: AmountEnum.AMOUNT, payload: '' });
+				dispatch({ type: DestinationEnum.AMOUNT, payload: '' });
 			}
 		},
 		[destinationToken, destinationNetwork, sourceNetwork, sourceToken, value] // TODO: add destinationWallet later
@@ -197,6 +208,26 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 			SOURCE_TOKEN: sourceToken
 		};
 	}, [destinationToken, destinationNetwork, sourceNetwork, sourceToken]); // TODO: add destinationWallet later
+
+	const wrappedTokens: any = useMemo(() => {
+		const result: unknown = {};
+
+		if (value === 'SOURCE_TOKEN' && SOURCE_NETWORKS && isNetworkSelected(sourceNetwork)) {
+			// @ts-ignore
+			for (const [key, value] of Object.entries(SOURCE_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.['tokens'])) {
+				// @ts-ignore
+				result[key] = value['wrappedToken'] ? value['wrappedToken'] : '';
+			}
+		} else if (value === 'TOKEN' && DESTINATION_NETWORKS && isNetworkSelected(destinationNetwork)) {
+			// @ts-ignore
+			for (const [key, value] of Object.entries(DESTINATION_NETWORKS[NETWORK_TO_ID[sourceNetwork]]?.[sourceToken]?.[destinationNetwork]?.['tokens'])) {
+				// @ts-ignore
+				result[key] = value['wrappedToken'] ? value['wrappedToken'] : '';
+			}
+		}
+
+		return result;
+	}, [SOURCE_NETWORKS, DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork]);
 
 	return (
 		<Wrapper data-testid="select-list">
@@ -221,6 +252,9 @@ export const SelectList = ({ data, placeholder, value }: Props) => {
 							key={el}>
 							<Icon icon={el.toLowerCase() as IconType} size="small" />
 							<Name>{el}</Name>
+							{wrappedTokens[el] &&
+								<span style={{ marginLeft: '5px' }}>({wrappedTokens[el]})</span>
+							}
 						</Item>
 					))}
 				</List>

@@ -1,6 +1,9 @@
 import { format, utcToZonedTime } from 'date-fns-tz';
 import type { Theme } from './../styles';
 import { DefaultSelectEnum } from '../helpers';
+import type { Chain } from '@wagmi/core';
+import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
+import type { WalletConnectProviderOpts } from '@web3modal/ethereum/dist/_types/src/types';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 const { timeZone: localTimeZone } = Intl.DateTimeFormat().resolvedOptions();
@@ -60,4 +63,49 @@ export const findAndReplace = (array: string[], find: string, replace: string): 
 	}
 
 	return result;
+};
+
+export const findNativeToken = (networkTokens: any): string => {
+	let result = '';
+	for (const [key, value] of Object.entries(networkTokens)) {
+		// @ts-ignore
+		if (value.isNative) {
+			result = key;
+			break;
+		}
+	}
+
+	return result;
+};
+
+// -- constants ------------------------------------------------------- //
+export const NAMESPACE = 'eip155';
+// -- providers ------------------------------------------------------- //
+export function customW3mProvider<C extends Chain>({ projectId }: WalletConnectProviderOpts) {
+	return jsonRpcProvider<C>({
+		rpc: chain => {
+			const supportedChains = [
+				// Default values (56 been deleted)
+				// 1, 3, 4, 5, 10, 42, 56, 69, 97, 100, 137, 280, 324, 420, 42161, 42220, 43114, 80001, 421611,
+				1, 3, 4, 5, 10, 42, 69, 97, 100, 137, 280, 324, 420, 42161, 42220, 43114, 80001, 421611,
+				421613, 1313161554, 1313161555
+			];
+
+			if (supportedChains.includes(chain.id)) {
+				return {
+					http: `https://rpc.walletconnect.com/v1/?chainId=${NAMESPACE}:${chain.id}&projectId=${projectId}`
+				};
+			}
+
+			return {
+				http: chain.rpcUrls.default.http[0],
+				webSocket: chain.rpcUrls.default.webSocket?.[0]
+			};
+		}
+	});
+}
+
+export const getTodaysDate = () => {
+	
+	return new Date().toISOString().split('T')[0];
 };

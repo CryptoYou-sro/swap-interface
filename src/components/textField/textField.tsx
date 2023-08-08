@@ -1,5 +1,7 @@
 import { useState } from 'react';
 import styled, { css } from 'styled-components';
+import { Icon } from '../../components';
+import { useStore } from '../../helpers';
 import type { ThemeProps } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -10,25 +12,25 @@ import {
 	pxToRem,
 	spacing
 } from '../../styles';
-import { useStore } from '../../helpers';
-import { Icon } from '../../components';
 
 export type AlignProps = 'left' | 'right' | 'center';
 export type TypeProps = 'text' | 'number' | 'search' | 'email' | 'radio' | 'checkbox';
 export type SizeProps = 'regular' | 'small';
+export type ThemeModeProps = 'light' | 'dark' | 'auto';
 
 type StyledProps = {
 	align: AlignProps;
 	error: boolean;
 	type: TypeProps;
 	size: SizeProps;
+	themeMode: ThemeModeProps;
 };
 
 const TextFieldWrapper = styled.div`
 	position: relative;
 `;
 
-const Input = styled.input(({ align, error, type, size }: StyledProps) => {
+const Input = styled.input(({ align, error, type, size, themeMode }: StyledProps) => {
 	const {
 		state: { theme }
 	} = useStore();
@@ -45,7 +47,7 @@ const Input = styled.input(({ align, error, type, size }: StyledProps) => {
 		padding: ${isTypeSearch
 			? `${spacing[isSmall ? 8 : 14]} ${spacing[14]} ${spacing[isSmall ? 8 : 14]} ${spacing[42]}`
 			: `${spacing[isSmall ? 12 : 18]} ${spacing[HORIZONTAL_PADDING]}`};
-		color: ${theme.font.default};
+		color: ${themeMode === 'light' ? '#000000' : themeMode === 'dark' ? '#ffffff' : theme.font.default};
 		border: 1px solid ${error && isTypeNumber ? theme.button.error : theme.border.default};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
 		cursor: pointer;
@@ -112,6 +114,8 @@ type Props = {
 	id?: string;
 	checked?: boolean;
 	maxLength?: any;
+	autocomplete?: string;
+	themeMode?: string;
 };
 
 export const TextField = ({
@@ -128,7 +132,9 @@ export const TextField = ({
 	name,
 	id,
 	checked = false,
-	maxLength
+	maxLength,
+	autocomplete = 'on',
+	themeMode = 'auto'
 }: Props) => {
 	const {
 		state: { theme }
@@ -155,6 +161,8 @@ export const TextField = ({
 				id={id}
 				checked={checked}
 				maxLength={maxLength}
+				autocomplete={autocomplete}
+				themeMode={themeMode}
 			/>
 			{isTypeSearch && (
 				<Icon

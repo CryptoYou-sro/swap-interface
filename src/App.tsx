@@ -1,22 +1,25 @@
-import './styles/fonts/font.css';
+import { Route, BrowserRouter as Router, Routes } from 'react-router-dom';
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import styled, { createGlobalStyle } from 'styled-components';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { Footer, Header } from './components';
+import { TabModal } from './components/tabs/tabModal';
+import { useStore } from './helpers';
+import { SwapForm, TransactionHistory, Widget } from './pages';
 import type { Theme } from './styles';
 import {
 	DEFAULT_TRANSITION,
+	MAIN_MAX_WIDTH,
 	fontFamily,
 	fontSize,
 	fontStyle,
 	fontWeight,
-	MAIN_MAX_WIDTH,
 	mediaQuery,
 	pxToRem,
+	// spacing,
 	viewport
 } from './styles';
-import { Header } from './components';
-import { SwapForm, TransactionHistory } from './pages';
-import { useStore } from './helpers';
-import { TabModal } from './components/tabs/tabModal';
+import './styles/fonts/font.css';
 
 type Props = {
 	theme: Theme;
@@ -28,13 +31,14 @@ export const GlobalStyles = createGlobalStyle`
 	}
 
 	body {
-		font-family: ${fontFamily};
+	font-family: ${fontFamily};
 		font-style: ${fontStyle.normal};
 		font-weight: ${fontWeight.regular};
 		font-size: ${fontSize[14]};
 		line-height: ${fontSize[18]};
 		max-width: ${viewport[1760]};
-		min-height: 100vh;
+		// min-height: 100vh;
+		height: 100vh;
 		color: ${(props: Props) => props.theme.font.default};
 		box-sizing: border-box;
 		scroll-behavior: smooth;
@@ -46,11 +50,11 @@ export const GlobalStyles = createGlobalStyle`
 		-moz-osx-font-smoothing: grayscale;
 		transition: ${DEFAULT_TRANSITION};
 		background: ${(props: Props) =>
-			`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
+		`linear-gradient(to bottom, ${props.theme.background.default}, ${props.theme.background.default})`};
 
 		${mediaQuery('s')} {
 			background: ${(props: Props) =>
-				`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 52px, ${props.theme.background.default} 52px);`}
+		`linear-gradient(180deg, ${props.theme.background.secondary}, ${props.theme.background.secondary} 52px, ${props.theme.background.default} 52px);`}
 		}
 	}
 
@@ -59,10 +63,28 @@ export const GlobalStyles = createGlobalStyle`
 	}
 `;
 
-const Wrapper = styled.main`
+const MainWrapper = styled.main`
+	margin: 0;
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+`;
+
+const ContentWrapper = styled.main`
 	margin: 0 auto;
 	max-width: ${MAIN_MAX_WIDTH};
+	flex: 1;
 `;
+
+// const Title = styled.p(() => {
+// 	const { state: { theme } } = useStore();
+
+// 	return css`
+// 		text-align: center;
+// 		margin: 0 0 ${spacing[48]};
+// 		color: ${theme.font.default};
+// 	`;
+// });
 
 const App = () => {
 	const {
@@ -71,20 +93,29 @@ const App = () => {
 
 	return (
 		<Router>
-			<GlobalStyles theme={theme} />
-			<Header />
 			<Routes>
 				<Route
 					path="/"
 					element={
-						<Wrapper>
-							<SwapForm />
-							<TabModal />
-						</Wrapper>
+						<MainWrapper>
+							<GlobalStyles theme={theme} />
+							<Header />
+							<ContentWrapper>
+								{/* <Title>
+									Swap over 25 Ethereum and Moonbeam tokens for nearly 230+ tokens across 110+
+									different networks directly from your wallet.
+								</Title> */}
+								<SwapForm />
+								<TabModal />
+							</ContentWrapper>
+							<Footer />
+						</MainWrapper>
 					}
 				/>
 				<Route path="/transaction-history" element={<TransactionHistory />} />
+				<Route path="/embed" element={<Widget />} />
 			</Routes>
+      <ToastContainer style={{ zIndex: 1000000000000000 }} position='bottom-right' />
 		</Router>
 	);
 };

@@ -1,4 +1,7 @@
 import type { ReactNode } from 'react';
+import styled, { css } from 'styled-components';
+import { Spinner } from '../../components';
+import { isLightTheme, useStore } from '../../helpers';
 import type { ColorType } from '../../styles';
 import {
 	DEFAULT_BORDER_RADIUS,
@@ -8,9 +11,6 @@ import {
 	MAIN_MAX_WIDTH,
 	pxToRem
 } from '../../styles';
-import styled, { css } from 'styled-components';
-import { isLightTheme, useStore } from '../../helpers';
-import { Spinner } from '../../components';
 
 interface CommonProps {
 	children: ReactNode;
@@ -61,17 +61,17 @@ const StyledButton = styled.button((props: ButtonProps) => {
 		color: ${isPure
 			? theme.font.default
 			: isSecondaryDefault || isPrimaryTransparent
-			? theme.button.default
-			: '#FFF'};
+				? theme.button.default
+				: '#FFF'};
 		background-color: ${isPure || isSecondaryDefault || isPrimaryTransparent
 			? theme.button.transparent
 			: props.disabled
-			? theme.button.disabled
-			: theme.button[props.color!]};
+				? theme.button.disabled
+				: theme.button[props.color!]};
 		border: 1px solid
 			${isSecondaryDefault || isPrimaryTransparent
-				? theme.button.default
-				: isPure || isColorDefault
+			? theme.button.default
+			: isPure || isColorDefault
 				? theme.button.transparent
 				: '#FFF'};
 		border-radius: ${DEFAULT_BORDER_RADIUS};
@@ -94,10 +94,10 @@ const StyledButton = styled.button((props: ButtonProps) => {
 			outline-offset: ${DEFAULT_OUTLINE_OFFSET};
 			outline: 1px solid
 				${isPrimary
-					? theme.button.default
-					: isPure
-					? theme.background.secondary
-					: isLightTheme(theme)
+			? theme.button.default
+			: isPure
+				? theme.background.secondary
+				: isLightTheme(theme)
 					? theme.button[props.color!]
 					: '#FFF'};
 		}

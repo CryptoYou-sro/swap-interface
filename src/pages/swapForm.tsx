@@ -1,31 +1,25 @@
+import axios from 'axios';
+import queryString from 'query-string';
 import { useEffect, useRef, useState } from 'react';
+import { useLocation } from 'react-router-dom';
 import styled, { css } from 'styled-components';
-import DESTINATION_NETWORKS from '../data/destinationNetworks.json';
-import { MAIN_MAX_WIDTH, mediaQuery, spacing } from '../styles';
-import {
-	Button,
-	Fees,
-	Icon,
-	IconType,
-	NetworkTokenModal,
-	SwapButton,
-	TextField
-} from '../components';
-import type { Fee } from '../helpers';
+import { useAccount, useDisconnect, useNetwork, useSwitchNetwork, } from 'wagmi';
+import { Fees, Icon, IconType, NetworkTokenModal, SwapButton, TextField } from '../components';
 import {
 	AmountEnum,
-	beautifyNumbers,
 	BINANCE_FEE,
 	DestinationEnum,
+	NETWORK_TO_ID,
+	NETWORK_TO_WC,
+	SourceEnum,
+	beautifyNumbers,
 	isLightTheme,
 	isNetworkSelected,
 	isTokenSelected,
-	KycL2BusinessStatusEnum,
-	NETWORK_TO_ID,
 	useStore
 } from '../helpers';
-import { useFees } from '../hooks';
-import { KycL2LegalModal } from '../components/modal/kycL2LegalModal';
+import { useFees, useMedia } from '../hooks';
+import { MAIN_MAX_WIDTH, fontSize, mediaQuery, pxToRem, spacing } from '../styles';
 
 const Wrapper = styled.main`
 	margin: 0 auto;
@@ -135,13 +129,47 @@ const ExchangeRate = styled.div(
 `
 );
 
-const KYCL2Wrapper = styled.div`
-	margin-top: ${spacing[26]};
-	width: 100%;
-	text-align: center;
-`;
+const WithdrawTips = styled.div(
+	({ color }: { color: string }) => `
+		margin: ${spacing[28]} 0;
+		color: ${color};
+
+		${mediaQuery('xs')} {
+			width: 100%;
+		}
+	`
+);
+
+const CopyPasteBtn = styled.button(() => {
+	const {
+		state: { theme }
+	} = useStore();
+
+	return css`
+	border: none;
+	background: transparent;
+	color: ${theme.font.default};
+	cursor: pointer;
+	padding: 0;
+	font-size: ${fontSize[14]};
+	line-height: ${pxToRem(18)};
+	&:hover {
+			opacity: 0.8;
+		}
+
+	`;
+});
 
 type Limit = { message: string; value: string; error: boolean };
+
+interface DepthResponse {
+	bids?: Array<[string, string]>;
+	asks?: Array<[string, string]>;
+}
+
+type ParsedProps = {
+	[key: string]: string;
+};
 
 export const SwapForm = () => {
 	const {
@@ -156,36 +184,179 @@ export const SwapForm = () => {
 			destinationMemo,
 			isUserVerified,
 			amount,
-			account,
-			kycL2Business
+			availableDestinationNetworks: DESTINATION_NETWORKS
 		},
 		dispatch
 	} = useStore();
-	const swapButtonRef = useRef();
-	const { withdrawFee, cexFee, minAmount, maxAmount, getPrice } = useFees();
+
+	const { mobileWidth: isMobile } = useMedia('xs');
+	const { chain: wagmiChain } = useNetwork();
+	const { disconnect } = useDisconnect();
+	const { isConnected, address: accountAddr } = useAccount();
+	const { switchNetworkAsync } = useSwitchNetwork();
+	const { withdrawFee, cexFee, minAmount, maxAmount } = useFees();
 	const [showDestinationModal, setShowDestinationModal] = useState(false);
 	// const [showNotificaitonsModal, setShowNotificaitonsModal] = useState(false);
 	const [showSourceModal, setShowSourceModal] = useState(false);
-	const [showKycL2, setShowKycL2] = useState(false);
 	const [hasMemo, setHasMemo] = useState(false);
+	const [withdrawTipsText, setWithdrawTipsText] = useState('');
 	const [destinationAddressIsValid, setDestinationAddressIsValid] = useState(false);
 	const [destinationMemoIsValid, setDestinationMemoIsValid] = useState(false);
 	const [limit, setLimit] = useState<Limit>({ message: '', value: '', error: false });
+	const [exchangeRate, setExchangeRate] = useState<{ price: number; totalAmount: number } | null>(null);
+	const [parsedUrl, setParsedUrl] = useState<ParsedProps>({});
 
-	const updateShowKycL2 = (value: boolean) => {
-		setShowKycL2(value);
-	};
+	const swapButtonRef = useRef();
+	const location: any = useLocation();
+	const isParsedEmpty = Object.keys(parsedUrl).length <= 0;
+	const sameUrlAndSiteNetworkId = wagmiChain?.id === parseFloat(NETWORK_TO_ID[parsedUrl?.sellAssetNet as keyof typeof NETWORK_TO_ID]);
 
-	// const { mobileWidth } = useMedia('xs');
+	useEffect(() => {
+		if (isParsedEmpty && location.search) {
+			try {
+				const parsed: ParsedProps | any = queryString.parse(location.search);
+
+				if (parsed && Object.keys(parsed).length > 1) {
+					// Set parsed data if it has more than one key, else it is promo code
+					setParsedUrl(parsed);
+				}
+			} catch (error) {
+				console.log('error in URL parsing', error);
+			}
+		}
+	}, [location.search]);
+
+	useEffect(() => {
+		if (!isParsedEmpty && DESTINATION_NETWORKS) {
+			if (!isConnected) {
+				dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+				dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+				dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+				dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+				dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+				window.history.replaceState({}, document.title, '/');
+			}
+
+			if (isConnected && sameUrlAndSiteNetworkId) {
+				dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+				dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+				dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+				dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+				dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+				window.history.replaceState({}, document.title, '/');
+			}
+		}
+	}, [isParsedEmpty, DESTINATION_NETWORKS]);
+
+	useEffect(() => {
+		async function switchToNetwork() {
+			if (!isParsedEmpty && isConnected && switchNetworkAsync && DESTINATION_NETWORKS && !sameUrlAndSiteNetworkId) {
+				try {
+					// @ts-ignore
+					await switchNetworkAsync(NETWORK_TO_WC[parsedUrl?.sellAssetNet]?.id);
+					dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+					dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+					dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+					dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+					dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+					window.history.replaceState({}, document.title, '/');
+
+				} catch (error) {
+					disconnect();
+					dispatch({ type: SourceEnum.NETWORK, payload: parsedUrl?.sellAssetNet });
+					dispatch({ type: SourceEnum.TOKEN, payload: parsedUrl?.sellAssetToken });
+					dispatch({ type: DestinationEnum.NETWORK, payload: parsedUrl?.buyAssetNet });
+					dispatch({ type: DestinationEnum.TOKEN, payload: parsedUrl?.buyAssetToken });
+					dispatch({ type: AmountEnum.AMOUNT, payload: parsedUrl?.sellAssetAmount });
+					window.history.replaceState({}, document.title, '/');
+				}
+			}
+		}
+		void switchToNetwork();
+	}, [isParsedEmpty, isConnected, switchNetworkAsync, DESTINATION_NETWORKS]);
+
+	async function getOrderBookPrice(currency1: any, currency2: any, startAmount: any, startCurrency: any) {
+		let pair: string | '' = '';
+		let res: DepthResponse | any = null;
+		let totalPrice: string | number = 0;
+		let totalCurrencyAmount: string | number = 0;
+		try {
+			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency1}${currency2}&limit=4999`).then(r => res = r.data);
+			if (res) {
+				pair = `${currency1}${currency2}`;
+			}
+		} catch (error: any) {
+			await axios.get<DepthResponse>(`https://api.binance.com/api/v3/depth?symbol=${currency2}${currency1}&limit=4999`).then(r => res = r.data);
+			if (res) {
+				pair = `${currency2}${currency1}`;
+			}
+		}
+		if (startAmount > 0) {
+			if ((pair === `${currency1}${currency2}` && startCurrency === currency1) || (pair === `${currency2}${currency1}` && startCurrency === currency2)) {
+				if (res) {
+					// console.log('SELL');
+					const bids: string[] = res.bids;
+					let leftToSwap: any = startAmount;
+
+					for (let i = 0; i < res.bids.length; i++) {
+						let orderBookAmount = 0;
+						if (leftToSwap === 0) {
+							break;
+						}
+						const price = parseFloat(bids[i][0]);
+						const amount = parseFloat(bids[i][1]);
+
+						if (amount < leftToSwap) {
+							orderBookAmount = amount;
+						} else {
+							orderBookAmount = leftToSwap;
+						}
+
+						leftToSwap -= orderBookAmount;
+						totalCurrencyAmount += price * orderBookAmount;
+						totalPrice = totalCurrencyAmount / startAmount;
+					}
+				}
+			} else if
+				((pair === `${currency1}${currency2}` && startCurrency === currency2) || (pair === `${currency2}${currency1}` && startCurrency === currency1)) {
+				if (res) {
+					// console.log('Buy');
+					const asks: string[] = res.asks;
+					let leftToSwap: any = startAmount;
+
+					for (let i = 0; i < res.asks.length; i++) {
+						let orderBookAmount = 0;
+						if (leftToSwap === 0) {
+							break;
+						}
+						const price = parseFloat(asks[i][0]);
+						const amount = parseFloat(asks[i][1]);
+
+						if (amount * price < leftToSwap) {
+							orderBookAmount = amount * price;
+						} else {
+							orderBookAmount = leftToSwap;
+						}
+
+						leftToSwap -= orderBookAmount;
+						totalCurrencyAmount = totalCurrencyAmount + 1 / price * orderBookAmount;
+						totalPrice = totalCurrencyAmount / startAmount;
+					}
+				}
+			}
+		}
+
+		return { price: totalPrice, totalAmount: totalCurrencyAmount };
+	}
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
 			const message =
 				+minAmount >= +maxAmount
-					? 'Insufficent funds'
+					? 'Insufficient funds'
 					: +minAmount < +amount
-					? 'Max Amount'
-					: 'Min Amount';
+						? 'Max Amount'
+						: 'Min Amount';
 			const value = +minAmount >= +maxAmount ? '' : +minAmount < +amount ? maxAmount : minAmount;
 			setLimit({
 				message,
@@ -199,43 +370,79 @@ export const SwapForm = () => {
 
 	useEffect(() => {
 		if (isTokenSelected(destinationToken)) {
-			const calculatedDestinationAmount =
-				(+amount / (1 + BINANCE_FEE)) * getPrice(sourceToken, destinationToken) -
-				withdrawFee.amount -
-				cexFee.reduce((total: number, fee: Fee) => (total += fee.amount), 0);
+			const getDestinationAmount = async () => {
+				const orderBookPrice = await getOrderBookPrice(
+					sourceToken,
+					destinationToken,
+					amount,
+					sourceToken
+				);
+				setExchangeRate(orderBookPrice);
+			};
+
+			void getDestinationAmount();
+		}
+	}, [withdrawFee, cexFee, amount]);
+
+	useEffect(() => {
+		if (exchangeRate?.price) {
+			const calcDestinationAmount = +amount * exchangeRate.price * (1 - BINANCE_FEE) - withdrawFee.amount;
+
 			dispatch({
 				type: DestinationEnum.AMOUNT,
-				payload: calculatedDestinationAmount < 0 ? '' : calculatedDestinationAmount.toString()
+				payload:
+					calcDestinationAmount < 0
+						? ''
+						: calcDestinationAmount.toString(),
 			});
 		}
-	}, [amount, destinationToken, cexFee, withdrawFee]);
+	}, [exchangeRate]);
 
 	useEffect(() => {
-		const hasTag =
-			// @ts-ignore
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+		if (DESTINATION_NETWORKS) {
+			const hasTag =
+				// @ts-ignore
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
 				'hasTag'
-			];
-		setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
-	}, [sourceToken, destinationNetwork, sourceNetwork]);
+				];
+			setHasMemo(!isNetworkSelected(destinationNetwork) ? false : hasTag);
+		}
+	}, [DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork]);
 
 	useEffect(() => {
-		const addressRegEx = new RegExp(
-			// @ts-ignore,
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
-				'tokens'
-			]?.[destinationToken]?.['addressRegex']
-		);
-		const memoRegEx = new RegExp(
-			// @ts-ignore
-			DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
-				'tokens'
-			]?.[destinationToken]?.['tagRegex']
-		);
+		if (DESTINATION_NETWORKS) {
+			const specialWithdrawTips =
+				// @ts-ignore
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.tokens[
+					destinationToken
+				]?.specialWithdrawTips;
+			setWithdrawTipsText(!isNetworkSelected(destinationNetwork) ? '' : specialWithdrawTips);
+		}
+	}, [DESTINATION_NETWORKS, sourceNetwork, sourceToken, destinationNetwork, destinationToken]);
 
-		setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
-		setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
-	}, [destinationAddress, destinationMemo, destinationToken]);
+	useEffect(() => {
+		if (DESTINATION_NETWORKS) {
+			const addressRegEx = new RegExp(
+				// @ts-ignore,
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['addressRegex']
+			);
+			const memoRegEx = new RegExp(
+				// @ts-ignore
+				DESTINATION_NETWORKS[[NETWORK_TO_ID[sourceNetwork]]]?.[sourceToken]?.[destinationNetwork]?.[
+				'tokens'
+				]?.[destinationToken]?.['tagRegex']
+			);
+
+			setDestinationAddressIsValid(() => addressRegEx.test(destinationAddress));
+			if (destinationMemo.length > 0) {
+				setDestinationMemoIsValid(() => memoRegEx.test(destinationMemo));
+			} else {
+				setDestinationMemoIsValid(true);
+			}
+		}
+	}, [DESTINATION_NETWORKS, destinationAddress, destinationMemo, destinationToken]);
 
 	const handleSwap = (): void => {
 		// @ts-ignore
@@ -307,7 +514,7 @@ export const SwapForm = () => {
 				<Icon
 					size="small"
 					icon={isLightTheme(theme) ? 'swapperLight' : 'swapperDark'}
-					style={{ marginBottom: 18 }}
+					style={{ marginBottom: 18, transform: `${isMobile ? 'rotate(90deg)' : 'rotate(0)'}` }}
 				/>
 				<Swap>
 					<SwapInput>
@@ -321,6 +528,7 @@ export const SwapForm = () => {
 							onClick={() => setShowDestinationModal(!showDestinationModal)}
 						/>
 						<TextField
+							autocomplete='off'
 							disabled
 							type="text"
 							value={beautifyNumbers({ n: destinationAmount })}
@@ -338,11 +546,10 @@ export const SwapForm = () => {
 			<ExchangeRate color={theme.font.default}>
 				{!isTokenSelected(destinationToken)
 					? ''
-					: `1 ${sourceToken} = ${beautifyNumbers({
-							n: getPrice(sourceToken, destinationToken)
-					  })} ${destinationToken}`}
+					: exchangeRate?.price ? `1 ${sourceToken} = ${beautifyNumbers({ n: exchangeRate.price })} ${destinationToken}` : null}
 			</ExchangeRate>
 			<TextField
+				autocomplete='off'
 				value={destinationAddress}
 				error={!destinationAddressIsValid}
 				description="Destination Address"
@@ -353,6 +560,15 @@ export const SwapForm = () => {
 					})
 				}
 			/>
+			{accountAddr && (
+				<CopyPasteBtn onClick={() =>
+					dispatch({
+						type: DestinationEnum.ADDRESS,
+						payload: accountAddr
+					})
+				}>
+					Insert current address
+				</CopyPasteBtn>)}
 			{hasMemo && (
 				<div style={{ marginTop: 24 }}>
 					<TextField
@@ -367,23 +583,15 @@ export const SwapForm = () => {
 			)}
 			{isUserVerified &&
 				isNetworkSelected(destinationNetwork) &&
-				isTokenSelected(destinationToken) && <Fees />}
-			{isUserVerified && (
-				<SwapButton
-					ref={swapButtonRef}
-					validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
-					amount={amount.toString()}
-					onClick={handleSwap}
-				/>
-			)}
-			<KYCL2Wrapper>
-				{isUserVerified && account && (kycL2Business === KycL2BusinessStatusEnum.INITIAL || kycL2Business === KycL2BusinessStatusEnum.BASIC) ? (
-					<Button variant="pure" onClick={() => setShowKycL2(true)} color="default">
-						KYC as Legal Person
-					</Button>
-				) : null}
-				<KycL2LegalModal showKycL2={showKycL2} updateShowKycL2={updateShowKycL2} />
-			</KYCL2Wrapper>
+				isTokenSelected(destinationToken)}
+			<Fees />
+			<WithdrawTips color={theme.button.warning}>{withdrawTipsText}</WithdrawTips>
+			<SwapButton
+				ref={swapButtonRef}
+				validInputs={destinationMemoIsValid && destinationAddressIsValid && !limit.error}
+				amount={amount.toString()}
+				onClick={handleSwap}
+			/>
 		</Wrapper>
 	);
 };
