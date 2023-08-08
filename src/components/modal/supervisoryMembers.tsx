@@ -254,7 +254,7 @@ export const SupervisoryMembers = ({
 			backgroundColor='light'
 			themeMode='light'>
 			{/* @ts-ignore */}
-			<Wrapper themeMode='dark'>
+			<Wrapper themeMode='dark' data-testid='supervisoryMembersTest'>
 				<ContentTitle>Information on members of the supervisory board</ContentTitle>
 				<WrapContainer style={{ padding: '0 10px' }}>
 					<div style={{
@@ -303,12 +303,12 @@ export const SupervisoryMembers = ({
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
-								htmlFor="label-shareholders-place-of-birth"
+								htmlFor="label-supervisory-place-of-birth"
 								style={{ display: 'inline-block', margin: '8px 0' }}>
 								Place of Birth
 							</label>
 							<TextField
-								id="label-shareholders-place-of-birth"
+								id="label-supervisory-place-of-birth"
 								value={client.placeOfBirth}
 								placeholder="Place of Birth"
 								type="text"
@@ -327,14 +327,14 @@ export const SupervisoryMembers = ({
 							flexDirection: 'column',
 							justifyContent: 'flex-end'
 						}}>
-							<label htmlFor="label-shareholder-select-gender" style={{ display: 'inline-block', margin: '8px 0' }}>
+							<label htmlFor="label-supervisory-select-gender" style={{ display: 'inline-block', margin: '8px 0' }}>
 								Gender
 							</label>
 							<Select
 								name="gender"
 								onChange={handleDropDownInput}
 								value={client.gender}
-								id="label-shareholder-select-gender"
+								id="label-supervisory-select-gender"
 								// @ts-ignore
 								themeMode='light'>
 								<option value="Select gender">Select gender</option>
@@ -360,7 +360,7 @@ export const SupervisoryMembers = ({
 					</ContentTitle>
 					<div style={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'space-between' }}>
 						<div style={{ width: '48%' }}>
-							<label htmlFor="label-shareholder-address-permanent-state-Or-Country"
+							<label htmlFor="label-supervisory-address-permanent-state-or-Country"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Country
 							</label>
@@ -368,7 +368,7 @@ export const SupervisoryMembers = ({
 								name="stateOrCountry"
 								onChange={handleChangeResidenceInput}
 								value={client.residence.stateOrCountry}
-								id="label-shareholder-address-permanent-state-Or-Country"
+								id="label-supervisory-address-permanent-state-or-Country"
 								// @ts-ignore
 								themeMode='light'>
 								<option value="Select country">Select country</option>
@@ -384,12 +384,12 @@ export const SupervisoryMembers = ({
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
-								htmlFor="label-shareholder-address-permanent-street"
+								htmlFor="label-supervisory-address-permanent-street"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Street
 							</label>
 							<TextField
-								id="label-shareholder-address-permanent-street"
+								id="label-supervisory-address-permanent-street"
 								value={client.residence.street}
 								placeholder="Street"
 								type="text"
@@ -403,12 +403,12 @@ export const SupervisoryMembers = ({
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
-								htmlFor="label-shareholder-address-permanent-street-number"
+								htmlFor="label-supervisory-address-permanent-street-number"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
 								Street number
 							</label>
 							<TextField
-								id="label-shareholder-address-permanent-street-number"
+								id="label-supervisory-address-permanent-street-number"
 								value={client.residence.streetNumber}
 								placeholder="Street number"
 								type="text"
@@ -422,12 +422,12 @@ export const SupervisoryMembers = ({
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
-								htmlFor="label-shareholder-address-permanent-municipality"
+								htmlFor="label-supervisory-address-permanent-municipality"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
 								City
 							</label>
 							<TextField
-								id="label-shareholder-address-permanent-municipality"
+								id="label-supervisory-address-permanent-municipality"
 								value={client.residence.municipality}
 								placeholder="City"
 								type="text"
@@ -441,12 +441,12 @@ export const SupervisoryMembers = ({
 						</div>
 						<div style={{ width: '48%' }}>
 							<label
-								htmlFor="label-shareholder-address-permanent-zipCode"
+								htmlFor="label-supervisory-address-permanent-zipCode"
 								style={{ margin: '8px 0', display: 'inline-block' }}>
 								ZIP Code
 							</label>
 							<TextField
-								id="label-shareholder-address-permanent-zipCode"
+								id="label-supervisory-address-permanent-zipCode"
 								value={client.residence.zipCode}
 								placeholder="ZIP Code"
 								type="text"

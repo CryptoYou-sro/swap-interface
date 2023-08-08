@@ -1,0 +1,5222 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`KycL2Modal should render 2 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="secondPageForm"
+>
+  <h2
+    class="sc-iEXKAA dgMEcj"
+    style="margin-bottom: 3.75rem;"
+  >
+    KYC and AML Questionnaire for Individuals
+  </h2>
+  <div
+    class="sc-fMMURN hKbdiu"
+  >
+    <p
+      class="sc-brPLxw hmozBQ"
+      style="width: 100%; margin-right: 10px;"
+    >
+      Provide photos of one of the following documents: Passport /ID
+    </p>
+    <div
+      style="width: 100%; display: flex; justify-content: space-between; align-items: baseline;"
+    >
+      <p
+        class="sc-brPLxw hmozBQ"
+      >
+        Front side / second page for Passport
+      </p>
+      <label
+        class="sc-EgOXT bDBZrO"
+        for="file-natural-identification-doc-1"
+      >
+        <input
+          class="sc-eZYNyq fibwsS"
+          id="file-natural-identification-doc-1"
+          type="file"
+        />
+        filename.txt
+      </label>
+    </div>
+    <div
+      style="width: 100%; display: flex; justify-content: space-between; align-items: baseline;"
+    >
+      <p
+        class="sc-brPLxw hmozBQ"
+        style="max-width: 75%; margin-right: 10px;"
+      >
+        Back side / third page for Passport
+      </p>
+      <label
+        class="sc-EgOXT bDBZrO"
+        for="file-natural-identification-doc-2"
+      >
+        <input
+          class="sc-eZYNyq fibwsS"
+          id="file-natural-identification-doc-2"
+          type="file"
+        />
+        filename.txt
+      </label>
+    </div>
+    <div
+      style="width: 100%; display: flex; justify-content: space-between; align-items: baseline;"
+    >
+      <p
+        class="sc-brPLxw hmozBQ"
+        style="max-width: 75%; margin-right: 10px;"
+      >
+        Submit a selfie in which you're holding a piece of paper that clearly shows today's date 
+        <br />
+         and the number of the document you have uploaded (Passport / ID).
+      </p>
+      <label
+        class="sc-EgOXT bDBZrO"
+        for="file-natural-selfie"
+      >
+        <input
+          class="sc-eZYNyq fibwsS"
+          id="file-natural-selfie"
+          type="file"
+        />
+        filename.txt
+      </label>
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 3 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <h2
+    class="sc-iEXKAA dgMEcj"
+  >
+    KYC and AML Questionnaire for Individuals
+  </h2>
+  <div
+    style="width: 75%; margin: 1.25rem auto;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="label-sourceOfIncome"
+    >
+      What is the prevailing source of your income?
+    </label>
+    <input
+      class="sc-jOnpCo bcpQjy"
+      id="label-sourceOfIncome"
+      maxlength="100"
+      name="sourceOfIncome"
+      placeholder="Employment/business, real estate, trading, etc."
+      type="text"
+      value="IT"
+    />
+  </div>
+  <div
+    style="width: 75%; margin: 1.25rem auto;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="label-net-yearly-income"
+    >
+      What is your net yearly income in € Euro ?
+    </label>
+    <input
+      class="sc-jOnpCo bcpQjy"
+      id="label-net-yearly-income"
+      maxlength="100"
+      name="yearlyIncome"
+      placeholder="Net yearly income"
+      type="number"
+      value="100"
+    />
+  </div>
+  <div
+    style="width: 75%; margin: 1.25rem auto;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="label-select-tax-residency"
+    >
+      Declare your tax Residency
+    </label>
+    <select
+      class="sc-dlWCHZ cSHBfA"
+      id="label-select-tax-residency"
+      name="taxResidency"
+      style="min-height: 2.875rem; width: 100%;"
+    >
+      <option
+        value="Select country"
+      >
+        Select country
+      </option>
+      <option
+        value="Afghanistan"
+      >
+        Afghanistan
+      </option>
+      <option
+        value="Åland Islands"
+      >
+        Åland Islands
+      </option>
+      <option
+        value="Albania"
+      >
+        Albania
+      </option>
+      <option
+        value="Algeria"
+      >
+        Algeria
+      </option>
+      <option
+        value="American Samoa"
+      >
+        American Samoa
+      </option>
+      <option
+        value="Andorra"
+      >
+        Andorra
+      </option>
+      <option
+        value="Angola"
+      >
+        Angola
+      </option>
+      <option
+        value="Anguilla"
+      >
+        Anguilla
+      </option>
+      <option
+        value="Antarctica"
+      >
+        Antarctica
+      </option>
+      <option
+        value="Antigua and Barbuda"
+      >
+        Antigua and Barbuda
+      </option>
+      <option
+        value="Argentina"
+      >
+        Argentina
+      </option>
+      <option
+        value="Armenia"
+      >
+        Armenia
+      </option>
+      <option
+        value="Aruba"
+      >
+        Aruba
+      </option>
+      <option
+        value="Australia"
+      >
+        Australia
+      </option>
+      <option
+        value="Austria"
+      >
+        Austria
+      </option>
+      <option
+        value="Azerbaijan"
+      >
+        Azerbaijan
+      </option>
+      <option
+        value="Bahamas"
+      >
+        Bahamas
+      </option>
+      <option
+        value="Bahrain"
+      >
+        Bahrain
+      </option>
+      <option
+        value="Bangladesh"
+      >
+        Bangladesh
+      </option>
+      <option
+        value="Barbados"
+      >
+        Barbados
+      </option>
+      <option
+        value="Belarus"
+      >
+        Belarus
+      </option>
+      <option
+        value="Belgium"
+      >
+        Belgium
+      </option>
+      <option
+        value="Belize"
+      >
+        Belize
+      </option>
+      <option
+        value="Benin"
+      >
+        Benin
+      </option>
+      <option
+        value="Bermuda"
+      >
+        Bermuda
+      </option>
+      <option
+        value="Bhutan"
+      >
+        Bhutan
+      </option>
+      <option
+        value="Bolivia"
+      >
+        Bolivia
+      </option>
+      <option
+        value="Bosnia and Herzegovina"
+      >
+        Bosnia and Herzegovina
+      </option>
+      <option
+        value="Botswana"
+      >
+        Botswana
+      </option>
+      <option
+        value="Bouvet Island"
+      >
+        Bouvet Island
+      </option>
+      <option
+        value="Brazil"
+      >
+        Brazil
+      </option>
+      <option
+        value="British Indian Ocean Territory"
+      >
+        British Indian Ocean Territory
+      </option>
+      <option
+        value="Brunei Darussalam"
+      >
+        Brunei Darussalam
+      </option>
+      <option
+        value="Bulgaria"
+      >
+        Bulgaria
+      </option>
+      <option
+        value="Burkina Faso"
+      >
+        Burkina Faso
+      </option>
+      <option
+        value="Burundi"
+      >
+        Burundi
+      </option>
+      <option
+        value="Cambodia"
+      >
+        Cambodia
+      </option>
+      <option
+        value="Cameroon"
+      >
+        Cameroon
+      </option>
+      <option
+        value="Canada"
+      >
+        Canada
+      </option>
+      <option
+        value="Cape Verde"
+      >
+        Cape Verde
+      </option>
+      <option
+        value="Cayman Islands"
+      >
+        Cayman Islands
+      </option>
+      <option
+        value="Central African Republic"
+      >
+        Central African Republic
+      </option>
+      <option
+        value="Chad"
+      >
+        Chad
+      </option>
+      <option
+        value="Chile"
+      >
+        Chile
+      </option>
+      <option
+        value="China"
+      >
+        China
+      </option>
+      <option
+        value="Christmas Island"
+      >
+        Christmas Island
+      </option>
+      <option
+        value="Cocos (Keeling) Islands"
+      >
+        Cocos (Keeling) Islands
+      </option>
+      <option
+        value="Colombia"
+      >
+        Colombia
+      </option>
+      <option
+        value="Comoros"
+      >
+        Comoros
+      </option>
+      <option
+        value="Congo"
+      >
+        Congo
+      </option>
+      <option
+        value="Congo, The Democratic Republic of the"
+      >
+        Congo, The Democratic Republic of the
+      </option>
+      <option
+        value="Cook Islands"
+      >
+        Cook Islands
+      </option>
+      <option
+        value="Costa Rica"
+      >
+        Costa Rica
+      </option>
+      <option
+        value="Cote Divoire"
+      >
+        Cote Divoire
+      </option>
+      <option
+        value="Croatia"
+      >
+        Croatia
+      </option>
+      <option
+        value="Cuba"
+      >
+        Cuba
+      </option>
+      <option
+        value="Cyprus"
+      >
+        Cyprus
+      </option>
+      <option
+        value="Czech Republic"
+      >
+        Czech Republic
+      </option>
+      <option
+        value="Denmark"
+      >
+        Denmark
+      </option>
+      <option
+        value="Djibouti"
+      >
+        Djibouti
+      </option>
+      <option
+        value="Dominica"
+      >
+        Dominica
+      </option>
+      <option
+        value="Dominican Republic"
+      >
+        Dominican Republic
+      </option>
+      <option
+        value="Ecuador"
+      >
+        Ecuador
+      </option>
+      <option
+        value="Egypt"
+      >
+        Egypt
+      </option>
+      <option
+        value="El Salvador"
+      >
+        El Salvador
+      </option>
+      <option
+        value="Equatorial Guinea"
+      >
+        Equatorial Guinea
+      </option>
+      <option
+        value="Eritrea"
+      >
+        Eritrea
+      </option>
+      <option
+        value="Estonia"
+      >
+        Estonia
+      </option>
+      <option
+        value="Ethiopia"
+      >
+        Ethiopia
+      </option>
+      <option
+        value="Falkland Islands (Malvinas)"
+      >
+        Falkland Islands (Malvinas)
+      </option>
+      <option
+        value="Faroe Islands"
+      >
+        Faroe Islands
+      </option>
+      <option
+        value="Fiji"
+      >
+        Fiji
+      </option>
+      <option
+        value="Finland"
+      >
+        Finland
+      </option>
+      <option
+        value="France"
+      >
+        France
+      </option>
+      <option
+        value="French Guiana"
+      >
+        French Guiana
+      </option>
+      <option
+        value="French Polynesia"
+      >
+        French Polynesia
+      </option>
+      <option
+        value="French Southern Territories"
+      >
+        French Southern Territories
+      </option>
+      <option
+        value="Gabon"
+      >
+        Gabon
+      </option>
+      <option
+        value="Gambia"
+      >
+        Gambia
+      </option>
+      <option
+        value="Georgia"
+      >
+        Georgia
+      </option>
+      <option
+        value="Germany"
+      >
+        Germany
+      </option>
+      <option
+        value="Ghana"
+      >
+        Ghana
+      </option>
+      <option
+        value="Gibraltar"
+      >
+        Gibraltar
+      </option>
+      <option
+        value="Greece"
+      >
+        Greece
+      </option>
+      <option
+        value="Greenland"
+      >
+        Greenland
+      </option>
+      <option
+        value="Grenada"
+      >
+        Grenada
+      </option>
+      <option
+        value="Guadeloupe"
+      >
+        Guadeloupe
+      </option>
+      <option
+        value="Guam"
+      >
+        Guam
+      </option>
+      <option
+        value="Guatemala"
+      >
+        Guatemala
+      </option>
+      <option
+        value="Guernsey"
+      >
+        Guernsey
+      </option>
+      <option
+        value="Guinea"
+      >
+        Guinea
+      </option>
+      <option
+        value="Guinea-Bissau"
+      >
+        Guinea-Bissau
+      </option>
+      <option
+        value="Guyana"
+      >
+        Guyana
+      </option>
+      <option
+        value="Haiti"
+      >
+        Haiti
+      </option>
+      <option
+        value="Heard Island and Mcdonald Islands"
+      >
+        Heard Island and Mcdonald Islands
+      </option>
+      <option
+        value="Holy See (Vatican City State)"
+      >
+        Holy See (Vatican City State)
+      </option>
+      <option
+        value="Honduras"
+      >
+        Honduras
+      </option>
+      <option
+        value="Hong Kong"
+      >
+        Hong Kong
+      </option>
+      <option
+        value="Hungary"
+      >
+        Hungary
+      </option>
+      <option
+        value="Iceland"
+      >
+        Iceland
+      </option>
+      <option
+        value="India"
+      >
+        India
+      </option>
+      <option
+        value="Indonesia"
+      >
+        Indonesia
+      </option>
+      <option
+        value="Iran, Islamic Republic Of"
+      >
+        Iran, Islamic Republic Of
+      </option>
+      <option
+        value="Iraq"
+      >
+        Iraq
+      </option>
+      <option
+        value="Ireland"
+      >
+        Ireland
+      </option>
+      <option
+        value="Isle of Man"
+      >
+        Isle of Man
+      </option>
+      <option
+        value="Israel"
+      >
+        Israel
+      </option>
+      <option
+        value="Italy"
+      >
+        Italy
+      </option>
+      <option
+        value="Jamaica"
+      >
+        Jamaica
+      </option>
+      <option
+        value="Japan"
+      >
+        Japan
+      </option>
+      <option
+        value="Jersey"
+      >
+        Jersey
+      </option>
+      <option
+        value="Jordan"
+      >
+        Jordan
+      </option>
+      <option
+        value="Kazakhstan"
+      >
+        Kazakhstan
+      </option>
+      <option
+        value="Kenya"
+      >
+        Kenya
+      </option>
+      <option
+        value="Kiribati"
+      >
+        Kiribati
+      </option>
+      <option
+        value="Korea, Democratic People\\"S Republic of"
+      >
+        Korea, Democratic People"S Republic of
+      </option>
+      <option
+        value="Korea, Republic of"
+      >
+        Korea, Republic of
+      </option>
+      <option
+        value="Kuwait"
+      >
+        Kuwait
+      </option>
+      <option
+        value="Kyrgyzstan"
+      >
+        Kyrgyzstan
+      </option>
+      <option
+        value="Lao People\\"S Democratic Republic"
+      >
+        Lao People"S Democratic Republic
+      </option>
+      <option
+        value="Latvia"
+      >
+        Latvia
+      </option>
+      <option
+        value="Lebanon"
+      >
+        Lebanon
+      </option>
+      <option
+        value="Lesotho"
+      >
+        Lesotho
+      </option>
+      <option
+        value="Liberia"
+      >
+        Liberia
+      </option>
+      <option
+        value="Libyan Arab Jamahiriya"
+      >
+        Libyan Arab Jamahiriya
+      </option>
+      <option
+        value="Liechtenstein"
+      >
+        Liechtenstein
+      </option>
+      <option
+        value="Lithuania"
+      >
+        Lithuania
+      </option>
+      <option
+        value="Luxembourg"
+      >
+        Luxembourg
+      </option>
+      <option
+        value="Macao"
+      >
+        Macao
+      </option>
+      <option
+        value="Macedonia, The Former Yugoslav Republic of"
+      >
+        Macedonia, The Former Yugoslav Republic of
+      </option>
+      <option
+        value="Madagascar"
+      >
+        Madagascar
+      </option>
+      <option
+        value="Malawi"
+      >
+        Malawi
+      </option>
+      <option
+        value="Malaysia"
+      >
+        Malaysia
+      </option>
+      <option
+        value="Maldives"
+      >
+        Maldives
+      </option>
+      <option
+        value="Mali"
+      >
+        Mali
+      </option>
+      <option
+        value="Malta"
+      >
+        Malta
+      </option>
+      <option
+        value="Marshall Islands"
+      >
+        Marshall Islands
+      </option>
+      <option
+        value="Martinique"
+      >
+        Martinique
+      </option>
+      <option
+        value="Mauritania"
+      >
+        Mauritania
+      </option>
+      <option
+        value="Mauritius"
+      >
+        Mauritius
+      </option>
+      <option
+        value="Mayotte"
+      >
+        Mayotte
+      </option>
+      <option
+        value="Mexico"
+      >
+        Mexico
+      </option>
+      <option
+        value="Micronesia, Federated States of"
+      >
+        Micronesia, Federated States of
+      </option>
+      <option
+        value="Moldova, Republic of"
+      >
+        Moldova, Republic of
+      </option>
+      <option
+        value="Monaco"
+      >
+        Monaco
+      </option>
+      <option
+        value="Mongolia"
+      >
+        Mongolia
+      </option>
+      <option
+        value="Montenegro"
+      >
+        Montenegro
+      </option>
+      <option
+        value="Montserrat"
+      >
+        Montserrat
+      </option>
+      <option
+        value="Morocco"
+      >
+        Morocco
+      </option>
+      <option
+        value="Mozambique"
+      >
+        Mozambique
+      </option>
+      <option
+        value="Myanmar"
+      >
+        Myanmar
+      </option>
+      <option
+        value="Namibia"
+      >
+        Namibia
+      </option>
+      <option
+        value="Nauru"
+      >
+        Nauru
+      </option>
+      <option
+        value="Nepal"
+      >
+        Nepal
+      </option>
+      <option
+        value="Netherlands"
+      >
+        Netherlands
+      </option>
+      <option
+        value="Netherlands Antilles"
+      >
+        Netherlands Antilles
+      </option>
+      <option
+        value="New Caledonia"
+      >
+        New Caledonia
+      </option>
+      <option
+        value="New Zealand"
+      >
+        New Zealand
+      </option>
+      <option
+        value="Nicaragua"
+      >
+        Nicaragua
+      </option>
+      <option
+        value="Niger"
+      >
+        Niger
+      </option>
+      <option
+        value="Nigeria"
+      >
+        Nigeria
+      </option>
+      <option
+        value="Niue"
+      >
+        Niue
+      </option>
+      <option
+        value="Norfolk Island"
+      >
+        Norfolk Island
+      </option>
+      <option
+        value="Northern Mariana Islands"
+      >
+        Northern Mariana Islands
+      </option>
+      <option
+        value="Norway"
+      >
+        Norway
+      </option>
+      <option
+        value="Oman"
+      >
+        Oman
+      </option>
+      <option
+        value="Pakistan"
+      >
+        Pakistan
+      </option>
+      <option
+        value="Palau"
+      >
+        Palau
+      </option>
+      <option
+        value="Palestinian Territory, Occupied"
+      >
+        Palestinian Territory, Occupied
+      </option>
+      <option
+        value="Panama"
+      >
+        Panama
+      </option>
+      <option
+        value="Papua New Guinea"
+      >
+        Papua New Guinea
+      </option>
+      <option
+        value="Paraguay"
+      >
+        Paraguay
+      </option>
+      <option
+        value="Peru"
+      >
+        Peru
+      </option>
+      <option
+        value="Philippines"
+      >
+        Philippines
+      </option>
+      <option
+        value="Pitcairn"
+      >
+        Pitcairn
+      </option>
+      <option
+        value="Poland"
+      >
+        Poland
+      </option>
+      <option
+        value="Portugal"
+      >
+        Portugal
+      </option>
+      <option
+        value="Puerto Rico"
+      >
+        Puerto Rico
+      </option>
+      <option
+        value="Qatar"
+      >
+        Qatar
+      </option>
+      <option
+        value="Reunion"
+      >
+        Reunion
+      </option>
+      <option
+        value="Romania"
+      >
+        Romania
+      </option>
+      <option
+        value="RWANDA"
+      >
+        RWANDA
+      </option>
+      <option
+        value="Saint Helena"
+      >
+        Saint Helena
+      </option>
+      <option
+        value="Saint Kitts and Nevis"
+      >
+        Saint Kitts and Nevis
+      </option>
+      <option
+        value="Saint Lucia"
+      >
+        Saint Lucia
+      </option>
+      <option
+        value="Saint Pierre and Miquelon"
+      >
+        Saint Pierre and Miquelon
+      </option>
+      <option
+        value="Saint Vincent and the Grenadines"
+      >
+        Saint Vincent and the Grenadines
+      </option>
+      <option
+        value="Samoa"
+      >
+        Samoa
+      </option>
+      <option
+        value="San Marino"
+      >
+        San Marino
+      </option>
+      <option
+        value="Sao Tome and Principe"
+      >
+        Sao Tome and Principe
+      </option>
+      <option
+        value="Saudi Arabia"
+      >
+        Saudi Arabia
+      </option>
+      <option
+        value="Senegal"
+      >
+        Senegal
+      </option>
+      <option
+        value="Serbia"
+      >
+        Serbia
+      </option>
+      <option
+        value="Seychelles"
+      >
+        Seychelles
+      </option>
+      <option
+        value="Sierra Leone"
+      >
+        Sierra Leone
+      </option>
+      <option
+        value="Singapore"
+      >
+        Singapore
+      </option>
+      <option
+        value="Slovakia"
+      >
+        Slovakia
+      </option>
+      <option
+        value="Slovenia"
+      >
+        Slovenia
+      </option>
+      <option
+        value="Solomon Islands"
+      >
+        Solomon Islands
+      </option>
+      <option
+        value="Somalia"
+      >
+        Somalia
+      </option>
+      <option
+        value="South Africa"
+      >
+        South Africa
+      </option>
+      <option
+        value="South Georgia and the South Sandwich Islands"
+      >
+        South Georgia and the South Sandwich Islands
+      </option>
+      <option
+        value="Spain"
+      >
+        Spain
+      </option>
+      <option
+        value="Sri Lanka"
+      >
+        Sri Lanka
+      </option>
+      <option
+        value="Sudan"
+      >
+        Sudan
+      </option>
+      <option
+        value="Suriname"
+      >
+        Suriname
+      </option>
+      <option
+        value="Svalbard and Jan Mayen"
+      >
+        Svalbard and Jan Mayen
+      </option>
+      <option
+        value="Swaziland"
+      >
+        Swaziland
+      </option>
+      <option
+        value="Sweden"
+      >
+        Sweden
+      </option>
+      <option
+        value="Switzerland"
+      >
+        Switzerland
+      </option>
+      <option
+        value="Syrian Arab Republic"
+      >
+        Syrian Arab Republic
+      </option>
+      <option
+        value="Taiwan, Province of China"
+      >
+        Taiwan, Province of China
+      </option>
+      <option
+        value="Tajikistan"
+      >
+        Tajikistan
+      </option>
+      <option
+        value="Tanzania, United Republic of"
+      >
+        Tanzania, United Republic of
+      </option>
+      <option
+        value="Thailand"
+      >
+        Thailand
+      </option>
+      <option
+        value="Timor-Leste"
+      >
+        Timor-Leste
+      </option>
+      <option
+        value="Togo"
+      >
+        Togo
+      </option>
+      <option
+        value="Tokelau"
+      >
+        Tokelau
+      </option>
+      <option
+        value="Tonga"
+      >
+        Tonga
+      </option>
+      <option
+        value="Trinidad and Tobago"
+      >
+        Trinidad and Tobago
+      </option>
+      <option
+        value="Tunisia"
+      >
+        Tunisia
+      </option>
+      <option
+        value="Turkey"
+      >
+        Turkey
+      </option>
+      <option
+        value="Turkmenistan"
+      >
+        Turkmenistan
+      </option>
+      <option
+        value="Turks and Caicos Islands"
+      >
+        Turks and Caicos Islands
+      </option>
+      <option
+        value="Tuvalu"
+      >
+        Tuvalu
+      </option>
+      <option
+        value="Uganda"
+      >
+        Uganda
+      </option>
+      <option
+        value="Ukraine"
+      >
+        Ukraine
+      </option>
+      <option
+        value="United Arab Emirates"
+      >
+        United Arab Emirates
+      </option>
+      <option
+        value="United Kingdom"
+      >
+        United Kingdom
+      </option>
+      <option
+        value="United States"
+      >
+        United States
+      </option>
+      <option
+        value="United States Minor Outlying Islands"
+      >
+        United States Minor Outlying Islands
+      </option>
+      <option
+        value="Uruguay"
+      >
+        Uruguay
+      </option>
+      <option
+        value="Uzbekistan"
+      >
+        Uzbekistan
+      </option>
+      <option
+        value="Vanuatu"
+      >
+        Vanuatu
+      </option>
+      <option
+        value="Venezuela"
+      >
+        Venezuela
+      </option>
+      <option
+        value="Viet Nam"
+      >
+        Viet Nam
+      </option>
+      <option
+        value="Virgin Islands, British"
+      >
+        Virgin Islands, British
+      </option>
+      <option
+        value="Virgin Islands, U.S."
+      >
+        Virgin Islands, U.S.
+      </option>
+      <option
+        value="Wallis and Futuna"
+      >
+        Wallis and Futuna
+      </option>
+      <option
+        value="Western Sahara"
+      >
+        Western Sahara
+      </option>
+      <option
+        value="Yemen"
+      >
+        Yemen
+      </option>
+      <option
+        value="Zambia"
+      >
+        Zambia
+      </option>
+      <option
+        value="Zimbabwe"
+      >
+        Zimbabwe
+      </option>
+    </select>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 4 page of form 1`] = `
+<div
+  data-testid="container"
+  style="margin-bottom: 10px; width: 75%;"
+>
+  <h2
+    class="sc-iEXKAA dgMEcj"
+  >
+    KYC and AML Questionnaire for Individuals
+  </h2>
+  <p
+    class="sc-brPLxw hmozBQ"
+  >
+    State the country in which you are conducting your work / business activity
+  </p>
+  <div
+    class=" css-b62m3t-container"
+  >
+    <span
+      class="css-1f43avz-a11yText-A11yText"
+      id="react-select-2-live-region"
+    />
+    <span
+      aria-atomic="false"
+      aria-live="polite"
+      aria-relevant="additions text"
+      class="css-1f43avz-a11yText-A11yText"
+    />
+    <div
+      class=" css-1dfwphs-control"
+    >
+      <div
+        class=" css-1fdsijx-ValueContainer"
+        style="display: grid;"
+      >
+        <div
+          class=" css-1jqq78o-placeholder"
+          id="react-select-2-placeholder"
+        >
+          Select country...
+        </div>
+        <div
+          class=" css-12m8hzo-Input"
+          data-value="Albania"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-select-2-listbox"
+            aria-describedby="react-select-2-placeholder"
+            aria-expanded="true"
+            aria-haspopup="true"
+            aria-owns="react-select-2-listbox"
+            autocapitalize="none"
+            autocomplete="off"
+            autocorrect="off"
+            class=""
+            id="react-select-2-input"
+            role="combobox"
+            spellcheck="false"
+            style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+            tabindex="0"
+            type="text"
+            value="Albania"
+          />
+        </div>
+      </div>
+      <div
+        class=" css-1hb7zxy-IndicatorsContainer"
+      >
+        <span
+          class=" css-1u9des2-indicatorSeparator"
+        />
+        <div
+          aria-hidden="true"
+          class=" css-1xc3v61-indicatorContainer"
+        >
+          <svg
+            aria-hidden="true"
+            class="css-tj5bde-Svg"
+            focusable="false"
+            height="20"
+            viewBox="0 0 20 20"
+            width="20"
+          >
+            <path
+              d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div
+      class=" css-140qvo9-menu"
+      id="react-select-2-listbox"
+    >
+      <div
+        class=" css-1n6sfyn-MenuList"
+      >
+        <div
+          aria-disabled="false"
+          class=" css-15fkltp-option"
+          id="react-select-2-option-2"
+          tabindex="-1"
+        >
+          Albania
+        </div>
+      </div>
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS cspvys"
+    disabled=""
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 5 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <div
+    style="display: flex; flex-wrap: wrap; flex-direction: column; align-items: stretch; margin-bottom: 15px;"
+  >
+    <p
+      class="sc-brPLxw hmozBQ"
+    >
+      Select the areas in which you conduct your work / business activity:
+    </p>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-0"
+        name="None of the hereinafter mentioned"
+        type="checkbox"
+        value="None of the hereinafter mentioned"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-0"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        None of the hereinafter mentioned
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-1"
+        name="Arms Transaction"
+        type="checkbox"
+        value="Arms Transaction"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-1"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Arms Transaction
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-2"
+        name="Pawnshop activity"
+        type="checkbox"
+        value="Pawnshop activity"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-2"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Pawnshop activity
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-3"
+        name="Used car business"
+        type="checkbox"
+        value="Used car business"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-3"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Used car business
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-4"
+        name="Gambling and other similar games"
+        type="checkbox"
+        value="Gambling and other similar games"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-4"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Gambling and other similar games
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-5"
+        name="Secondary waste treatment"
+        type="checkbox"
+        value="Secondary waste treatment"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-5"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Secondary waste treatment
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-6"
+        name="Antiques and art shop"
+        type="checkbox"
+        value="Antiques and art shop"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-6"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Antiques and art shop
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-7"
+        name="Construction with participation in public procurement"
+        type="checkbox"
+        value="Construction with participation in public procurement"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-7"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Construction with participation in public procurement
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-8"
+        name="IT services with participation in public procurement"
+        type="checkbox"
+        value="IT services with participation in public procurement"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-8"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        IT services with participation in public procurement
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-9"
+        name="State administration in the field of decision-making on subsidies and public procurement"
+        type="checkbox"
+        value="State administration in the field of decision-making on subsidies and public procurement"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-9"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        State administration in the field of decision-making on subsidies and public procurement
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-10"
+        name="Business with a high volume of cash"
+        type="checkbox"
+        value="Business with a high volume of cash"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-10"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Business with a high volume of cash
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-11"
+        name="Precious metals Transaction"
+        type="checkbox"
+        value="Precious metals Transaction"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-11"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Precious metals Transaction
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-12"
+        name="Virtual currency trading"
+        type="checkbox"
+        value="Virtual currency trading"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-12"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Virtual currency trading
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-13"
+        name="Intangible rights trading"
+        type="checkbox"
+        value="Intangible rights trading"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-13"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Intangible rights trading
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-14"
+        name="Energy trading or emission allowances "
+        type="checkbox"
+        value="Energy trading or emission allowances "
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-14"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Energy trading or emission allowances 
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-15"
+        name="Erotic industry"
+        type="checkbox"
+        value="Erotic industry"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-15"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Erotic industry
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="workArea"
+        id="workAreaList-checkbox-16"
+        name="Non-profit organizations, foundations or churches"
+        type="checkbox"
+        value="Non-profit organizations, foundations or churches"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="workAreaList-checkbox-16"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Non-profit organizations, foundations or churches
+      </label>
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 6 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <p
+    class="sc-brPLxw hmozBQ"
+  >
+    State which is the source of funds intended for your transactions:
+  </p>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-0"
+      name="Employment or business"
+      type="checkbox"
+      value="Employment or business"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-0"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Employment or business
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-1"
+      name="Sale of real estate"
+      type="checkbox"
+      value="Sale of real estate"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-1"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Sale of real estate
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-2"
+      name="Heritage"
+      type="checkbox"
+      value="Heritage"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-2"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Heritage
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-3"
+      name="Financial instruments and capital assets"
+      type="checkbox"
+      value="Financial instruments and capital assets"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-3"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Financial instruments and capital assets
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-4"
+      name="Lease of real estate"
+      type="checkbox"
+      value="Lease of real estate"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-4"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Lease of real estate
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfFunds"
+      id="sourceOfFundsList-checkbox-5"
+      name="Other"
+      type="checkbox"
+      value="Other"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfFundsList-checkbox-5"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Other
+    </label>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 7 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <p
+    class="sc-brPLxw hmozBQ"
+  >
+    State which is the nature of your prevailing source of income
+  </p>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfIncomeNature"
+      id="sourceOfIncomeNatureList-checkbox-0"
+      name="Employee"
+      type="checkbox"
+      value="Employee"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfIncomeNatureList-checkbox-0"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Employee
+    </label>
+  </div>
+  <div
+    style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+  >
+    <input
+      data-key="sourceOfIncomeNature"
+      id="sourceOfIncomeNatureList-checkbox-1"
+      name="Other"
+      type="checkbox"
+      value="Other"
+    />
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="sourceOfIncomeNatureList-checkbox-1"
+      style="margin: 0px 0px 0px 4px;"
+    >
+      Other
+    </label>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 8 page of form 1`] = `
+<div
+  class="sc-kzqdkY kWpFTO"
+  data-testid="container"
+>
+  <p
+    class="sc-brPLxw hmozBQ"
+    style="text-align: center;"
+  >
+    Citizenship(s)
+  </p>
+  <div
+    class=" css-b62m3t-container"
+  >
+    <span
+      class="css-1f43avz-a11yText-A11yText"
+      id="react-select-3-live-region"
+    />
+    <span
+      aria-atomic="false"
+      aria-live="polite"
+      aria-relevant="additions text"
+      class="css-1f43avz-a11yText-A11yText"
+    />
+    <div
+      class=" css-1dfwphs-control"
+    >
+      <div
+        class=" css-1fdsijx-ValueContainer"
+        style="display: grid;"
+      >
+        <div
+          class=" css-1jqq78o-placeholder"
+          id="react-select-3-placeholder"
+        >
+          Select country...
+        </div>
+        <div
+          class=" css-12m8hzo-Input"
+          data-value="Albania"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-controls="react-select-3-listbox"
+            aria-describedby="react-select-3-placeholder"
+            aria-expanded="true"
+            aria-haspopup="true"
+            aria-owns="react-select-3-listbox"
+            autocapitalize="none"
+            autocomplete="off"
+            autocorrect="off"
+            class=""
+            id="react-select-3-input"
+            role="combobox"
+            spellcheck="false"
+            style="opacity: 1; width: 100%; grid-area: 1 / 2; min-width: 2px; border: 0px; margin: 0px; outline: 0; padding: 0px;"
+            tabindex="0"
+            type="text"
+            value="Albania"
+          />
+        </div>
+      </div>
+      <div
+        class=" css-1hb7zxy-IndicatorsContainer"
+      >
+        <span
+          class=" css-1u9des2-indicatorSeparator"
+        />
+        <div
+          aria-hidden="true"
+          class=" css-1xc3v61-indicatorContainer"
+        >
+          <svg
+            aria-hidden="true"
+            class="css-tj5bde-Svg"
+            focusable="false"
+            height="20"
+            viewBox="0 0 20 20"
+            width="20"
+          >
+            <path
+              d="M4.516 7.548c0.436-0.446 1.043-0.481 1.576 0l3.908 3.747 3.908-3.747c0.533-0.481 1.141-0.446 1.574 0 0.436 0.445 0.408 1.197 0 1.615-0.406 0.418-4.695 4.502-4.695 4.502-0.217 0.223-0.502 0.335-0.787 0.335s-0.57-0.112-0.789-0.335c0 0-4.287-4.084-4.695-4.502s-0.436-1.17 0-1.615z"
+            />
+          </svg>
+        </div>
+      </div>
+    </div>
+    <div
+      class=" css-140qvo9-menu"
+      id="react-select-3-listbox"
+    >
+      <div
+        class=" css-1n6sfyn-MenuList"
+      >
+        <div
+          aria-disabled="false"
+          class=" css-15fkltp-option"
+          id="react-select-3-option-2"
+          tabindex="-1"
+        >
+          Albania
+        </div>
+      </div>
+    </div>
+    <div>
+      <input
+        name="citizenship"
+        type="hidden"
+        value="Albania"
+      />
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS cspvys"
+    disabled=""
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 9 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <div
+    style="margin-bottom: 15px;"
+  >
+    <p
+      class="sc-brPLxw hmozBQ"
+    >
+      State which of the following incomes of funds intended for business comes from irregular activities (select none if you don't conduct irregular activities):
+    </p>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-0"
+        name="None"
+        type="checkbox"
+        value="None"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-0"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        None
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-1"
+        name="Employment or business"
+        type="checkbox"
+        value="Employment or business"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-1"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Employment or business
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-2"
+        name="Sale of real estate"
+        type="checkbox"
+        value="Sale of real estate"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-2"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Sale of real estate
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-3"
+        name="Heritage"
+        type="checkbox"
+        value="Heritage"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-3"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Heritage
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-4"
+        name="Financial instruments and capital assets"
+        type="checkbox"
+        value="Financial instruments and capital assets"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-4"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Financial instruments and capital assets
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-5"
+        name="Lease of real estate"
+        type="checkbox"
+        value="Lease of real estate"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-5"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Lease of real estate
+      </label>
+    </div>
+    <div
+      style="display: flex; justify-content: flex-start; margin-bottom: 8px;"
+    >
+      <input
+        data-key="irregularSourceOfFunds"
+        id="fundsIrregularForBusinessList-checkbox-6"
+        name="Other"
+        type="checkbox"
+        value="Other"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="fundsIrregularForBusinessList-checkbox-6"
+        style="margin: 0px 0px 0px 4px;"
+      >
+        Other
+      </label>
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 10 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <p
+    class="sc-brPLxw hmozBQ"
+  >
+    I declare that
+  </p>
+  <div
+    style="margin-bottom: 14px;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="declare-nationonal-sole-state"
+    >
+      <input
+        id="declare-nationonal-sole-state"
+        name="declare"
+        type="radio"
+        value="I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country"
+      />
+      I am a national of the aforementioned sole state or country and simultaneously I am registered to a permanent or other type of residency in this state or country
+    </label>
+  </div>
+  <div
+    style="margin-bottom: 14px;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="declare-nationonal-other-country-or-state"
+    >
+      <input
+        id="declare-nationonal-other-country-or-state"
+        name="declare"
+        type="radio"
+        value="I am a national of another state or country, specifically:"
+      />
+      I am a national of another state or country, specifically:
+    </label>
+  </div>
+  <div
+    style="margin-bottom: 14px;"
+  >
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="declare-permanent-register"
+    >
+      <input
+        id="declare-permanent-register"
+        name="declare"
+        type="radio"
+        value="I am registered to a permanent or other type of residency in another state or country, specifically:"
+      />
+      I am a national of another state or country, specifically:
+    </label>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 11 page of form 1`] = `
+<div
+  data-testid="container"
+  style="display: flex; align-items: baseline; width: 100%;"
+>
+  <p
+    style="margin-bottom: 25px; margin-right: 30px;"
+  >
+    Have you ever been convicted or prosecuted for a criminal offense, in particular an offense against property or economic offense committed not only in relation with work or business activities (without regards to presumption of innocence)?
+  </p>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="hasCriminalRecordsTrue"
+    style="margin: 0px 10px 0px 0px;"
+  >
+    <input
+      id="hasCriminalRecordsTrue"
+      name="hasCriminalRecords"
+      type="radio"
+      value="Yes"
+    />
+    Yes
+  </label>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="hasCriminalRecordsFalse"
+  >
+    <input
+      id="hasCriminalRecordsFalse"
+      name="hasCriminalRecords"
+      type="radio"
+      value="No"
+    />
+    No
+  </label>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 12 page of form 1`] = `
+<div
+  data-testid="container"
+  style="display: flex; align-items: baseline; width: 100%;"
+>
+  <p
+    style="margin-bottom: 25px; margin-right: 30px;"
+  >
+    Are you a person against whom are applied Czech and/or international sanctions?
+  </p>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="appliedSanctionsTrue"
+    style="margin: 0px 10px 0px 0px;"
+  >
+    <input
+      id="appliedSanctionsTrue"
+      name="appliedSanctions"
+      type="radio"
+      value="Yes"
+    />
+    Yes
+  </label>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="appliedSanctionsFalse"
+  >
+    <input
+      id="appliedSanctionsFalse"
+      name="appliedSanctions"
+      type="radio"
+      value="No"
+    />
+    No
+  </label>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 13 page of form 1`] = `
+<div
+  data-testid="container"
+  style="display: flex; align-items: baseline; width: 100%;"
+>
+  <p
+    style="margin-bottom: 25px; margin-right: 30px;"
+  >
+    Are you a politically exposed person?
+  </p>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="politicallPersonTrue"
+    style="margin: 0px 10px 0px 0px;"
+  >
+    <input
+      id="politicallPersonTrue"
+      name="politicallPerson"
+      type="radio"
+      value="Yes"
+    />
+    Yes
+  </label>
+  <label
+    class="sc-dkmUuB iyYtB"
+    for="politicallPersonFalse"
+  >
+    <input
+      id="politicallPersonFalse"
+      name="politicallPerson"
+      type="radio"
+      value="No"
+    />
+    No
+  </label>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 14 page of form 1`] = `
+<div
+  data-testid="container"
+>
+  <p
+    class="sc-brPLxw hmozBQ"
+    style="text-align: center;"
+  >
+    Your Residence
+  </p>
+  <div
+    style="display: flex; margin: 0px auto; max-width: 56.25rem;"
+  >
+    <div
+      style="width: 50%; margin-right: 20px;"
+    >
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="input.residence.country"
+        style="margin-top: 6px;"
+      >
+        Country
+      </label>
+      <select
+        class="sc-dlWCHZ cSHBfA"
+        id="input.residence.country"
+        style="width: 100%;"
+      >
+        <option
+          value="Select country"
+        >
+          Select country
+        </option>
+        <option
+          value="Afghanistan"
+        >
+          Afghanistan
+        </option>
+        <option
+          value="Åland Islands"
+        >
+          Åland Islands
+        </option>
+        <option
+          value="Albania"
+        >
+          Albania
+        </option>
+        <option
+          value="Algeria"
+        >
+          Algeria
+        </option>
+        <option
+          value="American Samoa"
+        >
+          American Samoa
+        </option>
+        <option
+          value="Andorra"
+        >
+          Andorra
+        </option>
+        <option
+          value="Angola"
+        >
+          Angola
+        </option>
+        <option
+          value="Anguilla"
+        >
+          Anguilla
+        </option>
+        <option
+          value="Antarctica"
+        >
+          Antarctica
+        </option>
+        <option
+          value="Antigua and Barbuda"
+        >
+          Antigua and Barbuda
+        </option>
+        <option
+          value="Argentina"
+        >
+          Argentina
+        </option>
+        <option
+          value="Armenia"
+        >
+          Armenia
+        </option>
+        <option
+          value="Aruba"
+        >
+          Aruba
+        </option>
+        <option
+          value="Australia"
+        >
+          Australia
+        </option>
+        <option
+          value="Austria"
+        >
+          Austria
+        </option>
+        <option
+          value="Azerbaijan"
+        >
+          Azerbaijan
+        </option>
+        <option
+          value="Bahamas"
+        >
+          Bahamas
+        </option>
+        <option
+          value="Bahrain"
+        >
+          Bahrain
+        </option>
+        <option
+          value="Bangladesh"
+        >
+          Bangladesh
+        </option>
+        <option
+          value="Barbados"
+        >
+          Barbados
+        </option>
+        <option
+          value="Belarus"
+        >
+          Belarus
+        </option>
+        <option
+          value="Belgium"
+        >
+          Belgium
+        </option>
+        <option
+          value="Belize"
+        >
+          Belize
+        </option>
+        <option
+          value="Benin"
+        >
+          Benin
+        </option>
+        <option
+          value="Bermuda"
+        >
+          Bermuda
+        </option>
+        <option
+          value="Bhutan"
+        >
+          Bhutan
+        </option>
+        <option
+          value="Bolivia"
+        >
+          Bolivia
+        </option>
+        <option
+          value="Bosnia and Herzegovina"
+        >
+          Bosnia and Herzegovina
+        </option>
+        <option
+          value="Botswana"
+        >
+          Botswana
+        </option>
+        <option
+          value="Bouvet Island"
+        >
+          Bouvet Island
+        </option>
+        <option
+          value="Brazil"
+        >
+          Brazil
+        </option>
+        <option
+          value="British Indian Ocean Territory"
+        >
+          British Indian Ocean Territory
+        </option>
+        <option
+          value="Brunei Darussalam"
+        >
+          Brunei Darussalam
+        </option>
+        <option
+          value="Bulgaria"
+        >
+          Bulgaria
+        </option>
+        <option
+          value="Burkina Faso"
+        >
+          Burkina Faso
+        </option>
+        <option
+          value="Burundi"
+        >
+          Burundi
+        </option>
+        <option
+          value="Cambodia"
+        >
+          Cambodia
+        </option>
+        <option
+          value="Cameroon"
+        >
+          Cameroon
+        </option>
+        <option
+          value="Canada"
+        >
+          Canada
+        </option>
+        <option
+          value="Cape Verde"
+        >
+          Cape Verde
+        </option>
+        <option
+          value="Cayman Islands"
+        >
+          Cayman Islands
+        </option>
+        <option
+          value="Central African Republic"
+        >
+          Central African Republic
+        </option>
+        <option
+          value="Chad"
+        >
+          Chad
+        </option>
+        <option
+          value="Chile"
+        >
+          Chile
+        </option>
+        <option
+          value="China"
+        >
+          China
+        </option>
+        <option
+          value="Christmas Island"
+        >
+          Christmas Island
+        </option>
+        <option
+          value="Cocos (Keeling) Islands"
+        >
+          Cocos (Keeling) Islands
+        </option>
+        <option
+          value="Colombia"
+        >
+          Colombia
+        </option>
+        <option
+          value="Comoros"
+        >
+          Comoros
+        </option>
+        <option
+          value="Congo"
+        >
+          Congo
+        </option>
+        <option
+          value="Congo, The Democratic Republic of the"
+        >
+          Congo, The Democratic Republic of the
+        </option>
+        <option
+          value="Cook Islands"
+        >
+          Cook Islands
+        </option>
+        <option
+          value="Costa Rica"
+        >
+          Costa Rica
+        </option>
+        <option
+          value="Cote Divoire"
+        >
+          Cote Divoire
+        </option>
+        <option
+          value="Croatia"
+        >
+          Croatia
+        </option>
+        <option
+          value="Cuba"
+        >
+          Cuba
+        </option>
+        <option
+          value="Cyprus"
+        >
+          Cyprus
+        </option>
+        <option
+          value="Czech Republic"
+        >
+          Czech Republic
+        </option>
+        <option
+          value="Denmark"
+        >
+          Denmark
+        </option>
+        <option
+          value="Djibouti"
+        >
+          Djibouti
+        </option>
+        <option
+          value="Dominica"
+        >
+          Dominica
+        </option>
+        <option
+          value="Dominican Republic"
+        >
+          Dominican Republic
+        </option>
+        <option
+          value="Ecuador"
+        >
+          Ecuador
+        </option>
+        <option
+          value="Egypt"
+        >
+          Egypt
+        </option>
+        <option
+          value="El Salvador"
+        >
+          El Salvador
+        </option>
+        <option
+          value="Equatorial Guinea"
+        >
+          Equatorial Guinea
+        </option>
+        <option
+          value="Eritrea"
+        >
+          Eritrea
+        </option>
+        <option
+          value="Estonia"
+        >
+          Estonia
+        </option>
+        <option
+          value="Ethiopia"
+        >
+          Ethiopia
+        </option>
+        <option
+          value="Falkland Islands (Malvinas)"
+        >
+          Falkland Islands (Malvinas)
+        </option>
+        <option
+          value="Faroe Islands"
+        >
+          Faroe Islands
+        </option>
+        <option
+          value="Fiji"
+        >
+          Fiji
+        </option>
+        <option
+          value="Finland"
+        >
+          Finland
+        </option>
+        <option
+          value="France"
+        >
+          France
+        </option>
+        <option
+          value="French Guiana"
+        >
+          French Guiana
+        </option>
+        <option
+          value="French Polynesia"
+        >
+          French Polynesia
+        </option>
+        <option
+          value="French Southern Territories"
+        >
+          French Southern Territories
+        </option>
+        <option
+          value="Gabon"
+        >
+          Gabon
+        </option>
+        <option
+          value="Gambia"
+        >
+          Gambia
+        </option>
+        <option
+          value="Georgia"
+        >
+          Georgia
+        </option>
+        <option
+          value="Germany"
+        >
+          Germany
+        </option>
+        <option
+          value="Ghana"
+        >
+          Ghana
+        </option>
+        <option
+          value="Gibraltar"
+        >
+          Gibraltar
+        </option>
+        <option
+          value="Greece"
+        >
+          Greece
+        </option>
+        <option
+          value="Greenland"
+        >
+          Greenland
+        </option>
+        <option
+          value="Grenada"
+        >
+          Grenada
+        </option>
+        <option
+          value="Guadeloupe"
+        >
+          Guadeloupe
+        </option>
+        <option
+          value="Guam"
+        >
+          Guam
+        </option>
+        <option
+          value="Guatemala"
+        >
+          Guatemala
+        </option>
+        <option
+          value="Guernsey"
+        >
+          Guernsey
+        </option>
+        <option
+          value="Guinea"
+        >
+          Guinea
+        </option>
+        <option
+          value="Guinea-Bissau"
+        >
+          Guinea-Bissau
+        </option>
+        <option
+          value="Guyana"
+        >
+          Guyana
+        </option>
+        <option
+          value="Haiti"
+        >
+          Haiti
+        </option>
+        <option
+          value="Heard Island and Mcdonald Islands"
+        >
+          Heard Island and Mcdonald Islands
+        </option>
+        <option
+          value="Holy See (Vatican City State)"
+        >
+          Holy See (Vatican City State)
+        </option>
+        <option
+          value="Honduras"
+        >
+          Honduras
+        </option>
+        <option
+          value="Hong Kong"
+        >
+          Hong Kong
+        </option>
+        <option
+          value="Hungary"
+        >
+          Hungary
+        </option>
+        <option
+          value="Iceland"
+        >
+          Iceland
+        </option>
+        <option
+          value="India"
+        >
+          India
+        </option>
+        <option
+          value="Indonesia"
+        >
+          Indonesia
+        </option>
+        <option
+          value="Iran, Islamic Republic Of"
+        >
+          Iran, Islamic Republic Of
+        </option>
+        <option
+          value="Iraq"
+        >
+          Iraq
+        </option>
+        <option
+          value="Ireland"
+        >
+          Ireland
+        </option>
+        <option
+          value="Isle of Man"
+        >
+          Isle of Man
+        </option>
+        <option
+          value="Israel"
+        >
+          Israel
+        </option>
+        <option
+          value="Italy"
+        >
+          Italy
+        </option>
+        <option
+          value="Jamaica"
+        >
+          Jamaica
+        </option>
+        <option
+          value="Japan"
+        >
+          Japan
+        </option>
+        <option
+          value="Jersey"
+        >
+          Jersey
+        </option>
+        <option
+          value="Jordan"
+        >
+          Jordan
+        </option>
+        <option
+          value="Kazakhstan"
+        >
+          Kazakhstan
+        </option>
+        <option
+          value="Kenya"
+        >
+          Kenya
+        </option>
+        <option
+          value="Kiribati"
+        >
+          Kiribati
+        </option>
+        <option
+          value="Korea, Democratic People\\"S Republic of"
+        >
+          Korea, Democratic People"S Republic of
+        </option>
+        <option
+          value="Korea, Republic of"
+        >
+          Korea, Republic of
+        </option>
+        <option
+          value="Kuwait"
+        >
+          Kuwait
+        </option>
+        <option
+          value="Kyrgyzstan"
+        >
+          Kyrgyzstan
+        </option>
+        <option
+          value="Lao People\\"S Democratic Republic"
+        >
+          Lao People"S Democratic Republic
+        </option>
+        <option
+          value="Latvia"
+        >
+          Latvia
+        </option>
+        <option
+          value="Lebanon"
+        >
+          Lebanon
+        </option>
+        <option
+          value="Lesotho"
+        >
+          Lesotho
+        </option>
+        <option
+          value="Liberia"
+        >
+          Liberia
+        </option>
+        <option
+          value="Libyan Arab Jamahiriya"
+        >
+          Libyan Arab Jamahiriya
+        </option>
+        <option
+          value="Liechtenstein"
+        >
+          Liechtenstein
+        </option>
+        <option
+          value="Lithuania"
+        >
+          Lithuania
+        </option>
+        <option
+          value="Luxembourg"
+        >
+          Luxembourg
+        </option>
+        <option
+          value="Macao"
+        >
+          Macao
+        </option>
+        <option
+          value="Macedonia, The Former Yugoslav Republic of"
+        >
+          Macedonia, The Former Yugoslav Republic of
+        </option>
+        <option
+          value="Madagascar"
+        >
+          Madagascar
+        </option>
+        <option
+          value="Malawi"
+        >
+          Malawi
+        </option>
+        <option
+          value="Malaysia"
+        >
+          Malaysia
+        </option>
+        <option
+          value="Maldives"
+        >
+          Maldives
+        </option>
+        <option
+          value="Mali"
+        >
+          Mali
+        </option>
+        <option
+          value="Malta"
+        >
+          Malta
+        </option>
+        <option
+          value="Marshall Islands"
+        >
+          Marshall Islands
+        </option>
+        <option
+          value="Martinique"
+        >
+          Martinique
+        </option>
+        <option
+          value="Mauritania"
+        >
+          Mauritania
+        </option>
+        <option
+          value="Mauritius"
+        >
+          Mauritius
+        </option>
+        <option
+          value="Mayotte"
+        >
+          Mayotte
+        </option>
+        <option
+          value="Mexico"
+        >
+          Mexico
+        </option>
+        <option
+          value="Micronesia, Federated States of"
+        >
+          Micronesia, Federated States of
+        </option>
+        <option
+          value="Moldova, Republic of"
+        >
+          Moldova, Republic of
+        </option>
+        <option
+          value="Monaco"
+        >
+          Monaco
+        </option>
+        <option
+          value="Mongolia"
+        >
+          Mongolia
+        </option>
+        <option
+          value="Montenegro"
+        >
+          Montenegro
+        </option>
+        <option
+          value="Montserrat"
+        >
+          Montserrat
+        </option>
+        <option
+          value="Morocco"
+        >
+          Morocco
+        </option>
+        <option
+          value="Mozambique"
+        >
+          Mozambique
+        </option>
+        <option
+          value="Myanmar"
+        >
+          Myanmar
+        </option>
+        <option
+          value="Namibia"
+        >
+          Namibia
+        </option>
+        <option
+          value="Nauru"
+        >
+          Nauru
+        </option>
+        <option
+          value="Nepal"
+        >
+          Nepal
+        </option>
+        <option
+          value="Netherlands"
+        >
+          Netherlands
+        </option>
+        <option
+          value="Netherlands Antilles"
+        >
+          Netherlands Antilles
+        </option>
+        <option
+          value="New Caledonia"
+        >
+          New Caledonia
+        </option>
+        <option
+          value="New Zealand"
+        >
+          New Zealand
+        </option>
+        <option
+          value="Nicaragua"
+        >
+          Nicaragua
+        </option>
+        <option
+          value="Niger"
+        >
+          Niger
+        </option>
+        <option
+          value="Nigeria"
+        >
+          Nigeria
+        </option>
+        <option
+          value="Niue"
+        >
+          Niue
+        </option>
+        <option
+          value="Norfolk Island"
+        >
+          Norfolk Island
+        </option>
+        <option
+          value="Northern Mariana Islands"
+        >
+          Northern Mariana Islands
+        </option>
+        <option
+          value="Norway"
+        >
+          Norway
+        </option>
+        <option
+          value="Oman"
+        >
+          Oman
+        </option>
+        <option
+          value="Pakistan"
+        >
+          Pakistan
+        </option>
+        <option
+          value="Palau"
+        >
+          Palau
+        </option>
+        <option
+          value="Palestinian Territory, Occupied"
+        >
+          Palestinian Territory, Occupied
+        </option>
+        <option
+          value="Panama"
+        >
+          Panama
+        </option>
+        <option
+          value="Papua New Guinea"
+        >
+          Papua New Guinea
+        </option>
+        <option
+          value="Paraguay"
+        >
+          Paraguay
+        </option>
+        <option
+          value="Peru"
+        >
+          Peru
+        </option>
+        <option
+          value="Philippines"
+        >
+          Philippines
+        </option>
+        <option
+          value="Pitcairn"
+        >
+          Pitcairn
+        </option>
+        <option
+          value="Poland"
+        >
+          Poland
+        </option>
+        <option
+          value="Portugal"
+        >
+          Portugal
+        </option>
+        <option
+          value="Puerto Rico"
+        >
+          Puerto Rico
+        </option>
+        <option
+          value="Qatar"
+        >
+          Qatar
+        </option>
+        <option
+          value="Reunion"
+        >
+          Reunion
+        </option>
+        <option
+          value="Romania"
+        >
+          Romania
+        </option>
+        <option
+          value="RWANDA"
+        >
+          RWANDA
+        </option>
+        <option
+          value="Saint Helena"
+        >
+          Saint Helena
+        </option>
+        <option
+          value="Saint Kitts and Nevis"
+        >
+          Saint Kitts and Nevis
+        </option>
+        <option
+          value="Saint Lucia"
+        >
+          Saint Lucia
+        </option>
+        <option
+          value="Saint Pierre and Miquelon"
+        >
+          Saint Pierre and Miquelon
+        </option>
+        <option
+          value="Saint Vincent and the Grenadines"
+        >
+          Saint Vincent and the Grenadines
+        </option>
+        <option
+          value="Samoa"
+        >
+          Samoa
+        </option>
+        <option
+          value="San Marino"
+        >
+          San Marino
+        </option>
+        <option
+          value="Sao Tome and Principe"
+        >
+          Sao Tome and Principe
+        </option>
+        <option
+          value="Saudi Arabia"
+        >
+          Saudi Arabia
+        </option>
+        <option
+          value="Senegal"
+        >
+          Senegal
+        </option>
+        <option
+          value="Serbia"
+        >
+          Serbia
+        </option>
+        <option
+          value="Seychelles"
+        >
+          Seychelles
+        </option>
+        <option
+          value="Sierra Leone"
+        >
+          Sierra Leone
+        </option>
+        <option
+          value="Singapore"
+        >
+          Singapore
+        </option>
+        <option
+          value="Slovakia"
+        >
+          Slovakia
+        </option>
+        <option
+          value="Slovenia"
+        >
+          Slovenia
+        </option>
+        <option
+          value="Solomon Islands"
+        >
+          Solomon Islands
+        </option>
+        <option
+          value="Somalia"
+        >
+          Somalia
+        </option>
+        <option
+          value="South Africa"
+        >
+          South Africa
+        </option>
+        <option
+          value="South Georgia and the South Sandwich Islands"
+        >
+          South Georgia and the South Sandwich Islands
+        </option>
+        <option
+          value="Spain"
+        >
+          Spain
+        </option>
+        <option
+          value="Sri Lanka"
+        >
+          Sri Lanka
+        </option>
+        <option
+          value="Sudan"
+        >
+          Sudan
+        </option>
+        <option
+          value="Suriname"
+        >
+          Suriname
+        </option>
+        <option
+          value="Svalbard and Jan Mayen"
+        >
+          Svalbard and Jan Mayen
+        </option>
+        <option
+          value="Swaziland"
+        >
+          Swaziland
+        </option>
+        <option
+          value="Sweden"
+        >
+          Sweden
+        </option>
+        <option
+          value="Switzerland"
+        >
+          Switzerland
+        </option>
+        <option
+          value="Syrian Arab Republic"
+        >
+          Syrian Arab Republic
+        </option>
+        <option
+          value="Taiwan, Province of China"
+        >
+          Taiwan, Province of China
+        </option>
+        <option
+          value="Tajikistan"
+        >
+          Tajikistan
+        </option>
+        <option
+          value="Tanzania, United Republic of"
+        >
+          Tanzania, United Republic of
+        </option>
+        <option
+          value="Thailand"
+        >
+          Thailand
+        </option>
+        <option
+          value="Timor-Leste"
+        >
+          Timor-Leste
+        </option>
+        <option
+          value="Togo"
+        >
+          Togo
+        </option>
+        <option
+          value="Tokelau"
+        >
+          Tokelau
+        </option>
+        <option
+          value="Tonga"
+        >
+          Tonga
+        </option>
+        <option
+          value="Trinidad and Tobago"
+        >
+          Trinidad and Tobago
+        </option>
+        <option
+          value="Tunisia"
+        >
+          Tunisia
+        </option>
+        <option
+          value="Turkey"
+        >
+          Turkey
+        </option>
+        <option
+          value="Turkmenistan"
+        >
+          Turkmenistan
+        </option>
+        <option
+          value="Turks and Caicos Islands"
+        >
+          Turks and Caicos Islands
+        </option>
+        <option
+          value="Tuvalu"
+        >
+          Tuvalu
+        </option>
+        <option
+          value="Uganda"
+        >
+          Uganda
+        </option>
+        <option
+          value="Ukraine"
+        >
+          Ukraine
+        </option>
+        <option
+          value="United Arab Emirates"
+        >
+          United Arab Emirates
+        </option>
+        <option
+          value="United Kingdom"
+        >
+          United Kingdom
+        </option>
+        <option
+          value="United States"
+        >
+          United States
+        </option>
+        <option
+          value="United States Minor Outlying Islands"
+        >
+          United States Minor Outlying Islands
+        </option>
+        <option
+          value="Uruguay"
+        >
+          Uruguay
+        </option>
+        <option
+          value="Uzbekistan"
+        >
+          Uzbekistan
+        </option>
+        <option
+          value="Vanuatu"
+        >
+          Vanuatu
+        </option>
+        <option
+          value="Venezuela"
+        >
+          Venezuela
+        </option>
+        <option
+          value="Viet Nam"
+        >
+          Viet Nam
+        </option>
+        <option
+          value="Virgin Islands, British"
+        >
+          Virgin Islands, British
+        </option>
+        <option
+          value="Virgin Islands, U.S."
+        >
+          Virgin Islands, U.S.
+        </option>
+        <option
+          value="Wallis and Futuna"
+        >
+          Wallis and Futuna
+        </option>
+        <option
+          value="Western Sahara"
+        >
+          Western Sahara
+        </option>
+        <option
+          value="Yemen"
+        >
+          Yemen
+        </option>
+        <option
+          value="Zambia"
+        >
+          Zambia
+        </option>
+        <option
+          value="Zimbabwe"
+        >
+          Zimbabwe
+        </option>
+        ;
+      </select>
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="label-address-permanent-street"
+        style="margin-top: 6px;"
+      >
+        Street
+      </label>
+      <input
+        class="sc-jOnpCo bcpQjy"
+        id="label-address-permanent-street"
+        maxlength="100"
+        name="street"
+        placeholder="Street"
+        type="text"
+        value="Independence street"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="label-address-permanent-street-number"
+        style="margin-top: 6px;"
+      >
+        Street number
+      </label>
+      <input
+        class="sc-jOnpCo bcpQjy"
+        id="label-address-permanent-street-number"
+        maxlength="100"
+        name="streetNumber"
+        placeholder="Street number"
+        type="text"
+        value="0101"
+      />
+    </div>
+    <div
+      style="width: 50%;"
+    >
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="label-address-permanent-municipality"
+        style="margin-top: 6px;"
+      >
+        City
+      </label>
+      <input
+        class="sc-jOnpCo bcpQjy"
+        id="label-address-permanent-municipality"
+        maxlength="100"
+        name="municipality"
+        placeholder="Municipality"
+        type="text"
+        value="London"
+      />
+      <label
+        class="sc-dkmUuB iyYtB"
+        for="label-address-permanent-zipCode"
+        style="margin-top: 6px;"
+      >
+        ZIP Code
+      </label>
+      <input
+        class="sc-jOnpCo bcpQjy"
+        id="label-address-permanent-zipCode"
+        maxlength="100"
+        name="zipCode"
+        placeholder="ZIP Code"
+        type="text"
+        value="01"
+      />
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 15 page of form 1`] = `
+<div
+  data-testid="container"
+  style="margin: 0px auto; max-width: 56.25rem;"
+>
+  <div
+    style="display: flex; align-items: baseline; justify-content: center; margin-bottom: 3.125rem;"
+  >
+    <p
+      style="margin-right: 20px;"
+    >
+      Is your permanent (RESIDENCE) address the same as your mailing address?
+    </p>
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="label-mailing-permanent-address-true"
+      style="margin-right: 10px;"
+    >
+      <input
+        checked=""
+        id="label-mailing-permanent-address-true"
+        name="permanentAndMailAddressSame"
+        type="radio"
+        value="Yes"
+      />
+      Yes
+    </label>
+    <label
+      class="sc-dkmUuB iyYtB"
+      for="label-mailing-permanent-address-false"
+    >
+      <input
+        id="label-mailing-permanent-address-false"
+        name="permanentAndMailAddressSame"
+        type="radio"
+        value="No"
+      />
+      No
+    </label>
+  </div>
+  <div>
+    <div
+      style="display: flex;"
+    >
+      <div
+        style="width: 50%; margin-right: 20px;"
+      >
+        <label
+          class="sc-dkmUuB iyYtB"
+          for="label-input-mailAddress-country"
+          style="margin-top: 6px;"
+        >
+          Country
+        </label>
+        <select
+          class="sc-dlWCHZ cSHBfA"
+          id="label-input-mailAddress-country"
+          name="mailAddressStateOrCountry"
+          style="width: 100%;"
+        >
+          <option
+            value="Select country"
+          >
+            Select country
+          </option>
+          <option
+            value="Afghanistan"
+          >
+            Afghanistan
+          </option>
+          <option
+            value="Åland Islands"
+          >
+            Åland Islands
+          </option>
+          <option
+            value="Albania"
+          >
+            Albania
+          </option>
+          <option
+            value="Algeria"
+          >
+            Algeria
+          </option>
+          <option
+            value="American Samoa"
+          >
+            American Samoa
+          </option>
+          <option
+            value="Andorra"
+          >
+            Andorra
+          </option>
+          <option
+            value="Angola"
+          >
+            Angola
+          </option>
+          <option
+            value="Anguilla"
+          >
+            Anguilla
+          </option>
+          <option
+            value="Antarctica"
+          >
+            Antarctica
+          </option>
+          <option
+            value="Antigua and Barbuda"
+          >
+            Antigua and Barbuda
+          </option>
+          <option
+            value="Argentina"
+          >
+            Argentina
+          </option>
+          <option
+            value="Armenia"
+          >
+            Armenia
+          </option>
+          <option
+            value="Aruba"
+          >
+            Aruba
+          </option>
+          <option
+            value="Australia"
+          >
+            Australia
+          </option>
+          <option
+            value="Austria"
+          >
+            Austria
+          </option>
+          <option
+            value="Azerbaijan"
+          >
+            Azerbaijan
+          </option>
+          <option
+            value="Bahamas"
+          >
+            Bahamas
+          </option>
+          <option
+            value="Bahrain"
+          >
+            Bahrain
+          </option>
+          <option
+            value="Bangladesh"
+          >
+            Bangladesh
+          </option>
+          <option
+            value="Barbados"
+          >
+            Barbados
+          </option>
+          <option
+            value="Belarus"
+          >
+            Belarus
+          </option>
+          <option
+            value="Belgium"
+          >
+            Belgium
+          </option>
+          <option
+            value="Belize"
+          >
+            Belize
+          </option>
+          <option
+            value="Benin"
+          >
+            Benin
+          </option>
+          <option
+            value="Bermuda"
+          >
+            Bermuda
+          </option>
+          <option
+            value="Bhutan"
+          >
+            Bhutan
+          </option>
+          <option
+            value="Bolivia"
+          >
+            Bolivia
+          </option>
+          <option
+            value="Bosnia and Herzegovina"
+          >
+            Bosnia and Herzegovina
+          </option>
+          <option
+            value="Botswana"
+          >
+            Botswana
+          </option>
+          <option
+            value="Bouvet Island"
+          >
+            Bouvet Island
+          </option>
+          <option
+            value="Brazil"
+          >
+            Brazil
+          </option>
+          <option
+            value="British Indian Ocean Territory"
+          >
+            British Indian Ocean Territory
+          </option>
+          <option
+            value="Brunei Darussalam"
+          >
+            Brunei Darussalam
+          </option>
+          <option
+            value="Bulgaria"
+          >
+            Bulgaria
+          </option>
+          <option
+            value="Burkina Faso"
+          >
+            Burkina Faso
+          </option>
+          <option
+            value="Burundi"
+          >
+            Burundi
+          </option>
+          <option
+            value="Cambodia"
+          >
+            Cambodia
+          </option>
+          <option
+            value="Cameroon"
+          >
+            Cameroon
+          </option>
+          <option
+            value="Canada"
+          >
+            Canada
+          </option>
+          <option
+            value="Cape Verde"
+          >
+            Cape Verde
+          </option>
+          <option
+            value="Cayman Islands"
+          >
+            Cayman Islands
+          </option>
+          <option
+            value="Central African Republic"
+          >
+            Central African Republic
+          </option>
+          <option
+            value="Chad"
+          >
+            Chad
+          </option>
+          <option
+            value="Chile"
+          >
+            Chile
+          </option>
+          <option
+            value="China"
+          >
+            China
+          </option>
+          <option
+            value="Christmas Island"
+          >
+            Christmas Island
+          </option>
+          <option
+            value="Cocos (Keeling) Islands"
+          >
+            Cocos (Keeling) Islands
+          </option>
+          <option
+            value="Colombia"
+          >
+            Colombia
+          </option>
+          <option
+            value="Comoros"
+          >
+            Comoros
+          </option>
+          <option
+            value="Congo"
+          >
+            Congo
+          </option>
+          <option
+            value="Congo, The Democratic Republic of the"
+          >
+            Congo, The Democratic Republic of the
+          </option>
+          <option
+            value="Cook Islands"
+          >
+            Cook Islands
+          </option>
+          <option
+            value="Costa Rica"
+          >
+            Costa Rica
+          </option>
+          <option
+            value="Cote Divoire"
+          >
+            Cote Divoire
+          </option>
+          <option
+            value="Croatia"
+          >
+            Croatia
+          </option>
+          <option
+            value="Cuba"
+          >
+            Cuba
+          </option>
+          <option
+            value="Cyprus"
+          >
+            Cyprus
+          </option>
+          <option
+            value="Czech Republic"
+          >
+            Czech Republic
+          </option>
+          <option
+            value="Denmark"
+          >
+            Denmark
+          </option>
+          <option
+            value="Djibouti"
+          >
+            Djibouti
+          </option>
+          <option
+            value="Dominica"
+          >
+            Dominica
+          </option>
+          <option
+            value="Dominican Republic"
+          >
+            Dominican Republic
+          </option>
+          <option
+            value="Ecuador"
+          >
+            Ecuador
+          </option>
+          <option
+            value="Egypt"
+          >
+            Egypt
+          </option>
+          <option
+            value="El Salvador"
+          >
+            El Salvador
+          </option>
+          <option
+            value="Equatorial Guinea"
+          >
+            Equatorial Guinea
+          </option>
+          <option
+            value="Eritrea"
+          >
+            Eritrea
+          </option>
+          <option
+            value="Estonia"
+          >
+            Estonia
+          </option>
+          <option
+            value="Ethiopia"
+          >
+            Ethiopia
+          </option>
+          <option
+            value="Falkland Islands (Malvinas)"
+          >
+            Falkland Islands (Malvinas)
+          </option>
+          <option
+            value="Faroe Islands"
+          >
+            Faroe Islands
+          </option>
+          <option
+            value="Fiji"
+          >
+            Fiji
+          </option>
+          <option
+            value="Finland"
+          >
+            Finland
+          </option>
+          <option
+            value="France"
+          >
+            France
+          </option>
+          <option
+            value="French Guiana"
+          >
+            French Guiana
+          </option>
+          <option
+            value="French Polynesia"
+          >
+            French Polynesia
+          </option>
+          <option
+            value="French Southern Territories"
+          >
+            French Southern Territories
+          </option>
+          <option
+            value="Gabon"
+          >
+            Gabon
+          </option>
+          <option
+            value="Gambia"
+          >
+            Gambia
+          </option>
+          <option
+            value="Georgia"
+          >
+            Georgia
+          </option>
+          <option
+            value="Germany"
+          >
+            Germany
+          </option>
+          <option
+            value="Ghana"
+          >
+            Ghana
+          </option>
+          <option
+            value="Gibraltar"
+          >
+            Gibraltar
+          </option>
+          <option
+            value="Greece"
+          >
+            Greece
+          </option>
+          <option
+            value="Greenland"
+          >
+            Greenland
+          </option>
+          <option
+            value="Grenada"
+          >
+            Grenada
+          </option>
+          <option
+            value="Guadeloupe"
+          >
+            Guadeloupe
+          </option>
+          <option
+            value="Guam"
+          >
+            Guam
+          </option>
+          <option
+            value="Guatemala"
+          >
+            Guatemala
+          </option>
+          <option
+            value="Guernsey"
+          >
+            Guernsey
+          </option>
+          <option
+            value="Guinea"
+          >
+            Guinea
+          </option>
+          <option
+            value="Guinea-Bissau"
+          >
+            Guinea-Bissau
+          </option>
+          <option
+            value="Guyana"
+          >
+            Guyana
+          </option>
+          <option
+            value="Haiti"
+          >
+            Haiti
+          </option>
+          <option
+            value="Heard Island and Mcdonald Islands"
+          >
+            Heard Island and Mcdonald Islands
+          </option>
+          <option
+            value="Holy See (Vatican City State)"
+          >
+            Holy See (Vatican City State)
+          </option>
+          <option
+            value="Honduras"
+          >
+            Honduras
+          </option>
+          <option
+            value="Hong Kong"
+          >
+            Hong Kong
+          </option>
+          <option
+            value="Hungary"
+          >
+            Hungary
+          </option>
+          <option
+            value="Iceland"
+          >
+            Iceland
+          </option>
+          <option
+            value="India"
+          >
+            India
+          </option>
+          <option
+            value="Indonesia"
+          >
+            Indonesia
+          </option>
+          <option
+            value="Iran, Islamic Republic Of"
+          >
+            Iran, Islamic Republic Of
+          </option>
+          <option
+            value="Iraq"
+          >
+            Iraq
+          </option>
+          <option
+            value="Ireland"
+          >
+            Ireland
+          </option>
+          <option
+            value="Isle of Man"
+          >
+            Isle of Man
+          </option>
+          <option
+            value="Israel"
+          >
+            Israel
+          </option>
+          <option
+            value="Italy"
+          >
+            Italy
+          </option>
+          <option
+            value="Jamaica"
+          >
+            Jamaica
+          </option>
+          <option
+            value="Japan"
+          >
+            Japan
+          </option>
+          <option
+            value="Jersey"
+          >
+            Jersey
+          </option>
+          <option
+            value="Jordan"
+          >
+            Jordan
+          </option>
+          <option
+            value="Kazakhstan"
+          >
+            Kazakhstan
+          </option>
+          <option
+            value="Kenya"
+          >
+            Kenya
+          </option>
+          <option
+            value="Kiribati"
+          >
+            Kiribati
+          </option>
+          <option
+            value="Korea, Democratic People\\"S Republic of"
+          >
+            Korea, Democratic People"S Republic of
+          </option>
+          <option
+            value="Korea, Republic of"
+          >
+            Korea, Republic of
+          </option>
+          <option
+            value="Kuwait"
+          >
+            Kuwait
+          </option>
+          <option
+            value="Kyrgyzstan"
+          >
+            Kyrgyzstan
+          </option>
+          <option
+            value="Lao People\\"S Democratic Republic"
+          >
+            Lao People"S Democratic Republic
+          </option>
+          <option
+            value="Latvia"
+          >
+            Latvia
+          </option>
+          <option
+            value="Lebanon"
+          >
+            Lebanon
+          </option>
+          <option
+            value="Lesotho"
+          >
+            Lesotho
+          </option>
+          <option
+            value="Liberia"
+          >
+            Liberia
+          </option>
+          <option
+            value="Libyan Arab Jamahiriya"
+          >
+            Libyan Arab Jamahiriya
+          </option>
+          <option
+            value="Liechtenstein"
+          >
+            Liechtenstein
+          </option>
+          <option
+            value="Lithuania"
+          >
+            Lithuania
+          </option>
+          <option
+            value="Luxembourg"
+          >
+            Luxembourg
+          </option>
+          <option
+            value="Macao"
+          >
+            Macao
+          </option>
+          <option
+            value="Macedonia, The Former Yugoslav Republic of"
+          >
+            Macedonia, The Former Yugoslav Republic of
+          </option>
+          <option
+            value="Madagascar"
+          >
+            Madagascar
+          </option>
+          <option
+            value="Malawi"
+          >
+            Malawi
+          </option>
+          <option
+            value="Malaysia"
+          >
+            Malaysia
+          </option>
+          <option
+            value="Maldives"
+          >
+            Maldives
+          </option>
+          <option
+            value="Mali"
+          >
+            Mali
+          </option>
+          <option
+            value="Malta"
+          >
+            Malta
+          </option>
+          <option
+            value="Marshall Islands"
+          >
+            Marshall Islands
+          </option>
+          <option
+            value="Martinique"
+          >
+            Martinique
+          </option>
+          <option
+            value="Mauritania"
+          >
+            Mauritania
+          </option>
+          <option
+            value="Mauritius"
+          >
+            Mauritius
+          </option>
+          <option
+            value="Mayotte"
+          >
+            Mayotte
+          </option>
+          <option
+            value="Mexico"
+          >
+            Mexico
+          </option>
+          <option
+            value="Micronesia, Federated States of"
+          >
+            Micronesia, Federated States of
+          </option>
+          <option
+            value="Moldova, Republic of"
+          >
+            Moldova, Republic of
+          </option>
+          <option
+            value="Monaco"
+          >
+            Monaco
+          </option>
+          <option
+            value="Mongolia"
+          >
+            Mongolia
+          </option>
+          <option
+            value="Montenegro"
+          >
+            Montenegro
+          </option>
+          <option
+            value="Montserrat"
+          >
+            Montserrat
+          </option>
+          <option
+            value="Morocco"
+          >
+            Morocco
+          </option>
+          <option
+            value="Mozambique"
+          >
+            Mozambique
+          </option>
+          <option
+            value="Myanmar"
+          >
+            Myanmar
+          </option>
+          <option
+            value="Namibia"
+          >
+            Namibia
+          </option>
+          <option
+            value="Nauru"
+          >
+            Nauru
+          </option>
+          <option
+            value="Nepal"
+          >
+            Nepal
+          </option>
+          <option
+            value="Netherlands"
+          >
+            Netherlands
+          </option>
+          <option
+            value="Netherlands Antilles"
+          >
+            Netherlands Antilles
+          </option>
+          <option
+            value="New Caledonia"
+          >
+            New Caledonia
+          </option>
+          <option
+            value="New Zealand"
+          >
+            New Zealand
+          </option>
+          <option
+            value="Nicaragua"
+          >
+            Nicaragua
+          </option>
+          <option
+            value="Niger"
+          >
+            Niger
+          </option>
+          <option
+            value="Nigeria"
+          >
+            Nigeria
+          </option>
+          <option
+            value="Niue"
+          >
+            Niue
+          </option>
+          <option
+            value="Norfolk Island"
+          >
+            Norfolk Island
+          </option>
+          <option
+            value="Northern Mariana Islands"
+          >
+            Northern Mariana Islands
+          </option>
+          <option
+            value="Norway"
+          >
+            Norway
+          </option>
+          <option
+            value="Oman"
+          >
+            Oman
+          </option>
+          <option
+            value="Pakistan"
+          >
+            Pakistan
+          </option>
+          <option
+            value="Palau"
+          >
+            Palau
+          </option>
+          <option
+            value="Palestinian Territory, Occupied"
+          >
+            Palestinian Territory, Occupied
+          </option>
+          <option
+            value="Panama"
+          >
+            Panama
+          </option>
+          <option
+            value="Papua New Guinea"
+          >
+            Papua New Guinea
+          </option>
+          <option
+            value="Paraguay"
+          >
+            Paraguay
+          </option>
+          <option
+            value="Peru"
+          >
+            Peru
+          </option>
+          <option
+            value="Philippines"
+          >
+            Philippines
+          </option>
+          <option
+            value="Pitcairn"
+          >
+            Pitcairn
+          </option>
+          <option
+            value="Poland"
+          >
+            Poland
+          </option>
+          <option
+            value="Portugal"
+          >
+            Portugal
+          </option>
+          <option
+            value="Puerto Rico"
+          >
+            Puerto Rico
+          </option>
+          <option
+            value="Qatar"
+          >
+            Qatar
+          </option>
+          <option
+            value="Reunion"
+          >
+            Reunion
+          </option>
+          <option
+            value="Romania"
+          >
+            Romania
+          </option>
+          <option
+            value="RWANDA"
+          >
+            RWANDA
+          </option>
+          <option
+            value="Saint Helena"
+          >
+            Saint Helena
+          </option>
+          <option
+            value="Saint Kitts and Nevis"
+          >
+            Saint Kitts and Nevis
+          </option>
+          <option
+            value="Saint Lucia"
+          >
+            Saint Lucia
+          </option>
+          <option
+            value="Saint Pierre and Miquelon"
+          >
+            Saint Pierre and Miquelon
+          </option>
+          <option
+            value="Saint Vincent and the Grenadines"
+          >
+            Saint Vincent and the Grenadines
+          </option>
+          <option
+            value="Samoa"
+          >
+            Samoa
+          </option>
+          <option
+            value="San Marino"
+          >
+            San Marino
+          </option>
+          <option
+            value="Sao Tome and Principe"
+          >
+            Sao Tome and Principe
+          </option>
+          <option
+            value="Saudi Arabia"
+          >
+            Saudi Arabia
+          </option>
+          <option
+            value="Senegal"
+          >
+            Senegal
+          </option>
+          <option
+            value="Serbia"
+          >
+            Serbia
+          </option>
+          <option
+            value="Seychelles"
+          >
+            Seychelles
+          </option>
+          <option
+            value="Sierra Leone"
+          >
+            Sierra Leone
+          </option>
+          <option
+            value="Singapore"
+          >
+            Singapore
+          </option>
+          <option
+            value="Slovakia"
+          >
+            Slovakia
+          </option>
+          <option
+            value="Slovenia"
+          >
+            Slovenia
+          </option>
+          <option
+            value="Solomon Islands"
+          >
+            Solomon Islands
+          </option>
+          <option
+            value="Somalia"
+          >
+            Somalia
+          </option>
+          <option
+            value="South Africa"
+          >
+            South Africa
+          </option>
+          <option
+            value="South Georgia and the South Sandwich Islands"
+          >
+            South Georgia and the South Sandwich Islands
+          </option>
+          <option
+            value="Spain"
+          >
+            Spain
+          </option>
+          <option
+            value="Sri Lanka"
+          >
+            Sri Lanka
+          </option>
+          <option
+            value="Sudan"
+          >
+            Sudan
+          </option>
+          <option
+            value="Suriname"
+          >
+            Suriname
+          </option>
+          <option
+            value="Svalbard and Jan Mayen"
+          >
+            Svalbard and Jan Mayen
+          </option>
+          <option
+            value="Swaziland"
+          >
+            Swaziland
+          </option>
+          <option
+            value="Sweden"
+          >
+            Sweden
+          </option>
+          <option
+            value="Switzerland"
+          >
+            Switzerland
+          </option>
+          <option
+            value="Syrian Arab Republic"
+          >
+            Syrian Arab Republic
+          </option>
+          <option
+            value="Taiwan, Province of China"
+          >
+            Taiwan, Province of China
+          </option>
+          <option
+            value="Tajikistan"
+          >
+            Tajikistan
+          </option>
+          <option
+            value="Tanzania, United Republic of"
+          >
+            Tanzania, United Republic of
+          </option>
+          <option
+            value="Thailand"
+          >
+            Thailand
+          </option>
+          <option
+            value="Timor-Leste"
+          >
+            Timor-Leste
+          </option>
+          <option
+            value="Togo"
+          >
+            Togo
+          </option>
+          <option
+            value="Tokelau"
+          >
+            Tokelau
+          </option>
+          <option
+            value="Tonga"
+          >
+            Tonga
+          </option>
+          <option
+            value="Trinidad and Tobago"
+          >
+            Trinidad and Tobago
+          </option>
+          <option
+            value="Tunisia"
+          >
+            Tunisia
+          </option>
+          <option
+            value="Turkey"
+          >
+            Turkey
+          </option>
+          <option
+            value="Turkmenistan"
+          >
+            Turkmenistan
+          </option>
+          <option
+            value="Turks and Caicos Islands"
+          >
+            Turks and Caicos Islands
+          </option>
+          <option
+            value="Tuvalu"
+          >
+            Tuvalu
+          </option>
+          <option
+            value="Uganda"
+          >
+            Uganda
+          </option>
+          <option
+            value="Ukraine"
+          >
+            Ukraine
+          </option>
+          <option
+            value="United Arab Emirates"
+          >
+            United Arab Emirates
+          </option>
+          <option
+            value="United Kingdom"
+          >
+            United Kingdom
+          </option>
+          <option
+            value="United States"
+          >
+            United States
+          </option>
+          <option
+            value="United States Minor Outlying Islands"
+          >
+            United States Minor Outlying Islands
+          </option>
+          <option
+            value="Uruguay"
+          >
+            Uruguay
+          </option>
+          <option
+            value="Uzbekistan"
+          >
+            Uzbekistan
+          </option>
+          <option
+            value="Vanuatu"
+          >
+            Vanuatu
+          </option>
+          <option
+            value="Venezuela"
+          >
+            Venezuela
+          </option>
+          <option
+            value="Viet Nam"
+          >
+            Viet Nam
+          </option>
+          <option
+            value="Virgin Islands, British"
+          >
+            Virgin Islands, British
+          </option>
+          <option
+            value="Virgin Islands, U.S."
+          >
+            Virgin Islands, U.S.
+          </option>
+          <option
+            value="Wallis and Futuna"
+          >
+            Wallis and Futuna
+          </option>
+          <option
+            value="Western Sahara"
+          >
+            Western Sahara
+          </option>
+          <option
+            value="Yemen"
+          >
+            Yemen
+          </option>
+          <option
+            value="Zambia"
+          >
+            Zambia
+          </option>
+          <option
+            value="Zimbabwe"
+          >
+            Zimbabwe
+          </option>
+          ;
+        </select>
+        <label
+          class="sc-dkmUuB iyYtB"
+          for="label-input-mailAddress-street"
+          style="margin-top: 6px;"
+        >
+          Street
+        </label>
+        <input
+          class="sc-jOnpCo bcpQjy"
+          id="label-input-mailAddress-street"
+          maxlength="100"
+          name="street"
+          placeholder="Street"
+          type="text"
+          value="Independence street"
+        />
+        <label
+          class="sc-dkmUuB iyYtB"
+          for="label-input-mailAddress-streetNumber"
+          style="margin-top: 6px;"
+        >
+          Street number
+        </label>
+        <input
+          class="sc-jOnpCo bcpQjy"
+          id="label-input-mailAddress-streetNumber"
+          maxlength="100"
+          name="streetNumber"
+          placeholder="Street number"
+          type="text"
+          value="0101"
+        />
+      </div>
+      <div
+        style="width: 50%;"
+      >
+        <label
+          class="sc-dkmUuB iyYtB"
+          for="label-input-mailAddress-municipality"
+          style="margin-top: 6px;"
+        >
+          City
+        </label>
+        <input
+          class="sc-jOnpCo bcpQjy"
+          id="label-input-mailAddress-municipality"
+          maxlength="100"
+          name="municipality"
+          placeholder="Municipality"
+          type="text"
+          value="London"
+        />
+        <label
+          class="sc-dkmUuB iyYtB"
+          for="label-input-mailAddress-zipCode"
+          style="margin-top: 6px;"
+        >
+          ZIP Code
+        </label>
+        <input
+          class="sc-jOnpCo bcpQjy"
+          id="label-input-mailAddress-zipCode"
+          maxlength="100"
+          name="zipCode"
+          placeholder="ZIP Code"
+          type="text"
+          value="01"
+        />
+      </div>
+    </div>
+  </div>
+  <button
+    class="sc-bDpDS eKdTQP"
+  >
+    Next
+  </button>
+</div>
+`;
+
+exports[`KycL2Modal should render 16 page of form 1`] = `
+<div
+  class="sc-ejfMa-d eHxSmv"
+  data-testid="container"
+>
+  <h2
+    class="sc-iEXKAA dgMEcj"
+  >
+    KYC and AML Questionnaire for Individuals
+  </h2>
+  <div
+    class="sc-fMMURN hKbdiu"
+  >
+    <p
+      class="sc-brPLxw hmozBQ"
+      style="max-width: 75%;"
+    >
+      Provide a proof of address (copies of statements of account kept by an institution in the EEA)
+    </p>
+    <label
+      class="sc-EgOXT bDBZrO"
+      for="file-input-address"
+    >
+      <input
+        class="sc-eZYNyq fibwsS"
+        id="file-input-address"
+        type="file"
+      />
+      123.txt
+    </label>
+    <p
+      class="sc-brPLxw hmozBQ"
+      style="max-width: 75%;"
+    >
+      Provide a document proving information on the source of your funds (bank statement, payslip, tax return, etc.)
+    </p>
+    <label
+      class="sc-EgOXT bDBZrO"
+      for="file-input-proof"
+    >
+      <input
+        class="sc-eZYNyq fibwsS"
+        id="file-input-proof"
+        type="file"
+      />
+      123.txt
+    </label>
+  </div>
+  <button
+    class="sc-bVHCgj kHMePN"
+  >
+    Submit
+  </button>
+</div>
+`;

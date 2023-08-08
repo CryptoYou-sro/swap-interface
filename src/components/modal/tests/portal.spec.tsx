@@ -1,8 +1,8 @@
 import 'jest-styled-components';
 import { render } from '@testing-library/react';
-import { AuthProvider } from '../../helpers';
-import { Portal } from '../../components';
-import type { PortalSizeProps } from '../../components';
+import { AuthProvider } from '../../../helpers';
+import { Portal } from '../..';
+import type { PortalSizeProps } from '../..';
 
 describe('Switch', () => {
 	it.each<[PortalSizeProps]>([['small'], ['large']])(
