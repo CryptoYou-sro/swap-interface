@@ -7,8 +7,8 @@ import {
 	DEFAULT_BORDER_RADIUS,
 	DEFAULT_OUTLINE_OFFSET,
 	DEFAULT_TRANSITION,
-	fontSize,
 	HORIZONTAL_PADDING,
+	fontSize,
 	pxToRem,
 	spacing
 } from '../../styles';
@@ -116,6 +116,7 @@ type Props = {
 	maxLength?: any;
 	autocomplete?: string;
 	themeMode?: string;
+	isLoading?: boolean;
 };
 
 export const TextField = ({
@@ -134,7 +135,8 @@ export const TextField = ({
 	checked = false,
 	maxLength,
 	autocomplete = 'on',
-	themeMode = 'auto'
+	themeMode = 'auto',
+	isLoading = false
 }: Props) => {
 	const {
 		state: { theme }
@@ -150,7 +152,7 @@ export const TextField = ({
 				disabled={disabled}
 				onChange={onChange}
 				align={align}
-				value={value}
+				value={!isLoading ? value : ''}
 				type={type}
 				size={size}
 				error={error}
@@ -176,6 +178,18 @@ export const TextField = ({
 					}}
 				/>
 			)}
+			{isLoading && (
+				<Icon
+					icon='spinnerAnimated'
+					size={25}
+					style={{
+						position: 'absolute',
+						transform: ' translate(-50%, -50%)',
+						top: '50%',
+						left: '50%'
+					}}
+				/>
+			)}
 			{(error || description) && type === 'text' && (
 				<Message>
 					{description && <Description theme={theme}>{description}</Description>}
@@ -185,5 +199,5 @@ export const TextField = ({
 		</>
 	);
 
-	return isTypeSearch ? <TextFieldWrapper>{textField}</TextFieldWrapper> : textField;
+	return isTypeSearch ? <TextFieldWrapper>{textField}</TextFieldWrapper> : isLoading ? <TextFieldWrapper>{textField}</TextFieldWrapper> : textField;
 };

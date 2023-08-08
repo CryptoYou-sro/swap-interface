@@ -1,9 +1,10 @@
-import { format, utcToZonedTime } from 'date-fns-tz';
-import type { Theme } from './../styles';
-import { DefaultSelectEnum } from '../helpers';
 import type { Chain } from '@wagmi/core';
 import { jsonRpcProvider } from '@wagmi/core/providers/jsonRpc';
 import type { WalletConnectProviderOpts } from '@web3modal/ethereum/dist/_types/src/types';
+import { format, utcToZonedTime } from 'date-fns-tz';
+import { useEffect, useState } from 'react';
+import { DefaultSelectEnum } from '../helpers';
+import type { Theme } from './../styles';
 
 export const isLightTheme = (theme: Theme): boolean => theme.name === 'light';
 const { timeZone: localTimeZone } = Intl.DateTimeFormat().resolvedOptions();
@@ -38,6 +39,7 @@ export const beautifyNumbers = ({ n, digits = 8 }: BeautifyNumbers): string => {
 };
 
 export const hexToRgbA = (hex: string, alpha = '1'): string => {
+	// eslint-disable-next-line @typescript-eslint/no-non-null-assertion
 	const [r, g, b] = hex.match(/\w\w/g)!.map((x) => parseInt(x, 16));
 
 	return `rgba(${r},${g},${b},${alpha})`;
@@ -108,4 +110,21 @@ export function customW3mProvider<C extends Chain>({ projectId }: WalletConnectP
 export const getTodaysDate = () => {
 	
 	return new Date().toISOString().split('T')[0];
+};
+
+export const useDebounce = (value: any, delay: number) => {
+	const [debouncedValue, setDebouncedValue] = useState(value);
+  
+	useEffect(() => {
+		const handler = setTimeout(() => {
+			setDebouncedValue(value);
+		}, delay);
+  
+		return () => {
+			clearTimeout(handler);
+		};
+	}, [value, delay]);
+
+	// eslint-disable-next-line @typescript-eslint/no-unsafe-return
+	return debouncedValue;
 };

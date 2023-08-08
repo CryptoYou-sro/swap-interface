@@ -273,6 +273,7 @@ import { ReactComponent as YFI } from '../../assets/yfi.svg';
 import { ReactComponent as YFII } from '../../assets/yfii.svg';
 import { ReactComponent as YGG } from '../../assets/ygg.svg';
 import { ReactComponent as TRASHBIN } from '../../assets/trash.svg';
+import { ReactComponent as SPINNERANIMATED } from '../../assets/spinner-animated.svg';
 
 
 import { useStore } from '../../helpers';
@@ -388,6 +389,7 @@ const Icons = {
 	settingsLight: SettingsLight,
 	moneyAnimated: MoneyAnimated,
 	trashBin: TRASHBIN,
+	spinnerAnimated: SPINNERANIMATED,
 
 	// avaxapt: AVAXAPT,
 	akro: AKRO,
